@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: swarm_bridge
+    ports:
+      - "8765:8765"
+    environment:
+      - BRIDGE_HOST=0.0.0.0
+      - BRIDGE_PORT=8765
+      - HMAC_SECRET=${HMAC_SECRET}
+      - ALLOWED_IPS=${ALLOWED_IPS}
+    networks:
+      - bridge_network
+    restart: unless-stopped
+
+networks:
+  bridge_network:
+    driver: bridge

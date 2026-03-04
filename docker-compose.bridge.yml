@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  bridge:
+    build:
+      context: ./swarm/bridge
+      dockerfile: Dockerfile
+    container_name: swarm_bridge
+    environment:
+      - BRIDGE_HOST=0.0.0.0
+      - BRIDGE_PORT=8765
+      - HMAC_SECRET=${HMAC_SECRET}
+      - ALLOWED_IPS=${ALLOWED_IPS}
+    ports:
+      - "8765:8765"
+    networks:
+      - bridge_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8765/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  bridge_network:
+    driver: bridge
