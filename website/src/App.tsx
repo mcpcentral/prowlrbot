@@ -10,7 +10,7 @@ const LANG_KEY = "site-lang";
 
 function getStoredLang(): Lang {
   const v = localStorage.getItem(LANG_KEY);
-  return v === "en" ? "en" : "zh";
+  return v === "zh" ? "zh" : "en";
 }
 
 export default function App() {

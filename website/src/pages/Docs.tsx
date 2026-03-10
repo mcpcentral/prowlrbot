@@ -418,6 +418,7 @@ export function Docs({ config, lang, onLangClick }: DocsProps) {
         docsPath={config.docsPath}
         repoUrl={config.repoUrl}
       />
+      <div style={{ paddingTop: "3.5rem" }} />
       <div className="docs-layout">
         <aside
           style={{
@@ -704,7 +705,7 @@ export function Docs({ config, lang, onLangClick }: DocsProps) {
                             if (isVideo) {
                               return (
                                 <video src={src ?? undefined} controls>
-                                  {alt ?? "您的浏览器不支持 video 标签。"}
+                                  {alt ?? "Your browser does not support the video tag."}
                                 </video>
                               );
                             }

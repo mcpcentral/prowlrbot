@@ -2,6 +2,5 @@
   "projectName": "ProwlrBot",
   "projectTaglineEn": "Always watching. Always ready.",
   "repoUrl": "https://github.com/mcpcentral/prowlrbot",
-  "docsPath": "/docs/",
-  "showTestimonials": true
+  "docsPath": "/docs/"
 }

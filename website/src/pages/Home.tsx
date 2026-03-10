@@ -3,9 +3,7 @@ import { type Lang } from "../i18n";
 import { Nav } from "../components/Nav";
 import { Hero } from "../components/Hero";
 import { Features } from "../components/Features";
-import { Stats } from "../components/Stats";
 import { UseCases } from "../components/UseCases";
-import { Testimonials } from "../components/Testimonials";
 import { QuickStart } from "../components/QuickStart";
 import { BrandStory } from "../components/BrandStory";
 import { Footer } from "../components/Footer";
@@ -26,6 +24,8 @@ export function Home({ config, lang, onLangClick }: HomeProps) {
         docsPath={config.docsPath}
         repoUrl={config.repoUrl}
       />
+      {/* Offset for fixed navbar */}
+      <div style={{ paddingTop: "3.5rem" }} />
       <main>
         <Hero
           projectName={config.projectName}
@@ -35,14 +35,10 @@ export function Home({ config, lang, onLangClick }: HomeProps) {
           lang={lang}
           docsPath={config.docsPath}
         />
-        <Features lang={lang} delay={0.35} />
-        <Stats lang={lang} delay={0.38} />
-        <UseCases lang={lang} delay={0.4} />
-        {config.showTestimonials !== false && (
-          <Testimonials lang={lang} delay={0.5} />
-        )}
-        <QuickStart config={config} lang={lang} delay={0.8} />
-        <BrandStory lang={lang} delay={0.9} />
+        <Features lang={lang} />
+        <UseCases lang={lang} />
+        <QuickStart config={config} lang={lang} />
+        <BrandStory lang={lang} />
       </main>
       <Footer lang={lang} />
     </>

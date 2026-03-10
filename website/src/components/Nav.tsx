@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, BookOpen, Github, Newspaper } from "lucide-react";
 import { t, type Lang } from "../i18n";
 
@@ -19,17 +19,44 @@ export function Nav({
   repoUrl: _repoUrl,
 }: NavProps) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const linkClass =
     "nav-item text-[var(--text-muted)] hover:text-[var(--text)] transition-colors";
+
+  const scrollTo = (id: string) => {
+    setOpen(false);
+    if (!isHome) return;
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <header
       style={{
-        position: "sticky",
+        position: "fixed",
         top: 0,
-        zIndex: 10,
-        background: "rgba(10, 10, 15, 0.92)",
-        backdropFilter: "blur(12px)",
-        borderBottom: "1px solid var(--border)",
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        background: scrolled
+          ? "rgba(10, 10, 15, 0.9)"
+          : "rgba(10, 10, 15, 0)",
+        backdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: scrolled
+          ? "1px solid var(--border)"
+          : "1px solid transparent",
+        transition:
+          "background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease",
       }}
     >
       <nav
@@ -57,11 +84,12 @@ export function Nav({
           aria-label={projectName}
         >
           <img
-            src="/prowlrlogo.png"
+            src="/logo.png"
             alt={projectName}
             style={{ height: 36, width: "auto" }}
           />
         </Link>
+
         <div
           className="nav-links"
           style={{
@@ -70,6 +98,38 @@ export function Nav({
             gap: "var(--space-4)",
           }}
         >
+          {isHome && (
+            <>
+              <button
+                type="button"
+                onClick={() => scrollTo("features")}
+                className={linkClass}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  font: "inherit",
+                }}
+              >
+                Features
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollTo("quickstart")}
+                className={linkClass}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  font: "inherit",
+                }}
+              >
+                Get Started
+              </button>
+            </>
+          )}
           <Link
             to={docsPath.replace(/\/$/, "") || "/docs"}
             className={linkClass}
@@ -98,6 +158,7 @@ export function Nav({
             <span>{t(lang, "nav.github")}</span>
           </a>
         </div>
+
         <button
           type="button"
           className="nav-mobile-toggle"
@@ -115,6 +176,7 @@ export function Nav({
           {open ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
+
       <div
         className="nav-mobile"
         style={{
@@ -126,6 +188,40 @@ export function Nav({
           gap: "var(--space-2)",
         }}
       >
+        {isHome && (
+          <>
+            <button
+              type="button"
+              onClick={() => scrollTo("features")}
+              className={linkClass}
+              style={{
+                background: "none",
+                border: "none",
+                padding: "var(--space-1) 0",
+                cursor: "pointer",
+                font: "inherit",
+                textAlign: "left",
+              }}
+            >
+              Features
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollTo("quickstart")}
+              className={linkClass}
+              style={{
+                background: "none",
+                border: "none",
+                padding: "var(--space-1) 0",
+                cursor: "pointer",
+                font: "inherit",
+                textAlign: "left",
+              }}
+            >
+              Get Started
+            </button>
+          </>
+        )}
         <Link
           to={docsPath.replace(/\/$/, "") || "/docs"}
           className={linkClass}
@@ -154,6 +250,7 @@ export function Nav({
           <Github size={18} /> {t(lang, "nav.github")}
         </a>
       </div>
+
       <style>{`
         @media (max-width: 640px) {
           .nav-links { display: none !important; }

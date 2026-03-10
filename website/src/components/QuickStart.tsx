@@ -1,54 +1,34 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Terminal, Copy, Cloud, Star, TriangleAlert } from "lucide-react";
-import { motion } from "motion/react";
+import { Terminal, Copy } from "lucide-react";
 import type { SiteConfig } from "../config";
 import { t, type Lang } from "../i18n";
-
-const DOCKER_IMAGE = "mcpcentral/prowlrbot:latest";
+import { SectionWrapper } from "./SectionWrapper";
 
 const COMMANDS = {
   pip: ["pip install prowlrbot", "prowlr init --defaults", "prowlr app"],
-  unix: [
-    "pip install prowlrbot",
-    "prowlr init --defaults",
-    "prowlr app",
-  ],
-  windows: [
-    "pip install prowlrbot",
-    "prowlr init --defaults",
-    "prowlr app",
-  ],
   docker: [
-    `docker pull ${DOCKER_IMAGE}`,
-    `docker run -p 8088:8088 -v prowlrbot-data:/app/working ${DOCKER_IMAGE}`,
+    "docker pull mcpcentral/prowlrbot:latest",
+    "docker run -p 8088:8088 -v prowlrbot-data:/app/working mcpcentral/prowlrbot:latest",
   ],
 } as const;
 
-const ECS_DEPLOY_URL =
-  "https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-1ed84201799f40879884";
-const ECS_DOC_URL = "https://developer.aliyun.com/article/1713682";
-
-const TABS = ["pip", "unix", "windows", "docker", "aliyun"] as const;
+const TABS = ["pip", "docker"] as const;
 type OsTab = (typeof TABS)[number];
 
 interface QuickStartProps {
   config: SiteConfig;
   lang: Lang;
-  delay?: number;
 }
 
-export function QuickStart({ config, lang, delay = 0 }: QuickStartProps) {
+export function QuickStart({ config, lang }: QuickStartProps) {
   const [activeTab, setActiveTab] = useState<OsTab>("pip");
   const [copied, setCopied] = useState(false);
   const [hasOverflow, setHasOverflow] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const docsBase = config.docsPath.replace(/\/$/, "") || "/docs";
-  const channelsDocPath = `${docsBase}/channels`;
 
-  const isAliyun = activeTab === "aliyun";
-  const isDocker = activeTab === "docker";
-  const lines = isAliyun ? [] : COMMANDS[activeTab];
+  const lines = COMMANDS[activeTab];
   const fullCommand = lines.join("\n");
 
   useEffect(() => {
@@ -73,298 +53,181 @@ export function QuickStart({ config, lang, delay = 0 }: QuickStartProps) {
   }, [fullCommand]);
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      style={{
-        margin: "0 auto",
-        maxWidth: "var(--container)",
-        width: "100%",
-        minWidth: 0,
-        padding: "var(--space-6) var(--space-4) var(--space-8)",
-        textAlign: "center",
-        overflow: "hidden",
-      }}
+    <SectionWrapper
+      id="quickstart"
+      label="Get Started"
+      title={t(lang, "quickstart.title")}
+      description="Up and running in under a minute. Choose your install method."
     >
-      <h2
-        style={{
-          margin: "0 0 var(--space-4)",
-          fontSize: "1.375rem",
-          fontWeight: 600,
-          color: "var(--text)",
-        }}
-      >
-        {t(lang, "quickstart.title")}
-      </h2>
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "var(--space-4)",
-          maxWidth: "28rem",
+          maxWidth: "36rem",
           margin: "0 auto",
-          minWidth: 0,
         }}
       >
-        <div className="quickstart-card">
-          <div className="quickstart-tabs">
-            {TABS.map((tab) => {
-              const fullTitle =
-                tab === "pip"
-                  ? t(lang, "quickstart.tabPip")
-                  : tab === "unix"
-                  ? t(lang, "quickstart.tabUnix")
-                  : tab === "windows"
-                  ? t(lang, "quickstart.tabWindows")
-                  : tab === "docker"
-                  ? t(lang, "quickstart.tabDocker")
-                  : t(lang, "quickstart.tabAliyun");
-              const shortLabel =
-                tab === "pip"
-                  ? t(lang, "quickstart.tabPipShort")
-                  : tab === "unix"
-                  ? t(lang, "quickstart.tabUnixShort")
-                  : tab === "windows"
-                  ? t(lang, "quickstart.tabWindowsShort")
-                  : tab === "docker"
-                  ? t(lang, "quickstart.tabDockerShort")
-                  : t(lang, "quickstart.tabAliyunShort");
-              const BadgeIcon =
-                tab === "pip"
-                  ? Star
-                  : tab === "unix" || tab === "windows"
-                  ? TriangleAlert
-                  : null;
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  className={`quickstart-tab${
-                    tab === "aliyun" ? " quickstart-tab--cloud" : ""
-                  }`}
-                  onClick={() => setActiveTab(tab)}
-                  aria-pressed={activeTab === tab}
-                  title={fullTitle}
-                >
-                  <span className="quickstart-tab-label">{shortLabel}</span>
-                  {BadgeIcon ? (
-                    <BadgeIcon
-                      className="quickstart-tab-icon"
-                      size={12}
-                      strokeWidth={2}
-                      aria-hidden
-                    />
-                  ) : null}
-                </button>
-              );
-            })}
-          </div>
+        {/* Terminal-styled install card */}
+        <div
+          style={{
+            background: "#0d1117",
+            border: "1px solid #30363d",
+            borderRadius: "0.75rem",
+            overflow: "hidden",
+          }}
+        >
+          {/* Tab bar */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              gap: "var(--space-2)",
-              marginBottom: "var(--space-3)",
-              minWidth: 0,
+              gap: "0",
+              borderBottom: "1px solid #30363d",
+              background: "#161b22",
             }}
           >
+            {TABS.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  flex: 1,
+                  padding: "0.625rem 1rem",
+                  fontSize: "0.8125rem",
+                  fontWeight: 500,
+                  fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+                  color:
+                    activeTab === tab ? "var(--accent)" : "var(--text-muted)",
+                  background: activeTab === tab ? "#0d1117" : "transparent",
+                  border: "none",
+                  borderBottom:
+                    activeTab === tab
+                      ? "2px solid var(--accent)"
+                      : "2px solid transparent",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                {tab === "pip" ? "pip install" : "Docker"}
+              </button>
+            ))}
+          </div>
+
+          {/* Commands */}
+          <div style={{ position: "relative", padding: "1.25rem" }}>
             <div
               style={{
                 display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
-                gap: "var(--space-2)",
-                minWidth: 0,
-                flex: "1 1 0",
-                overflow: "hidden",
+                marginBottom: "var(--space-2)",
               }}
             >
-              <span style={{ flexShrink: 0 }}>
-                {isAliyun ? (
-                  <Cloud
-                    size={18}
-                    strokeWidth={1.5}
-                    color="var(--text-muted)"
-                  />
-                ) : (
-                  <Terminal
-                    size={18}
-                    strokeWidth={1.5}
-                    color="var(--text-muted)"
-                  />
-                )}
-              </span>
-              <span
-                className="quickstart-option-desc"
-                title={
-                  activeTab === "unix" || activeTab === "windows"
-                    ? t(lang, "quickstart.optionLocal")
-                    : undefined
-                }
+              <div
                 style={{
-                  fontSize: "0.8125rem",
-                  color: "var(--text-muted)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "var(--space-1)",
                 }}
               >
-                {isAliyun
-                  ? t(lang, "quickstart.optionAliyun")
-                  : isDocker
-                  ? t(lang, "quickstart.optionDocker")
-                  : activeTab === "pip"
-                  ? t(lang, "quickstart.optionPip")
-                  : t(lang, "quickstart.optionLocal")}
-              </span>
-            </div>
-            {!isAliyun && (
+                <Terminal
+                  size={14}
+                  strokeWidth={1.5}
+                  style={{ color: "#484f58" }}
+                />
+                <span
+                  style={{
+                    fontSize: "0.6875rem",
+                    color: "#484f58",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  terminal
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={handleCopy}
                 aria-label={t(lang, "docs.copy")}
-                title={t(lang, "docs.copy")}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "var(--space-1)",
-                  padding: "var(--space-1) var(--space-2)",
-                  fontSize: "0.75rem",
-                  color: "var(--text-muted)",
-                  background: "transparent",
-                  border: "1px solid var(--border)",
-                  borderRadius: "0.375rem",
+                  gap: "0.25rem",
+                  padding: "0.25rem 0.5rem",
+                  fontSize: "0.6875rem",
+                  color: "#484f58",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "0.25rem",
                   cursor: "pointer",
-                  flexShrink: 0,
                 }}
               >
-                <Copy size={14} strokeWidth={1.5} aria-hidden />
-                <span>
-                  {copied ? t(lang, "docs.copied") : t(lang, "docs.copy")}
-                </span>
+                <Copy size={12} strokeWidth={1.5} />
+                {copied ? "Copied!" : "Copy"}
               </button>
-            )}
-          </div>
-          <div style={{ position: "relative", minWidth: 0 }}>
-            {isAliyun ? (
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "var(--space-2)",
-                  justifyContent: "center",
-                }}
-              >
-                <a
-                  href={ECS_DEPLOY_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="quickstart-ecs-btn"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "var(--space-2) var(--space-4)",
-                    fontSize: "0.8125rem",
-                    fontWeight: 500,
-                    color: "var(--text)",
-                    background: "var(--border)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "0.375rem",
-                    cursor: "pointer",
-                    textDecoration: "none",
-                  }}
-                >
-                  {t(lang, "quickstart.aliyunDeployLink")}
-                </a>
-                <a
-                  href={ECS_DOC_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="quickstart-ecs-btn"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "var(--space-2) var(--space-4)",
-                    fontSize: "0.8125rem",
-                    fontWeight: 500,
-                    color: "var(--text)",
-                    background: "var(--border)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "0.375rem",
-                    cursor: "pointer",
-                    textDecoration: "none",
-                  }}
-                >
-                  {t(lang, "quickstart.aliyunDocLink")}
-                </a>
-              </div>
-            ) : (
-              <>
-                <div
-                  ref={scrollRef}
-                  style={{
-                    overflowX: "auto",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "var(--space-1)",
-                    scrollbarGutter: "stable",
-                    minWidth: 0,
-                  }}
-                >
-                  {lines.map((line) => (
-                    <div
-                      key={line}
-                      style={{
-                        fontFamily: "ui-monospace, monospace",
-                        fontSize: "0.8125rem",
-                        color: "var(--text)",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {line}
-                    </div>
-                  ))}
-                </div>
-                {hasOverflow && (
-                  <div
-                    aria-hidden
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      bottom: 0,
-                      width: "3rem",
-                      background:
-                        "linear-gradient(to left, var(--surface) 0%, transparent)",
-                      pointerEvents: "none",
-                    }}
-                  />
-                )}
-              </>
-            )}
-          </div>
-          <p
-            style={{
-              margin: "var(--space-3) 0 0",
-              fontSize: "0.8125rem",
-              color: "var(--text-muted)",
-              lineHeight: 1.5,
-            }}
-          >
-            {t(lang, "quickstart.hintBefore")}
-            <Link
-              to={channelsDocPath}
+            </div>
+
+            <div
+              ref={scrollRef}
               style={{
-                color: "inherit",
-                textDecoration: "underline",
+                overflowX: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.375rem",
+                fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+                fontSize: "0.8125rem",
+                lineHeight: 1.7,
+                scrollbarWidth: "none",
               }}
             >
-              {t(lang, "quickstart.hintLink")}
-            </Link>
-            {t(lang, "quickstart.hintAfter")}
-          </p>
+              {lines.map((line) => (
+                <div key={line} style={{ whiteSpace: "nowrap" }}>
+                  <span style={{ color: "#28c840" }}>$</span>{" "}
+                  <span style={{ color: "#f0f6fc" }}>{line}</span>
+                </div>
+              ))}
+            </div>
+
+            {hasOverflow && (
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: "3rem",
+                  background:
+                    "linear-gradient(to left, #0d1117 0%, transparent)",
+                  pointerEvents: "none",
+                }}
+              />
+            )}
+          </div>
         </div>
+
+        <p
+          style={{
+            margin: "var(--space-3) 0 0",
+            fontSize: "0.8125rem",
+            color: "var(--text-muted)",
+            lineHeight: 1.5,
+            textAlign: "center",
+          }}
+        >
+          Then{" "}
+          <Link
+            to={`${docsBase}/channels`}
+            style={{
+              color: "var(--accent)",
+              textDecoration: "underline",
+              textUnderlineOffset: "2px",
+            }}
+          >
+            configure a channel
+          </Link>{" "}
+          and start chatting with your agent.
+        </p>
       </div>
-    </motion.section>
+    </SectionWrapper>
   );
 }

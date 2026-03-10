@@ -4,13 +4,6 @@ export interface SiteConfig {
   projectTaglineZh: string;
   repoUrl: string;
   docsPath: string;
-  /** When true or omitted, show Testimonials on homepage. */
-  showTestimonials?: boolean;
-  /**
-   * ModelScope Studio one-click setup URL (no Python install).
-   * Replace target when officially launched.
-   */
-  modelScopeForkUrl?: string;
 }
 
 const defaultConfig: SiteConfig = {
@@ -19,8 +12,6 @@ const defaultConfig: SiteConfig = {
   projectTaglineZh: "Always watching. Always ready.",
   repoUrl: "https://github.com/mcpcentral/prowlrbot",
   docsPath: "/docs/",
-  showTestimonials: false,
-  modelScopeForkUrl: "",
 };
 
 let cached: SiteConfig | null = null;

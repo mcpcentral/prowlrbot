@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Github } from "lucide-react";
 import { motion } from "motion/react";
 import { t, type Lang } from "../i18n";
+import { AnimatedTerminal } from "./AnimatedTerminal";
 
 interface HeroProps {
   projectName: string;
@@ -14,13 +15,13 @@ const container = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.05 },
+    transition: { staggerChildren: 0.12, delayChildren: 0.05 },
   },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
 export function Hero({
@@ -30,115 +31,229 @@ export function Hero({
   docsPath,
 }: HeroProps) {
   return (
-    <motion.section
+    <section
       className="hero-section"
       style={{
-        margin: "0 auto",
-        maxWidth: "var(--container)",
-        padding: "var(--space-8) var(--space-4) var(--space-7)",
-        textAlign: "center",
+        position: "relative",
+        overflow: "hidden",
       }}
-      variants={container}
-      initial="hidden"
-      animate="visible"
     >
-      <motion.div
-        variants={item}
-        className="hero-brand-row"
+      {/* Gradient background */}
+      <div
+        aria-hidden
         style={{
-          marginBottom: "var(--space-4)",
-          display: "flex",
-          justifyContent: "center",
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="visible"
+        style={{
+          position: "relative",
+          margin: "0 auto",
+          maxWidth: "var(--container)",
+          padding: "var(--space-8) var(--space-4) var(--space-7)",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "var(--space-6)",
           alignItems: "center",
         }}
+        className="hero-grid"
       >
-        <img
-          src="/prowlrlogo.png"
-          alt={projectName}
+        {/* Left — Text */}
+        <div>
+          <motion.div
+            variants={item}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "var(--space-1)",
+              padding: "0.25rem 0.75rem",
+              marginBottom: "var(--space-3)",
+              fontSize: "0.75rem",
+              fontWeight: 500,
+              fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+              color: "var(--accent)",
+              background: "var(--accent-dim)",
+              border: "1px solid rgba(0,229,255,0.15)",
+              borderRadius: "9999px",
+              letterSpacing: "0.05em",
+            }}
+          >
+            v0.1.0 — Now Open Source
+          </motion.div>
+
+          <motion.h1
+            variants={item}
+            style={{
+              margin: "0 0 var(--space-3)",
+              fontSize: "clamp(2rem, 5vw, 3.25rem)",
+              fontWeight: 800,
+              lineHeight: 1.1,
+              letterSpacing: "-0.03em",
+              color: "var(--text)",
+            }}
+          >
+            {projectName}
+          </motion.h1>
+
+          <motion.p
+            variants={item}
+            style={{
+              margin: "0 0 var(--space-2)",
+              fontSize: "clamp(1rem, 2vw, 1.25rem)",
+              fontWeight: 600,
+              color: "var(--text)",
+              lineHeight: 1.4,
+            }}
+          >
+            {t(lang, "hero.slogan")}
+          </motion.p>
+
+          <motion.p
+            variants={item}
+            style={{
+              margin: "0 0 var(--space-4)",
+              maxWidth: "28rem",
+              fontSize: "0.9375rem",
+              color: "var(--text-muted)",
+              lineHeight: 1.6,
+            }}
+          >
+            {t(lang, "hero.sub")}
+          </motion.p>
+
+          <motion.div
+            variants={item}
+            style={{
+              display: "flex",
+              gap: "var(--space-2)",
+              flexWrap: "wrap",
+              marginBottom: "var(--space-5)",
+            }}
+          >
+            <Link
+              to={docsPath.replace(/\/$/, "") || "/docs"}
+              className="hero-cta-primary"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "var(--space-1)",
+                padding: "0.75rem 1.5rem",
+                background: "var(--accent)",
+                color: "var(--bg)",
+                borderRadius: "0.5rem",
+                fontSize: "0.9375rem",
+                fontWeight: 700,
+                border: "none",
+                transition: "all 0.2s ease",
+              }}
+            >
+              {t(lang, "hero.cta")}
+              <ArrowRight size={18} strokeWidth={2} aria-hidden />
+            </Link>
+            <a
+              href="https://github.com/mcpcentral/prowlrbot"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "var(--space-1)",
+                padding: "0.75rem 1.5rem",
+                background: "transparent",
+                color: "var(--text)",
+                border: "1px solid var(--border)",
+                borderRadius: "0.5rem",
+                fontSize: "0.9375rem",
+                fontWeight: 600,
+                transition: "all 0.2s ease",
+              }}
+            >
+              <Github size={18} strokeWidth={2} aria-hidden />
+              GitHub
+            </a>
+          </motion.div>
+
+          {/* Stats row */}
+          <motion.div
+            variants={item}
+            style={{
+              display: "flex",
+              gap: "var(--space-5)",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              { value: "7", label: "AI Providers" },
+              { value: "8", label: "Channels" },
+              { value: "60+", label: "Features" },
+              { value: "3", label: "Protocols" },
+            ].map(({ value, label }) => (
+              <div key={label}>
+                <div
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: 700,
+                    color: "var(--accent)",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {value}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--text-muted)",
+                    fontWeight: 500,
+                  }}
+                >
+                  {label}
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Right — Animated Terminal */}
+        <motion.div
+          variants={item}
           style={{
-            height: 220,
-            width: "auto",
-            filter: "drop-shadow(0 0 40px rgba(0, 229, 255, 0.2))",
-          }}
-        />
-      </motion.div>
-      <motion.p
-        variants={item}
-        style={{
-          margin: "var(--space-3) 0 var(--space-2)",
-          fontSize: "clamp(1.125rem, 2.5vw, 1.375rem)",
-          color: "var(--text)",
-          maxWidth: "32rem",
-          marginLeft: "auto",
-          marginRight: "auto",
-          lineHeight: 1.5,
-          fontWeight: 600,
-        }}
-      >
-        {t(lang, "hero.slogan")}
-      </motion.p>
-      <motion.p
-        variants={item}
-        style={{
-          margin: "0 auto var(--space-4)",
-          maxWidth: "28rem",
-          fontSize: "0.9375rem",
-          color: "var(--text-muted)",
-          lineHeight: 1.6,
-        }}
-      >
-        {t(lang, "hero.sub")}
-      </motion.p>
-      <motion.div
-        variants={item}
-        style={{
-          marginBottom: "var(--space-5)",
-          display: "flex",
-          gap: "var(--space-3)",
-          justifyContent: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <Link
-          to={docsPath.replace(/\/$/, "") || "/docs"}
-          style={{
-            display: "inline-flex",
+            display: "flex",
+            justifyContent: "center",
             alignItems: "center",
-            gap: "var(--space-1)",
-            padding: "var(--space-2) var(--space-4)",
-            background: "var(--accent)",
-            color: "var(--bg)",
-            borderRadius: "0.5rem",
-            fontSize: "1rem",
-            fontWeight: 700,
-            transition: "all 0.2s ease",
           }}
         >
-          {t(lang, "hero.cta")}
-          <ArrowRight size={20} strokeWidth={2} aria-hidden />
-        </Link>
-        <a
-          href="https://github.com/mcpcentral/prowlrbot"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "var(--space-1)",
-            padding: "var(--space-2) var(--space-4)",
-            background: "transparent",
-            color: "var(--text)",
-            border: "1px solid var(--border)",
-            borderRadius: "0.5rem",
-            fontSize: "1rem",
-            fontWeight: 600,
-            transition: "all 0.2s ease",
-          }}
-        >
-          <Github size={18} strokeWidth={2} aria-hidden />
-          GitHub
-        </a>
+          <AnimatedTerminal />
+        </motion.div>
       </motion.div>
-    </motion.section>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            text-align: center;
+            padding-top: var(--space-6) !important;
+            padding-bottom: var(--space-5) !important;
+          }
+          .hero-grid > div:first-child {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+        }
+        .hero-cta-primary:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 20px var(--accent-glow);
+        }
+      `}</style>
+    </section>
   );
 }

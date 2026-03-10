@@ -1,46 +1,24 @@
-/**
- * Brand story: Why we built ProwlrBot — emotional narrative with CTA.
- */
-import { motion } from "motion/react";
 import { t, type Lang } from "../i18n";
+import { SectionWrapper } from "./SectionWrapper";
 
 interface BrandStoryProps {
   lang: Lang;
-  delay?: number;
 }
 
-export function BrandStory({ lang, delay = 0 }: BrandStoryProps) {
+export function BrandStory({ lang }: BrandStoryProps) {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      style={{
-        margin: "0 auto",
-        maxWidth: "var(--container)",
-        padding: "var(--space-6) var(--space-4)",
-        textAlign: "center",
-      }}
+    <SectionWrapper
+      id="story"
+      label="Our Story"
+      title={t(lang, "brandstory.title")}
     >
       <div
         style={{
           maxWidth: "36rem",
           margin: "0 auto",
-          padding: "var(--space-4)",
-          borderTop: "1px solid var(--border)",
+          textAlign: "center",
         }}
       >
-        <h2
-          style={{
-            margin: "0 0 var(--space-3)",
-            fontSize: "1.125rem",
-            fontWeight: 600,
-            color: "var(--accent)",
-            letterSpacing: "0.02em",
-          }}
-        >
-          {t(lang, "brandstory.title")}
-        </h2>
         <p
           style={{
             margin: "0 0 var(--space-2)",
@@ -73,7 +51,7 @@ export function BrandStory({ lang, delay = 0 }: BrandStoryProps) {
         </p>
         <p
           style={{
-            margin: "0 0 var(--space-3)",
+            margin: "0 0 var(--space-4)",
             fontSize: "0.9375rem",
             color: "var(--text-muted)",
             lineHeight: 1.8,
@@ -82,26 +60,32 @@ export function BrandStory({ lang, delay = 0 }: BrandStoryProps) {
           {t(lang, "brandstory.para4")}
         </p>
         <a
-          href="https://github.com/prowlrbot/prowlrbot"
+          href="https://github.com/mcpcentral/prowlrbot"
           target="_blank"
           rel="noopener noreferrer"
           style={{
             display: "inline-block",
-            padding: "0.625rem 1.5rem",
-            fontSize: "0.875rem",
+            padding: "0.75rem 2rem",
+            fontSize: "0.9375rem",
             fontWeight: 600,
             color: "var(--bg)",
             background: "var(--accent)",
-            borderRadius: "6px",
+            borderRadius: "0.5rem",
             textDecoration: "none",
-            transition: "opacity 0.2s ease",
+            transition: "opacity 0.2s ease, transform 0.15s ease",
           }}
-          onMouseEnter={(e) => ((e.target as HTMLElement).style.opacity = "0.85")}
-          onMouseLeave={(e) => ((e.target as HTMLElement).style.opacity = "1")}
+          onMouseEnter={(e) => {
+            (e.target as HTMLElement).style.opacity = "0.9";
+            (e.target as HTMLElement).style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            (e.target as HTMLElement).style.opacity = "1";
+            (e.target as HTMLElement).style.transform = "translateY(0)";
+          }}
         >
           {t(lang, "brandstory.cta")}
         </a>
       </div>
-    </motion.section>
+    </SectionWrapper>
   );
 }

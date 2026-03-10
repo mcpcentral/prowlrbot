@@ -1,7 +1,17 @@
 import type { LucideProps } from "lucide-react";
-import { MessageSquare, Shield, Puzzle, Globe, Sliders, Layers, Users, Radar, Zap } from "lucide-react";
-import { motion } from "motion/react";
+import {
+  MessageSquare,
+  Shield,
+  Puzzle,
+  Globe,
+  Sliders,
+  Layers,
+  Users,
+  Radar,
+  Zap,
+} from "lucide-react";
 import { t, type Lang } from "../i18n";
+import { SectionWrapper } from "./SectionWrapper";
 
 const items: Array<{
   key: string;
@@ -20,61 +30,53 @@ const items: Array<{
 
 interface FeaturesProps {
   lang: Lang;
-  delay?: number;
 }
 
-export function Features({ lang, delay = 0 }: FeaturesProps) {
+export function Features({ lang }: FeaturesProps) {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      style={{
-        margin: "0 auto",
-        maxWidth: "var(--container)",
-        padding: "var(--space-6) var(--space-4)",
-        textAlign: "center",
-      }}
+    <SectionWrapper
+      id="features"
+      label="Capabilities"
+      title={t(lang, "features.title")}
+      description="Everything you need to deploy, coordinate, and scale autonomous AI agents across any channel."
     >
-      <h2
-        style={{
-          margin: "0 0 var(--space-5)",
-          fontSize: "1.375rem",
-          fontWeight: 600,
-          color: "var(--text)",
-        }}
-      >
-        {t(lang, "features.title")}
-      </h2>
+      {/* 1px-border grid: bg color shows through 1px gap as borders */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(16rem, 1fr))",
-          gap: "var(--space-4)",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "1px",
+          background: "var(--border)",
+          borderRadius: "0.75rem",
+          overflow: "hidden",
+          border: "1px solid var(--border)",
         }}
+        className="features-grid"
       >
         {items.map(({ key, icon: Icon }) => (
           <div
             key={key}
+            className="feature-card"
             style={{
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
-              borderRadius: "0.5rem",
-              padding: "var(--space-4)",
+              background: "var(--bg)",
+              padding: "var(--space-5) var(--space-4)",
+              transition: "background 0.2s ease",
             }}
           >
             <div
+              className="feature-icon"
               style={{
-                marginBottom: "var(--space-2)",
-                color: "var(--text)",
+                marginBottom: "var(--space-3)",
+                color: "var(--text-muted)",
+                transition: "color 0.2s ease",
               }}
             >
-              <Icon size={22} strokeWidth={1.5} aria-hidden />
+              <Icon size={24} strokeWidth={1.5} aria-hidden />
             </div>
             <h3
               style={{
                 margin: "0 0 var(--space-1)",
-                fontSize: "1rem",
+                fontSize: "0.9375rem",
                 fontWeight: 600,
                 color: "var(--text)",
               }}
@@ -84,8 +86,8 @@ export function Features({ lang, delay = 0 }: FeaturesProps) {
             <p
               style={{
                 margin: 0,
-                fontSize: "0.875rem",
-                lineHeight: 1.55,
+                fontSize: "0.8125rem",
+                lineHeight: 1.6,
                 color: "var(--text-muted)",
               }}
             >
@@ -94,6 +96,25 @@ export function Features({ lang, delay = 0 }: FeaturesProps) {
           </div>
         ))}
       </div>
-    </motion.section>
+
+      <style>{`
+        .feature-card:hover {
+          background: rgba(255,255,255,0.015) !important;
+        }
+        .feature-card:hover .feature-icon {
+          color: var(--accent) !important;
+        }
+        @media (max-width: 768px) {
+          .features-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .features-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+      `}</style>
+    </SectionWrapper>
   );
 }
