@@ -28,7 +28,7 @@ class BootstrapHook:
     def __init__(
         self,
         working_dir: Path,
-        language: str = "zh",
+        language: str = "en",
     ):
         """Initialize bootstrap hook.
 

@@ -1,6 +1,6 @@
 ---
 name: dingtalk_channel_connect
-description: "使用可视浏览器自动完成 ProwlrBot 的钉钉频道接入。适用于用户提到钉钉、DingTalk、开发者后台、Client ID、Client Secret、机器人、Stream 模式、绑定或配置 channel 的场景；支持遇到登录页时暂停，等待用户登录后继续。"
+description: "Use a visible browser to automate DingTalk channel setup for ProwlrBot. Applicable when the user mentions DingTalk, developer console, Client ID, Client Secret, bot, Stream mode, binding or configuring a channel. Supports pausing at login pages for user authentication."
 metadata:
   {
     "prowlr":
@@ -11,66 +11,66 @@ metadata:
   }
 ---
 
-# 钉钉 Channel 自动连接（可视浏览器）
+# DingTalk Channel Auto-Connect (Visible Browser)
 
-此 skill 用于通过可视浏览器自动化完成钉钉应用创建与 ProwlrBot channel 绑定。
+This skill automates the creation of a DingTalk app and binding it to a ProwlrBot channel via a visible browser.
 
-## 强制规则
+## Mandatory Rules
 
-1. 必须使用可视浏览器模式启动：
+1. Must launch browser in visible mode:
 
 ```json
 {"action": "start", "headed": true}
 ```
 
-2. 遇到登录关卡必须暂停：
-   - 若页面出现登录界面（如 `登录`、扫码登录、手机号/密码登录），立即停止自动操作。
-   - 明确提示用户先手动登录，再等待用户回复“登录好了/继续”。
-   - 未收到用户确认前，不得继续执行后续步骤。
+2. Must pause at login gates:
+   - If a login page appears (scan QR code, phone/password login, etc.), immediately stop automation.
+   - Clearly prompt the user to log in manually, then wait for their confirmation ("done" / "continue").
+   - Do not proceed until the user confirms.
 
-3. 任何应用配置变更都必须新建版本并发布后才生效：
-   - 配置完机器人相关信息后**一定要发布机器人**
-   - 不论是新建应用还是修改应用信息（名称、描述、图标、机器人配置等），最终都**必须执行“创建新版本 + 发布”**。
-   - 若未完成发布，不得宣称配置已生效。
+3. All app configuration changes require creating a new version and publishing:
+   - After configuring bot settings, **you must publish the bot**.
+   - Whether creating a new app or modifying app info (name, description, icon, bot config, etc.), you **must create a new version and publish**.
+   - Do not claim the configuration is active until publishing is complete.
 
-## 执行前显著确认（必须先做）
+## Pre-Execution Confirmation (Required)
 
-在开始自动化点击前，先向用户发起一次“配置确认”，明确告知可自定义项、图片规范、默认值。建议使用如下结构化确认：
+Before starting automation, confirm with the user the customizable fields, image requirements, and defaults:
 
-1. 让用户可自定义以下字段：
-   - 应用名称
-   - 应用描述
-   - 机器人图标图片链接或本地路径
-   - 机器人消息预览图链接或本地路径
+1. Let the user customize these fields:
+   - App name
+   - App description
+   - Bot icon image (URL or local path)
+   - Bot message preview image (URL or local path)
 
-2. 明确告知图片规范（显著提示）：
-   - 机器人图标：仅支持 JPG/PNG，`240*240px` 以上，`1:1`，`2MB` 以内，无圆角。
-   - 机器人消息预览图：格式 `png/jpeg/jpg`，不超过 `2MB`。
+2. Clearly state image requirements:
+   - Bot icon: JPG/PNG only, `240x240px` or larger, `1:1` ratio, under `2MB`, no rounded corners.
+   - Bot message preview: `png/jpeg/jpg` format, under `2MB`.
 
-3. 明确告知默认值（用户不指定时自动采用）：
-   - 应用名称：`ProwlrBot`
-   - 应用描述：`Your personal assistant`
-   - 机器人图标：`https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
-   - 机器人消息预览图：`https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
+3. State the defaults (used when user doesn't specify):
+   - App name: `ProwlrBot`
+   - App description: `Your personal assistant`
+   - Bot icon: `https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
+   - Bot message preview: `https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
 
-4. 若用户未给任何自定义值，必须先明确回复：
-   - “将全部采用默认设置（ProwlrBot / Your personal assistant / 默认图片）后继续执行。”
+4. If the user provides no custom values, confirm:
+   - "Using all defaults (ProwlrBot / Your personal assistant / default images). Proceeding."
 
-## 图片上传策略（link/path 都支持）
+## Image Upload Strategy (URL and local path supported)
 
-1. 若用户提供本地路径，直接用于上传。
-2. 若用户提供图片 link，先下载到本地临时文件，再执行上传。
-3. 上传动作顺序必须是：
-   - 先点击页面上传入口（触发 chooser）
-   - 再调用 `file_upload` 传入本地路径数组（`paths_json`）
-4. 若上传报错且判断为图片规格不符合（尺寸、比例、大小、格式）：
-   - 立即暂停自动化
-   - 明确让用户手动上传符合规范的图片
-   - 用户确认“已上传/继续”后，从当前步骤继续后续流程
+1. If the user provides a local path, use it directly for upload.
+2. If the user provides an image URL, download it to a local temp file first, then upload.
+3. Upload sequence must be:
+   - Click the page upload trigger (triggers file chooser)
+   - Call `file_upload` with the local path array (`paths_json`)
+4. If upload fails due to image spec violations (size, ratio, dimensions, format):
+   - Pause automation immediately
+   - Ask the user to manually upload a compliant image
+   - After user confirms "uploaded/continue", resume from current step
 
-### 上传动作实战经验
+### Upload Practical Tips
 
-1. `file_upload` 的 `paths_json` 必须是“JSON 字符串数组”，注意转义：
+1. `file_upload`'s `paths_json` must be a "JSON string array" — mind the escaping:
 
 ```json
 {
@@ -80,106 +80,106 @@ metadata:
 }
 ```
 
-2. 若页面在 iframe 内，建议优先带上 `frame_selector`，否则可能出现找不到上传控件或 chooser 未触发。
+2. If the page uses iframes, include `frame_selector` — otherwise the upload control or chooser may not be found.
 
-3. 上传前必须先点击上传入口；若直接 `file_upload` 会报：
+3. You must click the upload trigger before calling `file_upload`; otherwise you'll get:
    - `No chooser. Click upload then file_upload.`
 
-4. 机器人图标区域的常见结构特征可用于定位（示例）：
-   - `text: "* 机器人图标"`
-   - `button: "使用应用图标"`
-   - `button: "avatar"`（通常内部有 `img "avatar"`）
+4. Common structural patterns for locating the bot icon area (examples):
+   - `text: "* Bot Icon"`
+   - `button: "Use App Icon"`
+   - `button: "avatar"` (usually contains `img "avatar"`)
 
-5. 当 snapshot 中同时出现“使用应用图标”和“avatar”时，优先点击 `avatar` 按钮触发上传，再执行 `file_upload`。
+5. When both "Use App Icon" and "avatar" appear in the snapshot, prefer clicking the `avatar` button to trigger upload, then call `file_upload`.
 
-## 自动化流程
+## Automation Flow
 
-### 步骤 1：打开钉钉开发者后台
+### Step 1: Open DingTalk Developer Console
 
-1. 可视模式启动浏览器（`headed: true`）
-2. 打开 `https://open-dev.dingtalk.com/`
-3. 调用 `snapshot` 判断是否需要登录
+1. Launch browser in visible mode (`headed: true`)
+2. Navigate to `https://open-dev.dingtalk.com/`
+3. Call `snapshot` to check if login is required
 
-若需要登录，使用如下话术暂停：
+If login is needed, pause with this message:
 
-> 检测到需要登录钉钉开发者后台。我已暂停自动操作，请先在弹出的浏览器中完成登录。完成后回复“继续”，我再从当前页面接着执行。
+> Login required for the DingTalk developer console. I've paused automation — please log in using the browser window. Reply "continue" when done, and I'll resume from the current page.
 
-### 步骤 2：创建企业内部应用
+### Step 2: Create an Internal Enterprise App
 
-用户确认登录后继续：
+After user confirms login:
 
-1. 进入创建路径：
-   - 应用开发 -> 企业内部应用 -> 钉钉应用 -> 创建应用
-2. 填写应用信息（优先使用用户自定义，否则使用默认值）：
-   - 应用名称：默认 `ProwlrBot`
-   - 应用描述：默认 `Your personal assistant`
-3. 保存并创建应用
+1. Navigate to the creation path:
+   - App Development -> Internal Enterprise Apps -> DingTalk App -> Create App
+2. Fill in app info (use user's custom values, or defaults):
+   - App name: default `ProwlrBot`
+   - App description: default `Your personal assistant`
+3. Save and create the app
 
-若页面文案或结构与预期不一致，重新 `snapshot`，按可见文本语义重新定位元素。
+If the page text or structure differs from expected, re-`snapshot` and locate elements by visible text semantics.
 
-### 步骤 3：添加机器人能力并发布
+### Step 3: Add Bot Capability and Publish
 
-1. 点击**应用能力**中的**添加应用能力**，找到**机器人**并添加
-2. 将**机器人配置**右侧的switch按钮切换为打开
-3. 填写**机器人名称**，**机器人简介**和**机器人描述**
-4. 上传**机器人图标**（用户自定义或默认图）：
-   - 点击机器人图标下面的图片
-   - 默认图链接：`https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
-   - 若为 link，先下载到本地再上传
-   - 若提示图片不合规，暂停并让用户手动上传合规图片后继续
-5. 上传**机器人消息预览图**（用户自定义或默认图）：
-   - 点击机器人消息预览图下面的图片
-   - 默认图链接：`https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
-   - 若为 link，先下载到本地再上传
-   - 若提示图片不合规，暂停并让用户手动上传合规图片后继续
-6. 确认消息接收模式设置为 `Stream 模式`
-7. 选择**发布**，此时会有进一步弹出的确认页面，选择发布。注意：**一定要发布机器人**之后再进行下一步
+1. Click **Add Capability** under **App Capabilities**, find **Bot** and add it
+2. Toggle the **Bot Configuration** switch to enabled
+3. Fill in **Bot Name**, **Bot Summary**, and **Bot Description**
+4. Upload **Bot Icon** (user-specified or default):
+   - Click the image area below "Bot Icon"
+   - Default URL: `https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
+   - If URL, download locally first then upload
+   - If image doesn't meet spec, pause and ask user to upload manually
+5. Upload **Bot Message Preview Image** (user-specified or default):
+   - Click the image area below "Bot Message Preview"
+   - Default URL: `https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
+   - If URL, download locally first then upload
+   - If image doesn't meet spec, pause and ask user to upload manually
+6. Confirm message receiving mode is set to `Stream Mode`
+7. Click **Publish** — a confirmation dialog will appear, confirm to publish. **You must publish the bot** before proceeding.
 
-### 步骤 4：创建版本并发布
+### Step 4: Create Version and Publish
 
-1. 打开 `应用发布 -> 版本管理与发布`
-2. 创建新版本（每次配置变更后都要创建）
-3. 填写版本描述，应用可见范围选择全部员工
-4. 按页面提示完成发布，此时会有新的弹窗出现，选择确认发布
-5. 只有看到发布成功状态，才可继续执行后续步骤/给用户“已生效”结论
+1. Go to `App Publishing -> Version Management & Publishing`
+2. Create a new version (required after every config change)
+3. Fill in version description, set app visibility to all employees
+4. Follow page prompts to complete publishing — a confirmation dialog will appear, confirm
+5. Only after seeing a successful publish status should you proceed or tell the user it's active
 
-### 步骤 5：获取凭证
+### Step 5: Obtain Credentials
 
-1. 打开 `基础信息 -> 凭证与基础信息`
-2. 告知用户`Client ID`（AppKey）和`Client Secret`（AppSecret）在该页面上。不主动进行修改，引导用户自行绑定
+1. Go to `Basic Info -> Credentials & Basic Info`
+2. Show the user where `Client ID` (AppKey) and `Client Secret` (AppSecret) are on the page. Do not modify them — guide the user to bind them manually.
 
-## ProwlrBot 绑定方式
+## ProwlrBot Binding
 
-拿到凭证后，引导用户选择以下任一方式：
+After obtaining credentials, guide the user to choose one of these methods:
 
-1. 控制台前端配置：
-   - ProwlrBot console 中进入 `控制 -> 频道 -> DingTalk`
-   - 填入 `Client ID` 与 `Client Secret`
+1. Console UI:
+   - In ProwlrBot console, go to `Control -> Channels -> DingTalk`
+   - Enter `Client ID` and `Client Secret`
 
-2. 配置文件方式：
+2. Config file:
 
 ```json
 "dingtalk": {
   "enabled": true,
   "bot_prefix": "[BOT]",
-  "client_id": "你的 Client ID",
-  "client_secret": "你的 Client Secret"
+  "client_id": "Your Client ID",
+  "client_secret": "Your Client Secret"
 }
 ```
 
-路径：`~/.prowlrbot/config.json`，位于 `channels.dingtalk` 下。
+Path: `~/.prowlrbot/config.json`, under `channels.dingtalk`.
 
-### 凭证交付要求（强制）
+### Credential Delivery Requirements (Mandatory)
 
-1. agent 只负责引导用户进入凭证页、获取并展示 `Client ID` 与真实 `Client Secret`。
-2. agent 不主动改 `console` 配置、不主动改 `~/.prowlrbot/config.json`。
-3. 必须提示用户按以下两种方式之一手动填写：
-   - 控制台前端：`控制 -> 频道 -> DingTalk`
-   - 配置文件：编辑 `~/.prowlrbot/config.json` 的 `channels.dingtalk` 字段
+1. The agent only guides the user to the credentials page and displays `Client ID` and `Client Secret`.
+2. The agent does NOT modify console config or `~/.prowlrbot/config.json` directly.
+3. Must prompt the user to fill in credentials manually via one of:
+   - Console UI: `Control -> Channels -> DingTalk`
+   - Config file: edit `~/.prowlrbot/config.json` under `channels.dingtalk`
 
-## Browser 工具调用模式
+## Browser Tool Call Pattern
 
-默认按以下顺序执行：
+Default execution order:
 
 1. `start` with `headed: true`
 2. `open`
@@ -188,9 +188,9 @@ metadata:
 5. frequent `snapshot` after page transitions
 6. `stop` when done
 
-## 稳定性与恢复策略
+## Stability & Recovery Strategy
 
-- 优先使用最新 `snapshot` 的 `ref`；仅在必要时使用 `selector`。
-- 每次关键点击或跳转后，使用短等待（`wait_for`）并立即重新 `snapshot`。
-- 若中途会话失效或要求重新登录，必须再次暂停，待用户登录后从当前步骤继续。
-- 若因租户权限、管理员审批等阻塞自动化，明确说明卡点，并请用户手动完成该步骤后再续跑。
+- Prefer using `ref` from the latest `snapshot`; only use `selector` when necessary.
+- After each critical click or navigation, use a short `wait_for` and immediately re-`snapshot`.
+- If the session expires or re-login is required mid-flow, pause again and wait for user login before continuing.
+- If blocked by tenant permissions or admin approval, clearly describe the blocker and ask the user to complete that step manually before resuming.

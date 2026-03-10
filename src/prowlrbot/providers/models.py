@@ -36,6 +36,23 @@ class ProviderDefinition(BaseModel):
         default="OpenAIChatModel",
         description="Chat model class name (e.g., 'OpenAIChatModel')",
     )
+    # --- Provider Detection fields ---
+    env_var: str = Field(
+        default="",
+        description="Environment variable name for API key detection",
+    )
+    url_based_detection: bool = Field(
+        default=False,
+        description="Whether to detect this provider via URL probe (e.g. Ollama)",
+    )
+    cost_tier: str = Field(
+        default="standard",
+        description="Cost tier: free / low / standard / premium",
+    )
+    health_check_endpoint: str = Field(
+        default="",
+        description="API path to probe for health checks (e.g. /v1/models)",
+    )
 
 
 class ProviderSettings(BaseModel):

@@ -1,6 +1,6 @@
 ---
 name: browser_visible
-description: "当用户希望打开真实可见的浏览器窗口（而非后台无头模式）时，使用 browser_use 的 headed 参数启动浏览器，随后可正常 open/snapshot/click 等。适用于用户想亲眼看到页面、演示或调试场景。"
+description: "When the user wants to open a real, visible browser window (not headless mode), use the browser_use headed parameter to launch the browser, then proceed with open/snapshot/click etc. Useful for demos, debugging, or when the user wants to see the page."
 metadata:
   {
     "prowlr":
@@ -11,42 +11,42 @@ metadata:
   }
 ---
 
-# 可见浏览器（真实窗口）参考
+# Visible Browser (Real Window) Reference
 
-默认情况下，**browser_use** 在后台以无头（headless）模式运行，不会弹出浏览器窗口。当用户明确希望**打开真正的浏览器窗口**、**看到浏览器界面**、**有界面的浏览器**或**可见浏览器**时，应使用本 skill：先以 **headed** 模式启动浏览器，再按需打开页面并操作。
+By default, **browser_use** runs in headless mode in the background without showing a browser window. When the user explicitly wants to **open a real browser window**, **see the browser UI**, or have a **visible browser**, use this skill: first launch the browser in **headed** mode, then open pages and interact as needed.
 
-## 何时使用
+## When to Use
 
-- 用户说：「打开真实浏览器」「打开有界面的浏览器」「我想看到浏览器」「不要后台，要能看到窗口」
-- 用户希望亲眼看到页面加载、点击、填表等过程（演示、调试、教学）
-- 用户需要与可见页面交互（如登录、验证码等需人工参与的场景）
+- User says: "open a real browser", "open a visible browser", "I want to see the browser", "don't run in the background, I want to see the window"
+- User wants to watch the page load, click, fill forms, etc. (demos, debugging, teaching)
+- User needs to interact with a visible page (e.g. login, CAPTCHA, or other human-in-the-loop scenarios)
 
-## 使用方式（browser_use）
+## Usage (browser_use)
 
-1. **先以可见模式启动浏览器**  
-   调用 **browser_use**，`action` 为 `start`，并传入 **headed=true**：
+1. **Launch browser in visible mode**
+   Call **browser_use** with `action` set to `start` and pass **headed=true**:
    ```json
    {"action": "start", "headed": true}
    ```
-   成功后会出现一个真实的 Chromium 浏览器窗口。
+   A real Chromium browser window will appear.
 
-2. **再按需打开页面并操作**  
-   与无头模式用法相同，例如：
-   - 打开 URL：`{"action": "open", "url": "https://example.com"}`
-   - 获取页面结构：`{"action": "snapshot"}`
-   - 点击、输入等：使用 `ref` 或 `selector` 进行 click、type 等
+2. **Open pages and interact as needed**
+   Same as headless mode, for example:
+   - Open URL: `{"action": "open", "url": "https://example.com"}`
+   - Get page structure: `{"action": "snapshot"}`
+   - Click, type, etc.: use `ref` or `selector` for click, type actions
 
-3. **关闭可见浏览器**  
-   使用完毕后可调用：`{"action": "stop"}` 关闭浏览器。
+3. **Close the visible browser**
+   When done: `{"action": "stop"}` to close the browser.
 
-## 与默认（无头）模式的区别
+## Difference from Default (Headless) Mode
 
-| 模式     | 启动方式                    | 是否弹出窗口 |
-|----------|-----------------------------|--------------|
-| 无头模式 | `{"action": "start"}`       | 否（后台）   |
-| 可见模式 | `{"action": "start", "headed": true}` | 是（真实窗口） |
+| Mode     | Launch Method                         | Shows Window |
+|----------|---------------------------------------|--------------|
+| Headless | `{"action": "start"}`                 | No (background) |
+| Visible  | `{"action": "start", "headed": true}` | Yes (real window) |
 
-## 注意
+## Notes
 
-- 若当前已有浏览器在运行，需要先 `stop` 再以 `headed: true` 重新 `start`，才能切换到可见窗口。
-- 可见模式会占用桌面并需要图形环境，服务器或无图形环境可能无法使用。
+- If a browser is already running, you need to `stop` it first, then `start` again with `headed: true` to switch to visible mode.
+- Visible mode requires a desktop/graphical environment. It may not work on servers without a display.

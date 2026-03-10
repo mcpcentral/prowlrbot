@@ -383,7 +383,7 @@ class FeishuChannel(BaseChannel):
             # Response per Feishu doc: GET contact/v3/users/{user_id}
             # https://open.feishu.cn/document/server-docs/contact-v3/user/get
             # Body: { "code": 0, "data": { "user": { "name": ... } } }
-            # "name" can be string or i18n object { "zh_cn": "中文", "en": "en" }
+            # "name" can be string or i18n object { "zh_cn": "name_zh", "en": "name_en" }
             user = data.get("data") or {}
             inner = user.get("user") or {}
             name = None

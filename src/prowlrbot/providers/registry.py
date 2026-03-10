@@ -67,12 +67,50 @@ AZURE_OPENAI_MODELS: List[ModelInfo] = [
     ModelInfo(id="gpt-4o-mini", name="GPT-4o Mini"),
 ]
 
+ANTHROPIC_MODELS: List[ModelInfo] = [
+    ModelInfo(id="claude-opus-4-6", name="Claude Opus 4.6"),
+    ModelInfo(id="claude-sonnet-4-6", name="Claude Sonnet 4.6"),
+    ModelInfo(id="claude-haiku-4-5-20251001", name="Claude Haiku 4.5"),
+    ModelInfo(id="claude-sonnet-4-5-20250514", name="Claude Sonnet 4.5"),
+]
+
+GROQ_MODELS: List[ModelInfo] = [
+    ModelInfo(id="llama-3.3-70b-versatile", name="Llama 3.3 70B"),
+    ModelInfo(id="llama-3.1-8b-instant", name="Llama 3.1 8B Instant"),
+    ModelInfo(id="mixtral-8x7b-32768", name="Mixtral 8x7B"),
+    ModelInfo(id="gemma2-9b-it", name="Gemma 2 9B"),
+]
+
+ZAI_MODELS: List[ModelInfo] = [
+    ModelInfo(id="glm-5", name="GLM-5"),
+    ModelInfo(id="glm-4-plus", name="GLM-4 Plus"),
+    ModelInfo(id="glm-4-air", name="GLM-4 Air"),
+]
+
+# ---------------------------------------------------------------------------
+#  Built-in provider definitions (with detection metadata)
+# ---------------------------------------------------------------------------
+
+PROVIDER_ANTHROPIC = ProviderDefinition(
+    id="anthropic",
+    name="Anthropic",
+    default_base_url="https://api.anthropic.com",
+    api_key_prefix="sk-ant-",
+    models=ANTHROPIC_MODELS,
+    env_var="ANTHROPIC_API_KEY",
+    cost_tier="premium",
+    health_check_endpoint="/v1/models",
+)
+
 PROVIDER_MODELSCOPE = ProviderDefinition(
     id="modelscope",
     name="ModelScope",
     default_base_url="https://api-inference.modelscope.cn/v1",
     api_key_prefix="ms",
     models=MODELSCOPE_MODELS,
+    env_var="MODELSCOPE_API_KEY",
+    cost_tier="standard",
+    health_check_endpoint="/v1/models",
 )
 
 PROVIDER_DASHSCOPE = ProviderDefinition(
@@ -81,6 +119,9 @@ PROVIDER_DASHSCOPE = ProviderDefinition(
     default_base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
     api_key_prefix="sk",
     models=DASHSCOPE_MODELS,
+    env_var="DASHSCOPE_API_KEY",
+    cost_tier="standard",
+    health_check_endpoint="/compatible-mode/v1/models",
 )
 
 PROVIDER_ALIYUN_CODINGPLAN = ProviderDefinition(
@@ -89,6 +130,9 @@ PROVIDER_ALIYUN_CODINGPLAN = ProviderDefinition(
     default_base_url="https://coding.dashscope.aliyuncs.com/v1",
     api_key_prefix="sk-sp",
     models=ALIYUN_CODINGPLAN_MODELS,
+    env_var="ALIYUN_CODINGPLAN_API_KEY",
+    cost_tier="low",
+    health_check_endpoint="/v1/models",
 )
 
 PROVIDER_LLAMACPP = ProviderDefinition(
@@ -98,6 +142,7 @@ PROVIDER_LLAMACPP = ProviderDefinition(
     api_key_prefix="",
     models=[],
     is_local=True,
+    cost_tier="free",
 )
 
 PROVIDER_MLX = ProviderDefinition(
@@ -107,6 +152,7 @@ PROVIDER_MLX = ProviderDefinition(
     api_key_prefix="",
     models=[],
     is_local=True,
+    cost_tier="free",
 )
 
 PROVIDER_OPENAI = ProviderDefinition(
@@ -115,6 +161,9 @@ PROVIDER_OPENAI = ProviderDefinition(
     default_base_url="https://api.openai.com/v1",
     api_key_prefix="sk-",
     models=OPENAI_MODELS,
+    env_var="OPENAI_API_KEY",
+    cost_tier="premium",
+    health_check_endpoint="/v1/models",
 )
 
 PROVIDER_AZURE_OPENAI = ProviderDefinition(
@@ -123,6 +172,8 @@ PROVIDER_AZURE_OPENAI = ProviderDefinition(
     default_base_url="",
     api_key_prefix="",
     models=AZURE_OPENAI_MODELS,
+    env_var="AZURE_OPENAI_API_KEY",
+    cost_tier="premium",
 )
 
 PROVIDER_OLLAMA = ProviderDefinition(
@@ -131,10 +182,37 @@ PROVIDER_OLLAMA = ProviderDefinition(
     default_base_url="http://localhost:11434/v1",
     api_key_prefix="",
     models=[],
+    url_based_detection=True,
+    is_local=True,
+    cost_tier="free",
+    health_check_endpoint="/v1/models",
+)
+
+PROVIDER_GROQ = ProviderDefinition(
+    id="groq",
+    name="Groq",
+    default_base_url="https://api.groq.com/openai/v1",
+    api_key_prefix="gsk_",
+    models=GROQ_MODELS,
+    env_var="GROQ_API_KEY",
+    cost_tier="low",
+    health_check_endpoint="/openai/v1/models",
+)
+
+PROVIDER_ZAI = ProviderDefinition(
+    id="zai",
+    name="Z.ai (Zhipu)",
+    default_base_url="https://open.bigmodel.cn/api/paas/v4",
+    api_key_prefix="",
+    models=ZAI_MODELS,
+    env_var="ZHIPUAI_API_KEY",
+    cost_tier="standard",
+    health_check_endpoint="/api/paas/v4/models",
 )
 
 _BUILTIN_IDS: frozenset[str] = frozenset(
     [
+        "anthropic",
         "modelscope",
         "dashscope",
         "aliyun-codingplan",
@@ -143,10 +221,13 @@ _BUILTIN_IDS: frozenset[str] = frozenset(
         "ollama",
         "llamacpp",
         "mlx",
+        "groq",
+        "zai",
     ],
 )
 
 PROVIDERS: dict[str, ProviderDefinition] = {
+    PROVIDER_ANTHROPIC.id: PROVIDER_ANTHROPIC,
     PROVIDER_MODELSCOPE.id: PROVIDER_MODELSCOPE,
     PROVIDER_DASHSCOPE.id: PROVIDER_DASHSCOPE,
     PROVIDER_ALIYUN_CODINGPLAN.id: PROVIDER_ALIYUN_CODINGPLAN,
@@ -155,6 +236,8 @@ PROVIDERS: dict[str, ProviderDefinition] = {
     PROVIDER_OLLAMA.id: PROVIDER_OLLAMA,
     PROVIDER_LLAMACPP.id: PROVIDER_LLAMACPP,
     PROVIDER_MLX.id: PROVIDER_MLX,
+    PROVIDER_GROQ.id: PROVIDER_GROQ,
+    PROVIDER_ZAI.id: PROVIDER_ZAI,
 }
 
 _VALID_ID_RE = re.compile(r"^[a-z][a-z0-9_-]{0,63}$")

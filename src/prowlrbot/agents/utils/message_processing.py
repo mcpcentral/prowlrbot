@@ -263,7 +263,7 @@ async def process_file_and_media_blocks_in_message(msg) -> None:
         for i, local_path in reversed(downloaded_files):
             text_block = {
                 "type": "text",
-                "text": f"用户上传文件，已经下载到 {local_path}",
+                "text": f"User uploaded file, downloaded to {local_path}",
             }
             message.content.insert(i + 1, text_block)
 

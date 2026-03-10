@@ -68,10 +68,10 @@ def _echo_security_warning_box() -> None:
 
 DEFAULT_HEARTBEAT_MDS = {
     "zh": """# Heartbeat checklist
-- 扫描收件箱紧急邮件
-- 查看未来 2h 的日历
-- 检查待办是否卡住
-- 若安静超过 8h，轻量 check-in
+- Scan inbox for urgent email
+- Check calendar for next 2h
+- Check tasks for blockers
+- Light check-in if quiet for 8h
 """,
     "en": """# Heartbeat checklist
 - Scan inbox for urgent email

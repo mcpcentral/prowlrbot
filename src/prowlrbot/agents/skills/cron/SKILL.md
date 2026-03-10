@@ -1,96 +1,96 @@
 ---
 name: cron
-description: 通过 prowlr 命令管理定时任务 - 创建、查询、暂停、恢复、删除任务
+description: Manage scheduled tasks via the prowlr command — create, list, pause, resume, delete jobs
 metadata: { "prowlr": { "emoji": "⏰" } }
 ---
 
-# 定时任务管理
+# Scheduled Task Management
 
-使用 `prowlr cron` 命令管理定时任务。
+Use the `prowlr cron` command to manage scheduled tasks.
 
-## 常用命令
+## Common Commands
 
 ```bash
-# 列出所有任务
+# List all jobs
 prowlr cron list
 
-# 查看任务详情
+# View job details
 prowlr cron get <job_id>
 
-# 查看任务状态
+# View job status
 prowlr cron state <job_id>
 
-# 删除任务
+# Delete a job
 prowlr cron delete <job_id>
 
-# 暂停/恢复任务
+# Pause/resume a job
 prowlr cron pause <job_id>
 prowlr cron resume <job_id>
 
-# 立即执行一次
+# Run a job immediately
 prowlr cron run <job_id>
 ```
 
-## 创建任务
+## Creating Jobs
 
-支持两种任务类型：
-- **text**：定时向频道发送固定消息
-- **agent**：定时向 Agent 提问并发送回复到频道
+Two job types are supported:
+- **text**: Send a fixed message to a channel on schedule
+- **agent**: Ask the Agent a question on schedule and send the reply to a channel
 
-### 快速创建
+### Quick Create
 
 ```bash
-# 每天 9:00 发送文本消息
+# Send a text message every day at 9:00
 prowlr cron create \
   --type text \
-  --name "每日早安" \
+  --name "daily-greeting" \
   --cron "0 9 * * *" \
   --channel imessage \
   --target-user "CHANGEME" \
   --target-session "CHANGEME" \
-  --text "早上好！"
+  --text "Good morning!"
 
-# 每 2 小时向 Agent 提问
+# Ask the Agent every 2 hours
 prowlr cron create \
   --type agent \
-  --name "检查待办" \
+  --name "check-todos" \
   --cron "0 */2 * * *" \
   --channel dingtalk \
   --target-user "CHANGEME" \
   --target-session "CHANGEME" \
-  --text "我有什么待办事项？"
+  --text "What are my pending tasks?"
 ```
 
-### 必填参数
+### Required Parameters
 
-创建任务需要：
-- `--type`：任务类型（text 或 agent）
-- `--name`：任务名称
-- `--cron`：cron 表达式（如 `"0 9 * * *"` 表示每天 9:00）
-- `--channel`：目标频道（imessage / discord / dingtalk / qq / console）
-- `--target-user`：用户标识
-- `--target-session`：会话标识
-- `--text`：消息内容（text 类型）或提问内容（agent 类型）
+Creating a job requires:
+- `--type`: Job type (text or agent)
+- `--name`: Job name
+- `--cron`: Cron expression (e.g. `"0 9 * * *"` for daily at 9:00)
+- `--channel`: Target channel (imessage / discord / dingtalk / qq / console)
+- `--target-user`: User identifier
+- `--target-session`: Session identifier
+- `--text`: Message content (text type) or question (agent type)
 
-### 从 JSON 创建（复杂配置）
+### Create from JSON (advanced)
 
 ```bash
 prowlr cron create -f job_spec.json
 ```
 
-## Cron 表达式示例
+## Cron Expression Examples
 
 ```
-0 9 * * *      # 每天 9:00
-0 */2 * * *    # 每 2 小时
-30 8 * * 1-5   # 工作日 8:30
-0 0 * * 0      # 每周日零点
-*/15 * * * *   # 每 15 分钟
+0 9 * * *      # Every day at 9:00
+0 */2 * * *    # Every 2 hours
+30 8 * * 1-5   # Weekdays at 8:30
+0 0 * * 0      # Every Sunday at midnight
+*/15 * * * *   # Every 15 minutes
 ```
 
-## 使用建议
+## Usage Tips
 
-- 缺少参数时，询问用户补充后再创建
-- 暂停/删除/恢复前，用 `prowlr cron list` 查找 job_id
-- 排查问题时，用 `prowlr cron state <job_id>` 查看状态
-- 给用户的命令要完整、可直接复制执行
+- If parameters are missing, ask the user to provide them before creating
+- Before pausing/deleting/resuming, use `prowlr cron list` to find the job_id
+- For troubleshooting, use `prowlr cron state <job_id>` to check status
+- Provide complete, copy-pasteable commands to the user
