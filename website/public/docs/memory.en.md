@@ -1,6 +1,6 @@
 # Memory
 
-**Memory** gives CoPAW persistent memory across conversations: it automatically manages the context window and writes key information to files for long-term storage.
+**Memory** gives ProwlrBot persistent memory across conversations: it automatically manages the context window and writes key information to files for long-term storage.
 
 The memory system provides two core capabilities:
 

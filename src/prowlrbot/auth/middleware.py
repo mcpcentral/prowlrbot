@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import secrets
 from functools import lru_cache
 from typing import Callable, Sequence
 
@@ -15,6 +16,17 @@ from .store import UserStore
 
 logger = logging.getLogger(__name__)
 
+# Resolve JWT secret once at module load: prefer env var, fall back to a
+# random secret (safe for single-process, but tokens won't survive restarts).
+_JWT_SECRET: str = os.environ.get("PROWLRBOT_JWT_SECRET", "")
+if not _JWT_SECRET:
+    _JWT_SECRET = secrets.token_hex(32)
+    logger.warning(
+        "PROWLRBOT_JWT_SECRET is not set — using a randomly generated secret. "
+        "JWTs will not survive server restarts. Set PROWLRBOT_JWT_SECRET in "
+        "production."
+    )
+
 
 @lru_cache(maxsize=1)
 def _get_user_store() -> UserStore:
@@ -22,9 +34,8 @@ def _get_user_store() -> UserStore:
 
 
 def _get_jwt_handler() -> JWTHandler:
-    secret = os.environ.get("PROWLRBOT_JWT_SECRET", "prowlrbot-dev-secret")
     expiry = int(os.environ.get("PROWLRBOT_JWT_EXPIRY_MINUTES", "60"))
-    return JWTHandler(secret_key=secret, expiry_minutes=expiry)
+    return JWTHandler(secret_key=_JWT_SECRET, expiry_minutes=expiry)
 
 
 async def get_current_user(request: Request) -> User:

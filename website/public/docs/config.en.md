@@ -14,16 +14,16 @@ This page covers:
 
 By default, all config and data live in one folder — the **working directory**:
 
-- **`~/.copaw`** (the `.copaw` folder under your home directory)
+- **`~/.prowlrbot`** (the `.prowlr` folder under your home directory)
 
-When you run `copaw init`, this directory is created automatically. Here's what
+When you run `prowlr init`, this directory is created automatically. Here's what
 you'll find inside:
 
 | File / Directory     | Purpose                                                            |
 | -------------------- | ------------------------------------------------------------------ |
 | `config.json`        | Channel on/off and credentials, heartbeat settings, language, etc. |
 | `HEARTBEAT.md`       | Prompt content used each heartbeat run                             |
-| `jobs.json`          | Cron job list (managed via `copaw cron` or API)                    |
+| `jobs.json`          | Cron job list (managed via `prowlr cron` or API)                    |
 | `chats.json`         | Chat/session list (file storage mode)                              |
 | `active_skills/`     | Skills currently active and used by the agent                      |
 | `customized_skills/` | User-created custom skills                                         |
@@ -33,38 +33,38 @@ you'll find inside:
 
 > **Tip:** `SOUL.md` and `AGENTS.md` are the minimum required Markdown files
 > for the agent's system prompt. Without them, the agent falls back to a
-> generic "You are a helpful assistant" prompt. Run `copaw init` to auto-copy
+> generic "You are a helpful assistant" prompt. Run `prowlr init` to auto-copy
 > them based on your language choice (`zh` / `en`).
 
 ---
 
 ## Changing paths with environment variables (optional)
 
-If you don't want to use `~/.copaw`, you can override the working directory or
+If you don't want to use `~/.prowlrbot`, you can override the working directory or
 specific file names:
 
 | Variable                           | Default         | Meaning                                                                             |
 | ---------------------------------- | --------------- | ----------------------------------------------------------------------------------- |
-| `COPAW_WORKING_DIR`                | `~/.copaw`      | Working directory; config, heartbeat, jobs, chats, skills, and memory all live here |
-| `COPAW_CONFIG_FILE`                | `config.json`   | Config file name (relative to working dir)                                          |
-| `COPAW_HEARTBEAT_FILE`             | `HEARTBEAT.md`  | Heartbeat prompt file name (relative to working dir)                                |
-| `COPAW_JOBS_FILE`                  | `jobs.json`     | Cron jobs file name (relative to working dir)                                       |
-| `COPAW_CHATS_FILE`                 | `chats.json`    | Chats file name (relative to working dir)                                           |
-| `COPAW_LOG_LEVEL`                  | `info`          | Log level for the app (`debug`, `info`, `warning`, `error`, `critical`)             |
-| `COPAW_MEMORY_COMPACT_THRESHOLD`   | `100000`        | Character threshold to trigger memory compaction                                    |
-| `COPAW_MEMORY_COMPACT_KEEP_RECENT` | `3`             | Number of recent messages kept after compaction                                     |
-| `COPAW_MEMORY_COMPACT_RATIO`       | `0.7`           | Threshold ratio for triggering compaction (relative to context window)              |
-| `COPAW_CONSOLE_STATIC_DIR`         | _(auto-detect)_ | Path to the console front-end static files                                          |
+| `PROWLRBOT_WORKING_DIR`                | `~/.prowlrbot`      | Working directory; config, heartbeat, jobs, chats, skills, and memory all live here |
+| `PROWLRBOT_CONFIG_FILE`                | `config.json`   | Config file name (relative to working dir)                                          |
+| `PROWLRBOT_HEARTBEAT_FILE`             | `HEARTBEAT.md`  | Heartbeat prompt file name (relative to working dir)                                |
+| `PROWLRBOT_JOBS_FILE`                  | `jobs.json`     | Cron jobs file name (relative to working dir)                                       |
+| `PROWLRBOT_CHATS_FILE`                 | `chats.json`    | Chats file name (relative to working dir)                                           |
+| `PROWLRBOT_LOG_LEVEL`                  | `info`          | Log level for the app (`debug`, `info`, `warning`, `error`, `critical`)             |
+| `PROWLRBOT_MEMORY_COMPACT_THRESHOLD`   | `100000`        | Character threshold to trigger memory compaction                                    |
+| `PROWLRBOT_MEMORY_COMPACT_KEEP_RECENT` | `3`             | Number of recent messages kept after compaction                                     |
+| `PROWLRBOT_MEMORY_COMPACT_RATIO`       | `0.7`           | Threshold ratio for triggering compaction (relative to context window)              |
+| `PROWLRBOT_CONSOLE_STATIC_DIR`         | _(auto-detect)_ | Path to the console front-end static files                                          |
 
 Example — use a different working dir for this shell:
 
 ```bash
-export COPAW_WORKING_DIR=/home/me/my_copaw
-copaw app
+export PROWLRBOT_WORKING_DIR=/home/me/my_prowlr
+prowlr app
 ```
 
 Config, HEARTBEAT, jobs, memory, etc. will be read/written under
-`/home/me/my_copaw`.
+`/home/me/my_prowlr`.
 
 ---
 
@@ -105,7 +105,7 @@ automatically use defaults.
       "app_secret": "",
       "encrypt_key": "",
       "verification_token": "",
-      "media_dir": "~/.copaw/media"
+      "media_dir": "~/.prowlrbot/media"
     },
     "qq": {
       "enabled": false,
@@ -186,7 +186,7 @@ Each channel has a common base and channel-specific fields.
 | `app_secret`         | string | `""`             | Feishu App Secret                   |
 | `encrypt_key`        | string | `""`             | Event encryption key (optional)     |
 | `verification_token` | string | `""`             | Event verification token (optional) |
-| `media_dir`          | string | `~/.copaw/media` | Directory for received media files  |
+| `media_dir`          | string | `~/.prowlrbot/media` | Directory for received media files  |
 
 **`channels.qq`** — QQ Bot
 
@@ -214,7 +214,7 @@ Each channel has a common base and channel-specific fields.
 | `agents.defaults.heartbeat`          | object \| null | See below | Heartbeat configuration                                                 |
 | `agents.running`                     | object         | See below | Agent runtime behavior configuration                                    |
 | `agents.language`                    | string         | `"zh"`    | Language for agent MD files (`"en"` or `"zh"`)                          |
-| `agents.installed_md_files_language` | string \| null | `null`    | Tracks which language's MD files are installed; managed by `copaw init` |
+| `agents.installed_md_files_language` | string \| null | `null`    | Tracks which language's MD files are installed; managed by `prowlr init` |
 
 **`agents.running`** — Agent runtime behavior
 
@@ -246,11 +246,11 @@ Each channel has a common base and channel-specific fields.
 
 | Field  | Type           | Default | Description                   |
 | ------ | -------------- | ------- | ----------------------------- |
-| `host` | string \| null | `null`  | Last host used by `copaw app` |
-| `port` | int \| null    | `null`  | Last port used by `copaw app` |
+| `host` | string \| null | `null`  | Last host used by `prowlr app` |
+| `port` | int \| null    | `null`  | Last port used by `prowlr app` |
 
-This is auto-saved every time you run `copaw app`. Other CLI subcommands
-(like `copaw cron`) use this to know where to send requests.
+This is auto-saved every time you run `prowlr app`. Other CLI subcommands
+(like `prowlr cron`) use this to know where to send requests.
 
 ---
 
@@ -278,9 +278,9 @@ channel/user/session.
 
 ## LLM Providers
 
-CoPaw needs an LLM provider to work. You can set it up in three ways:
+ProwlrBot needs an LLM provider to work. You can set it up in three ways:
 
-- **`copaw init`** — interactive wizard, the easiest way
+- **`prowlr init`** — interactive wizard, the easiest way
 - **Console UI** — click through the settings page at runtime
 - **API** — `PUT /providers/{id}` and `PUT /providers/active_llm`
 
@@ -306,11 +306,11 @@ Then choose which provider + model to activate:
 | `provider_id` | Which provider to use (e.g. `dashscope`) |
 | `model`       | Which model to use (e.g. `qwen3-max`)    |
 
-> **Tip:** Run `copaw init` and follow the prompts — it will list available
+> **Tip:** Run `prowlr init` and follow the prompts — it will list available
 > models for each provider so you can pick one directly.
 >
 > **Note:** You are responsible for ensuring the API key and base URL are valid.
-> CoPaw does not verify whether the key is correct or has sufficient quota —
+> ProwlrBot does not verify whether the key is correct or has sufficient quota —
 > make sure the chosen provider and model are accessible.
 
 ---
@@ -320,7 +320,7 @@ Then choose which provider + model to activate:
 Some tools need extra API keys (e.g. `TAVILY_API_KEY` for web search). You can
 manage them in three ways:
 
-- **`copaw init`** — prompts "Configure environment variables?" during setup
+- **`prowlr init`** — prompts "Configure environment variables?" during setup
 - **Console UI** — edit on the settings page
 - **API** — `GET/PUT/DELETE /envs`
 
@@ -328,7 +328,7 @@ Set variables are auto-loaded at app startup, so all tools and child processes
 can read them via `os.environ`.
 
 > **Note:** You are responsible for ensuring the values (e.g. third-party API
-> keys) are valid. CoPaw only stores and injects them — it does not verify
+> keys) are valid. ProwlrBot only stores and injects them — it does not verify
 > correctness.
 
 ---
@@ -339,31 +339,31 @@ Skills extend the agent's capabilities. They live in three directories:
 
 | Directory                     | Purpose                                                             |
 | ----------------------------- | ------------------------------------------------------------------- |
-| Built-in (in source code)     | Shipped with CoPaw — docx, pdf, pptx, xlsx, news, email, cron, etc. |
-| `~/.copaw/customized_skills/` | User-created skills                                                 |
-| `~/.copaw/active_skills/`     | Currently active skills (synced from built-in + customized)         |
+| Built-in (in source code)     | Shipped with ProwlrBot — docx, pdf, pptx, xlsx, news, email, cron, etc. |
+| `~/.prowlrbot/customized_skills/` | User-created skills                                                 |
+| `~/.prowlrbot/active_skills/`     | Currently active skills (synced from built-in + customized)         |
 
 Each skill is a directory with a `SKILL.md` file (YAML front matter with `name`
 and `description`), and optional `references/` and `scripts/` subdirectories.
 
 Manage skills via:
 
-- `copaw init` (choose all / none / custom during setup)
-- `copaw skills config` (interactive toggle)
+- `prowlr init` (choose all / none / custom during setup)
+- `prowlr skills config` (interactive toggle)
 - API endpoints (`/skills/...`)
 
 ---
 
 ## Memory
 
-CoPaw has persistent cross-conversation memory: it automatically compresses context and saves key information to Markdown files for long-term retention. See [Memory](./memory.en.md) for full details.
+ProwlrBot has persistent cross-conversation memory: it automatically compresses context and saves key information to Markdown files for long-term retention. See [Memory](./memory.en.md) for full details.
 
 Memory files are stored in two locations:
 
 | File / Directory                | Purpose                                                               |
 | ------------------------------- | --------------------------------------------------------------------- |
-| `~/.copaw/MEMORY.md`            | Long-lived key information (decisions, preferences, persistent facts) |
-| `~/.copaw/memory/YYYY-MM-DD.md` | Daily logs (notes, runtime context, auto-generated summaries)         |
+| `~/.prowlrbot/MEMORY.md`            | Long-lived key information (decisions, preferences, persistent facts) |
+| `~/.prowlrbot/memory/YYYY-MM-DD.md` | Daily logs (notes, runtime context, auto-generated summaries)         |
 
 ### Embedding Configuration
 
@@ -383,14 +383,14 @@ Memory search relies on vector embeddings for semantic retrieval. Configure via 
 
 ## Summary
 
-- Everything lives under **`~/.copaw`** by default; override with
-  `COPAW_WORKING_DIR` (and related env vars) if needed.
+- Everything lives under **`~/.prowlrbot`** by default; override with
+  `PROWLRBOT_WORKING_DIR` (and related env vars) if needed.
 - Day-to-day you edit **config.json** (channels, heartbeat, language) and
   **HEARTBEAT.md** (what to ask on each heartbeat tick); manage cron jobs
   via CLI/API.
 - Agent personality is defined by Markdown files in the working directory:
   **SOUL.md** + **AGENTS.md** (required).
-- LLM providers are configured via `copaw init` or the console UI.
+- LLM providers are configured via `prowlr init` or the console UI.
 - Config changes to channels are **auto-reloaded** without restart (polled
   every 2 seconds).
 - Call the Agent API: **POST** `/agent/process`, JSON body, SSE streaming;

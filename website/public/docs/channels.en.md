@@ -1,12 +1,12 @@
 # Channels
 
-A **channel** is where you talk to CoPaw: connect DingTalk and it replies
+A **channel** is where you talk to ProwlrBot: connect DingTalk and it replies
 in DingTalk; same for QQ, etc. If that term is new, see [Introduction](./intro).
 
 Two ways to configure channels:
 
 - **Console** (recommended) — In the [Console](./console) under **Control → Channels**, click a channel card, enable it and fill in credentials in the drawer. Changes take effect when you save.
-- **Edit `config.json` directly** — Default `~/.copaw/config.json` (created by `copaw init`), set `enabled: true` and fill in that platform's credentials. Saving triggers a reload without restarting the app.
+- **Edit `config.json` directly** — Default `~/.prowlr/config.json` (created by `prowlr init`), set `enabled: true` and fill in that platform's credentials. Saving triggers a reload without restarting the app.
 
 All channels share two fields:
 
@@ -57,11 +57,11 @@ Step-by-step:
 
    ![client](https://img.alicdn.com/imgextra/i3/O1CN01JsRrwx1hJImLfM7O1_!!6000000004256-2-tps-2809-1585.png)
 
-7. (Optional) **Add your server's IP to the whitelist** — this is required for features that call the DingTalk Open API (e.g. downloading images and files sent by users). Go to **"Security & Compliance → IP Whitelist"** in your app settings and add the public IP of the machine running CoPaw. You can find your public IP by running `curl ifconfig.me` in a terminal. If the IP is not whitelisted, image and file downloads will fail with a `Forbidden.AccessDenied.IpNotInWhiteList` error.
+7. (Optional) **Add your server's IP to the whitelist** — this is required for features that call the DingTalk Open API (e.g. downloading images and files sent by users). Go to **"Security & Compliance → IP Whitelist"** in your app settings and add the public IP of the machine running ProwlrBot. You can find your public IP by running `curl ifconfig.me` in a terminal. If the IP is not whitelisted, image and file downloads will fail with a `Forbidden.AccessDenied.IpNotInWhiteList` error.
 
 ### Link the app
 
-You can configure it either in the Console frontend or by editing `~/.copaw/config.json`.
+You can configure it either in the Console frontend or by editing `~/.prowlr/config.json`.
 
 **Method 1**: Configure in the Console frontend
 
@@ -69,7 +69,7 @@ Go to "Control→Channels", find **DingTalk**, click it, and enter the **Client 
 
 ![console](https://img.alicdn.com/imgextra/i3/O1CN01i07tt61rzZUSMo5SI_!!6000000005702-2-tps-3643-1897.png)
 
-**Method 2**: Edit `~/.copaw/config.json`
+**Method 2**: Edit `~/.prowlr/config.json`
 
 In `config.json`, find `channels.dingtalk` and fill in the corresponding information, for example:
 
@@ -86,7 +86,7 @@ In `config.json`, find `channels.dingtalk` and fill in the corresponding informa
 - Set `filter_tool_messages: true` if you want to hide tool execution details in the chat.
 
 Save the file; if the app is already running, the channel will reload. Otherwise run
-`copaw app`.
+`prowlr app`.
 
 ### Find the created app
 
@@ -130,7 +130,7 @@ The Feishu channel receives messages via **WebSocket long connection** (no publi
 
 3. Fill **App ID** and **App Secret** in `config.json` (see "Fill config.json" below) and save
 
-4. Run **`copaw app`** to start CoPAW
+4. Run **`prowlr app`** to start ProwlrBot
 
 5. Back in the Feishu console, enable **Bot** under **Add Features**
 
@@ -170,7 +170,7 @@ The Feishu channel receives messages via **WebSocket long connection** (no publi
 
 7. Under **Events & Callbacks**, click **Event configuration**, and choose **Receive events through persistent connection** as the subscription mode (no public IP needed)
 
-> **Note:** Follow this order: Configure App ID/Secret → start `copaw app` → then configure the long connection in the Feishu console. If errors persist, try stopping the copaw service and restarting `copaw app`.
+> **Note:** Follow this order: Configure App ID/Secret → start `prowlr app` → then configure the long connection in the Feishu console. If errors persist, try stopping the prowlr service and restarting `prowlr app`.
 
 ![WebSocket](https://img.alicdn.com/imgextra/i3/O1CN01XdU7hK1fVY8gIDhZK_!!6000000004012-2-tps-4082-2126.png)
 
@@ -194,7 +194,7 @@ The Feishu channel receives messages via **WebSocket long connection** (no publi
 
 ### Fill config.json
 
-Find `channels.feishu`（default as `~/.copaw/config.json`） in `config.json`. Only **App ID** and **App Secret** are required (copy from the Feishu console under Credentials & basic info):
+Find `channels.feishu`（default as `~/.prowlr/config.json`） in `config.json`. Only **App ID** and **App Secret** are required (copy from the Feishu console under Credentials & basic info):
 
 ```json
 "feishu": {
@@ -205,9 +205,9 @@ Find `channels.feishu`（default as `~/.copaw/config.json`） in `config.json`. 
 }
 ```
 
-Other fields (encrypt_key, verification_token, media_dir) are optional; with WebSocket mode you can omit them (defaults apply). Then `pip install lark-oapi` and run `copaw app`. If your environment uses a SOCKS proxy, also install `python-socks` (for example, `pip install python-socks`), otherwise you may see: `python-socks is required to use a SOCKS proxy`.
+Other fields (encrypt_key, verification_token, media_dir) are optional; with WebSocket mode you can omit them (defaults apply). Then `pip install lark-oapi` and run `prowlr app`. If your environment uses a SOCKS proxy, also install `python-socks` (for example, `pip install python-socks`), otherwise you may see: `python-socks is required to use a SOCKS proxy`.
 
-> **Note:** You can also fill in **App ID** and **App Secret** in the Console UI, but you must restart the copaw service before continuing with the long-connection configuration.
+> **Note:** You can also fill in **App ID** and **App Secret** in the Console UI, but you must restart the prowlr service before continuing with the long-connection configuration.
 > ![console](https://img.alicdn.com/imgextra/i1/O1CN01JInbHT1ei5MdfkMGv_!!6000000003904-2-tps-4082-2126.png)
 
 ### Recommended bot permissions
@@ -229,7 +229,7 @@ The JSON in step 6 grants the following permissions (app identity) for messaging
 | Get/upload image and file resources | im:resource                    | App     | -             |
 | **Read contact as app**             | **contact:user.base:readonly** | **App** | **See below** |
 
-> **User display name (recommended):** To show **user nicknames** in sessions and logs (e.g. "张三#1d1a" instead of "unknown#1d1a"), enable the contact read permission **Read contact as app** (`contact:user.base:readonly`). Without it, Feishu only returns identity fields (e.g. open_id) and not the user's name, so CoPAW cannot resolve nicknames. After enabling, publish or update the app version so the permission takes effect.
+> **User display name (recommended):** To show **user nicknames** in sessions and logs (e.g. "张三#1d1a" instead of "unknown#1d1a"), enable the contact read permission **Read contact as app** (`contact:user.base:readonly`). Without it, Feishu only returns identity fields (e.g. open_id) and not the user's name, so ProwlrBot cannot resolve nicknames. After enabling, publish or update the app version so the permission takes effect.
 
 ### Add the bot to favorites
 
@@ -324,7 +324,7 @@ The app polls the local iMessage database for new messages and sends replies on 
 
 ### Configure the Bot
 
-You can configure via the Console UI or by editing `~/.copaw/config.json`.
+You can configure via the Console UI or by editing `~/.prowlr/config.json`.
 
 **Method 1:** Configure in the Console
 
@@ -332,7 +332,7 @@ Go to **Control → Channels**, click **Discord**, and enter the **Bot Token** y
 
 ![Console](https://img.alicdn.com/imgextra/i4/O1CN019GKk901VE0od1PU9t_!!6000000002620-2-tps-4084-2126.png)
 
-**Method 2:** Edit `~/.copaw/config.json`
+**Method 2:** Edit `~/.prowlr/config.json`
 
 Find `channels.discord` in `config.json` and fill in the fields, for example:
 
@@ -497,8 +497,8 @@ For text-only channels using the manager queue, you do not need to implement `co
 ```python
 # my_channel.py
 from agentscope_runtime.engine.schemas.agent_schemas import TextContent, ContentType
-from copaw.app.channels.base import BaseChannel
-from copaw.app.channels.schema import ChannelType
+from prowlr.app.channels.base import BaseChannel
+from prowlr.app.channels.schema import ChannelType
 
 class MyChannel(BaseChannel):
     channel: ChannelType = "my_channel"
@@ -598,10 +598,10 @@ def build_agent_request_from_native(self, native_payload):
 
 ### Custom channel directory and CLI
 
-- **Directory**: Channels under the working dir at `custom_channels/` (default `~/.copaw/custom_channels/`) are loaded at runtime. The manager scans `.py` files and packages (subdirs with `__init__.py`), loads `BaseChannel` subclasses, and registers them by the class’s `channel` attribute.
-- **Install**: `copaw channels install <key>` creates a template `<key>.py` in `custom_channels/` for you to edit, or use `--path <local path>` / `--url <URL>` to copy a channel module from disk or the web. `copaw channels add <key>` does the same and also adds a default entry to config (with optional `--path`/`--url`).
-- **Remove**: `copaw channels remove <key>` deletes that channel’s module from `custom_channels/` (custom channels only; built-ins cannot be removed). By default it also removes the key from `channels` in `config.json`; use `--keep-config` to leave config unchanged.
-- **Config**: `ChannelConfig` uses `extra="allow"`, so any channel key can appear under `channels` in `config.json`. Use `copaw channels config` for interactive setup or edit config by hand.
+- **Directory**: Channels under the working dir at `custom_channels/` (default `~/.prowlr/custom_channels/`) are loaded at runtime. The manager scans `.py` files and packages (subdirs with `__init__.py`), loads `BaseChannel` subclasses, and registers them by the class’s `channel` attribute.
+- **Install**: `prowlr channels install <key>` creates a template `<key>.py` in `custom_channels/` for you to edit, or use `--path <local path>` / `--url <URL>` to copy a channel module from disk or the web. `prowlr channels add <key>` does the same and also adds a default entry to config (with optional `--path`/`--url`).
+- **Remove**: `prowlr channels remove <key>` deletes that channel’s module from `custom_channels/` (custom channels only; built-ins cannot be removed). By default it also removes the key from `channels` in `config.json`; use `--keep-config` to leave config unchanged.
+- **Config**: `ChannelConfig` uses `extra="allow"`, so any channel key can appear under `channels` in `config.json`. Use `prowlr channels config` for interactive setup or edit config by hand.
 
 ---
 

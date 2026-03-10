@@ -10,7 +10,7 @@ from typing import Optional
 from fastapi import APIRouter, Body, Depends, HTTPException
 
 from ...auth.jwt_handler import JWTHandler
-from ...auth.middleware import get_current_user, require_role
+from ...auth.middleware import get_current_user, require_role, _JWT_SECRET
 from ...auth.models import AuthResponse, Permission, Role, ROLE_PERMISSIONS, User
 from ...auth.store import UserStore
 
@@ -34,9 +34,8 @@ def _get_store() -> UserStore:
 
 
 def _get_jwt() -> JWTHandler:
-    secret = os.environ.get("PROWLRBOT_JWT_SECRET", "prowlrbot-dev-secret")
     expiry = int(os.environ.get("PROWLRBOT_JWT_EXPIRY_MINUTES", "60"))
-    return JWTHandler(secret_key=secret, expiry_minutes=expiry)
+    return JWTHandler(secret_key=_JWT_SECRET, expiry_minutes=expiry)
 
 
 # ------------------------------------------------------------------

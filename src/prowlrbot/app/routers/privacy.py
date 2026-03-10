@@ -26,6 +26,8 @@ async def get_privacy_settings() -> PrivacySettings:
     return _manager.get_settings()
 
 
+# TODO: This endpoint modifies privacy settings and needs auth protection
+# (e.g. Depends(require_role(Role.admin))).
 @router.put("/settings", response_model=PrivacySettings)
 async def update_privacy_settings(settings: PrivacySettings) -> PrivacySettings:
     """Update and persist privacy settings."""
@@ -38,6 +40,8 @@ async def update_privacy_settings(settings: PrivacySettings) -> PrivacySettings:
 # ------------------------------------------------------------------
 
 
+# TODO: This endpoint can delete data and needs auth protection
+# (e.g. Depends(require_role(Role.admin))).
 @router.post("/retention/apply")
 async def apply_retention(
     days: int = Query(default=90, ge=1, description="Retain data newer than N days"),
@@ -125,6 +129,8 @@ async def anonymize_data(data: Dict[str, Any]) -> Dict[str, Any]:
 # ------------------------------------------------------------------
 
 
+# TODO: This endpoint exports all user data (GDPR) and needs auth protection
+# (e.g. Depends(get_current_user) with ownership check or admin role).
 @router.get("/export/{user_id}")
 async def export_user_data(user_id: str) -> Dict[str, Any]:
     """Export all data associated with a user (GDPR data portability)."""
@@ -137,6 +143,8 @@ async def export_user_data(user_id: str) -> Dict[str, Any]:
 # ------------------------------------------------------------------
 
 
+# TODO: This endpoint permanently deletes user data and needs auth protection
+# (e.g. Depends(get_current_user) with ownership check or admin role).
 @router.delete("/data/{user_id}")
 async def delete_user_data(user_id: str) -> Dict[str, Any]:
     """Delete all data associated with a user (right to be forgotten).

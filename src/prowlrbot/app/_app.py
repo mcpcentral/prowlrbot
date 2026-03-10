@@ -31,6 +31,9 @@ from .runner.manager import ChatManager
 from .routers import router as api_router
 from .auth import AuthConfig, AuthDependency
 from .rate_limit import RateLimitMiddleware
+from ..auth.security_headers import SecurityHeadersMiddleware
+from ..auth.rate_limiter import RateLimitMiddleware as AuthRateLimitMiddleware
+from ..auth.csrf import CSRFMiddleware
 from .websocket import create_websocket_router
 from ..dashboard.events import EventBus
 from ..envs import load_envs_into_environ
@@ -174,6 +177,12 @@ if CORS_ORIGINS:
         allow_headers=["*"],
     )
 
+
+# --- Security middleware (order: SecurityHeaders outermost, RateLimit, CSRF innermost) ---
+# Starlette applies middleware in LIFO order, so add innermost first.
+app.add_middleware(CSRFMiddleware)
+app.add_middleware(AuthRateLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Console static dir: env, or prowlrbot package data (console), or cwd.
 _CONSOLE_STATIC_ENV = "PROWLRBOT_CONSOLE_STATIC_DIR"

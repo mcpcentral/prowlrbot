@@ -3,6 +3,7 @@ import { type Lang } from "../i18n";
 import { Nav } from "../components/Nav";
 import { Hero } from "../components/Hero";
 import { Features } from "../components/Features";
+import { Stats } from "../components/Stats";
 import { UseCases } from "../components/UseCases";
 import { Testimonials } from "../components/Testimonials";
 import { QuickStart } from "../components/QuickStart";
@@ -35,6 +36,7 @@ export function Home({ config, lang, onLangClick }: HomeProps) {
           docsPath={config.docsPath}
         />
         <Features lang={lang} delay={0.35} />
+        <Stats lang={lang} delay={0.38} />
         <UseCases lang={lang} delay={0.4} />
         {config.showTestimonials !== false && (
           <Testimonials lang={lang} delay={0.5} />

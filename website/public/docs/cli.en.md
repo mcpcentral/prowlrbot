@@ -1,6 +1,6 @@
 # CLI
 
-`copaw` is the command-line tool for CoPaw. This page is organized from
+`prowlr` is the command-line tool for ProwlrBot. This page is organized from
 "get-up-and-running" to "advanced management" — read from top to bottom if
 you're new, or jump to the section you need.
 
@@ -13,14 +13,14 @@ you're new, or jump to the section you need.
 
 These are the commands you'll use on day one.
 
-### copaw init
+### prowlr init
 
 First-time setup. Walks you through configuration interactively.
 
 ```bash
-copaw init              # Interactive setup (recommended for first time)
-copaw init --defaults   # Non-interactive, use all defaults (good for scripts)
-copaw init --force      # Overwrite existing config files
+prowlr init              # Interactive setup (recommended for first time)
+prowlr init --defaults   # Non-interactive, use all defaults (good for scripts)
+prowlr init --force      # Overwrite existing config files
 ```
 
 **What the interactive flow covers (in order):**
@@ -36,17 +36,17 @@ copaw init --force      # Overwrite existing config files
 7. **Environment variables** — optionally add key-value pairs for tools.
 8. **HEARTBEAT.md** — edit the heartbeat checklist in your default editor.
 
-### copaw app
+### prowlr app
 
-Start the CoPaw server. Everything else — channels, cron jobs, the Console
+Start the ProwlrBot server. Everything else — channels, cron jobs, the Console
 UI — depends on this.
 
 ```bash
-copaw app                             # Start on 127.0.0.1:8088
-copaw app --host 0.0.0.0 --port 9090 # Custom address
-copaw app --reload                    # Auto-reload on code change (dev)
-copaw app --workers 4                 # Multi-worker mode
-copaw app --log-level debug           # Verbose logging
+prowlr app                             # Start on 127.0.0.1:8088
+prowlr app --host 0.0.0.0 --port 9090 # Custom address
+prowlr app --reload                    # Auto-reload on code change (dev)
+prowlr app --workers 4                 # Multi-worker mode
+prowlr app --log-level debug           # Verbose logging
 ```
 
 | Option        | Default     | Description                                                   |
@@ -59,7 +59,7 @@ copaw app --log-level debug           # Verbose logging
 
 ### Console
 
-Once `copaw app` is running, open `http://127.0.0.1:8088/` in your browser to
+Once `prowlr app` is running, open `http://127.0.0.1:8088/` in your browser to
 access the **Console** — a web UI for chat, channels, cron, skills, models,
 and more. See [Console](./console) for a full walkthrough.
 
@@ -74,58 +74,58 @@ packages already include the Console.
 
 ## Models & environment variables
 
-Before using CoPaw you need at least one LLM provider configured. Environment
+Before using ProwlrBot you need at least one LLM provider configured. Environment
 variables power many built-in tools (e.g. web search).
 
-### copaw models
+### prowlr models
 
 Manage LLM providers and the active model.
 
 | Command                                | What it does                                         |
 | -------------------------------------- | ---------------------------------------------------- |
-| `copaw models list`                    | Show all providers, API key status, and active model |
-| `copaw models config`                  | Full interactive setup: API keys → active model      |
-| `copaw models config-key [provider]`   | Configure a single provider's API key                |
-| `copaw models set-llm`                 | Switch the active model (API keys unchanged)         |
-| `copaw models download <repo_id>`      | Download a local model (llama.cpp / MLX)             |
-| `copaw models local`                   | List downloaded local models                         |
-| `copaw models remove-local <model_id>` | Delete a downloaded local model                      |
-| `copaw models ollama-pull <model>`     | Download an Ollama model                             |
-| `copaw models ollama-list`             | List Ollama models                                   |
-| `copaw models ollama-remove <model>`   | Delete an Ollama model                               |
+| `prowlr models list`                    | Show all providers, API key status, and active model |
+| `prowlr models config`                  | Full interactive setup: API keys → active model      |
+| `prowlr models config-key [provider]`   | Configure a single provider's API key                |
+| `prowlr models set-llm`                 | Switch the active model (API keys unchanged)         |
+| `prowlr models download <repo_id>`      | Download a local model (llama.cpp / MLX)             |
+| `prowlr models local`                   | List downloaded local models                         |
+| `prowlr models remove-local <model_id>` | Delete a downloaded local model                      |
+| `prowlr models ollama-pull <model>`     | Download an Ollama model                             |
+| `prowlr models ollama-list`             | List Ollama models                                   |
+| `prowlr models ollama-remove <model>`   | Delete an Ollama model                               |
 
 ```bash
-copaw models list                    # See what's configured
-copaw models config                  # Full interactive setup
-copaw models config-key modelscope   # Just set ModelScope's API key
-copaw models config-key dashscope    # Just set DashScope's API key
-copaw models config-key custom       # Set custom provider (Base URL + key)
-copaw models set-llm                 # Change active model only
+prowlr models list                    # See what's configured
+prowlr models config                  # Full interactive setup
+prowlr models config-key modelscope   # Just set ModelScope's API key
+prowlr models config-key dashscope    # Just set DashScope's API key
+prowlr models config-key custom       # Set custom provider (Base URL + key)
+prowlr models set-llm                 # Change active model only
 ```
 
 #### Local models
 
-CoPaw can also run models locally via llama.cpp or MLX — no API key needed.
-Install the backend first: `pip install 'copaw[llamacpp]'` or
-`pip install 'copaw[mlx]'`.
+ProwlrBot can also run models locally via llama.cpp or MLX — no API key needed.
+Install the backend first: `pip install 'prowlr[llamacpp]'` or
+`pip install 'prowlr[mlx]'`.
 
 ```bash
 # Download a model (auto-selects Q4_K_M GGUF)
-copaw models download Qwen/Qwen3-4B-GGUF
+prowlr models download Qwen/Qwen3-4B-GGUF
 
 # Download an MLX model
-copaw models download Qwen/Qwen3-4B --backend mlx
+prowlr models download Qwen/Qwen3-4B --backend mlx
 
 # Download from ModelScope
-copaw models download Qwen/Qwen2-0.5B-Instruct-GGUF --source modelscope
+prowlr models download Qwen/Qwen2-0.5B-Instruct-GGUF --source modelscope
 
 # List downloaded models
-copaw models local
-copaw models local --backend mlx
+prowlr models local
+prowlr models local --backend mlx
 
 # Delete a downloaded model
-copaw models remove-local <model_id>
-copaw models remove-local <model_id> --yes   # skip confirmation
+prowlr models remove-local <model_id>
+prowlr models remove-local <model_id> --yes   # skip confirmation
 ```
 
 | Option      | Short | Default       | Description                                                           |
@@ -136,54 +136,54 @@ copaw models remove-local <model_id> --yes   # skip confirmation
 
 #### Ollama models
 
-CoPaw integrates with Ollama to run models locally. Models are dynamically loaded from your Ollama daemon — install Ollama first from [ollama.com](https://ollama.com).
+ProwlrBot integrates with Ollama to run models locally. Models are dynamically loaded from your Ollama daemon — install Ollama first from [ollama.com](https://ollama.com).
 
-Install the Ollama SDK: `pip install 'copaw[ollama]'` (or re-run the installer with `--extras ollama`)
+Install the Ollama SDK: `pip install 'prowlr[ollama]'` (or re-run the installer with `--extras ollama`)
 
 ```bash
 # Download an Ollama model
-copaw models ollama-pull mistral:7b
-copaw models ollama-pull qwen3:8b
+prowlr models ollama-pull mistral:7b
+prowlr models ollama-pull qwen3:8b
 
 # List Ollama models
-copaw models ollama-list
+prowlr models ollama-list
 
 # Remove an Ollama model
-copaw models ollama-remove mistral:7b
-copaw models ollama-remove qwen3:8b --yes   # skip confirmation
+prowlr models ollama-remove mistral:7b
+prowlr models ollama-remove qwen3:8b --yes   # skip confirmation
 
 # Use in config flow (auto-detects Ollama models)
-copaw models config           # Select Ollama → Choose from model list
-copaw models set-llm          # Switch to a different Ollama model
+prowlr models config           # Select Ollama → Choose from model list
+prowlr models set-llm          # Switch to a different Ollama model
 ```
 
 **Key differences from local models:**
 
-- Models come from Ollama daemon (not downloaded by CoPaw)
+- Models come from Ollama daemon (not downloaded by ProwlrBot)
 - Use `ollama-pull` / `ollama-remove` instead of `download` / `remove-local`
-- Model list updates dynamically when you add/remove via Ollama CLI or CoPaw
+- Model list updates dynamically when you add/remove via Ollama CLI or ProwlrBot
 
-> **Note:** You are responsible for ensuring the API key is valid. CoPaw does
+> **Note:** You are responsible for ensuring the API key is valid. ProwlrBot does
 > not verify key correctness. See [Config — LLM Providers](./config#llm-providers).
 
-### copaw env
+### prowlr env
 
 Manage environment variables used by tools and skills at runtime.
 
 | Command                   | What it does                  |
 | ------------------------- | ----------------------------- |
-| `copaw env list`          | List all configured variables |
-| `copaw env set KEY VALUE` | Set or update a variable      |
-| `copaw env delete KEY`    | Delete a variable             |
+| `prowlr env list`          | List all configured variables |
+| `prowlr env set KEY VALUE` | Set or update a variable      |
+| `prowlr env delete KEY`    | Delete a variable             |
 
 ```bash
-copaw env list
-copaw env set TAVILY_API_KEY "tvly-xxxxxxxx"
-copaw env set GITHUB_TOKEN "ghp_xxxxxxxx"
-copaw env delete TAVILY_API_KEY
+prowlr env list
+prowlr env set TAVILY_API_KEY "tvly-xxxxxxxx"
+prowlr env set GITHUB_TOKEN "ghp_xxxxxxxx"
+prowlr env delete TAVILY_API_KEY
 ```
 
-> **Note:** CoPaw only stores and loads these values; you are responsible for
+> **Note:** ProwlrBot only stores and loads these values; you are responsible for
 > ensuring they are correct. See
 > [Config — Environment Variables](./config#environment-variables).
 
@@ -191,9 +191,9 @@ copaw env delete TAVILY_API_KEY
 
 ## Channels
 
-Connect CoPaw to messaging platforms.
+Connect ProwlrBot to messaging platforms.
 
-### copaw channels
+### prowlr channels
 
 Manage channel configuration (iMessage, Discord, DingTalk, Feishu, QQ,
 Console, etc.). **Note:** Use `config` for interactive setup (no `configure`
@@ -201,20 +201,20 @@ subcommand); use `remove` to uninstall custom channels (no `uninstall`).
 
 | Command                        | What it does                                                                                                      |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `copaw channels list`          | Show all channels and their status (secrets masked)                                                               |
-| `copaw channels install <key>` | Install a channel into `custom_channels/`: create stub or use `--path`/`--url`                                    |
-| `copaw channels add <key>`     | Install and add to config; built-in channels only get config entry; supports `--path`/`--url`                     |
-| `copaw channels remove <key>`  | Remove a custom channel from `custom_channels/` (built-ins cannot be removed); `--keep-config` keeps config entry |
-| `copaw channels config`        | Interactively enable/disable channels and fill in credentials                                                     |
+| `prowlr channels list`          | Show all channels and their status (secrets masked)                                                               |
+| `prowlr channels install <key>` | Install a channel into `custom_channels/`: create stub or use `--path`/`--url`                                    |
+| `prowlr channels add <key>`     | Install and add to config; built-in channels only get config entry; supports `--path`/`--url`                     |
+| `prowlr channels remove <key>`  | Remove a custom channel from `custom_channels/` (built-ins cannot be removed); `--keep-config` keeps config entry |
+| `prowlr channels config`        | Interactively enable/disable channels and fill in credentials                                                     |
 
 ```bash
-copaw channels list                    # See current status
-copaw channels install my_channel      # Create custom channel stub
-copaw channels install my_channel --path ./my_channel.py
-copaw channels add dingtalk            # Add DingTalk to config
-copaw channels remove my_channel       # Remove custom channel (and from config by default)
-copaw channels remove my_channel --keep-config   # Remove module only, keep config entry
-copaw channels config                 # Interactive configuration
+prowlr channels list                    # See current status
+prowlr channels install my_channel      # Create custom channel stub
+prowlr channels install my_channel --path ./my_channel.py
+prowlr channels add dingtalk            # Add DingTalk to config
+prowlr channels remove my_channel       # Remove custom channel (and from config by default)
+prowlr channels remove my_channel --keep-config   # Remove module only, keep config entry
+prowlr channels config                 # Interactive configuration
 ```
 
 The interactive `config` flow lets you pick a channel, enable/disable it, and enter credentials. It loops until you choose "Save and exit".
@@ -235,20 +235,20 @@ The interactive `config` flow lets you pick a channel, enable/disable it, and en
 ## Cron (scheduled tasks)
 
 Create jobs that run on a timed schedule — "every day at 9am", "every 2 hours
-ask CoPaw and send the reply". **Requires `copaw app` to be running.**
+ask ProwlrBot and send the reply". **Requires `prowlr app` to be running.**
 
-### copaw cron
+### prowlr cron
 
 | Command                      | What it does                                  |
 | ---------------------------- | --------------------------------------------- |
-| `copaw cron list`            | List all jobs                                 |
-| `copaw cron get <job_id>`    | Show a job's spec                             |
-| `copaw cron state <job_id>`  | Show runtime state (next run, last run, etc.) |
-| `copaw cron create ...`      | Create a job                                  |
-| `copaw cron delete <job_id>` | Delete a job                                  |
-| `copaw cron pause <job_id>`  | Pause a job                                   |
-| `copaw cron resume <job_id>` | Resume a paused job                           |
-| `copaw cron run <job_id>`    | Run once immediately                          |
+| `prowlr cron list`            | List all jobs                                 |
+| `prowlr cron get <job_id>`    | Show a job's spec                             |
+| `prowlr cron state <job_id>`  | Show runtime state (next run, last run, etc.) |
+| `prowlr cron create ...`      | Create a job                                  |
+| `prowlr cron delete <job_id>` | Delete a job                                  |
+| `prowlr cron pause <job_id>`  | Pause a job                                   |
+| `prowlr cron resume <job_id>` | Resume a paused job                           |
+| `prowlr cron run <job_id>`    | Run once immediately                          |
 
 ### Creating jobs
 
@@ -257,11 +257,11 @@ ask CoPaw and send the reply". **Requires `copaw app` to be running.**
 Two task types:
 
 - **text** — send a fixed message to a channel on schedule.
-- **agent** — ask CoPaw a question on schedule and deliver the reply.
+- **agent** — ask ProwlrBot a question on schedule and deliver the reply.
 
 ```bash
 # Text: send "Good morning!" to DingTalk every day at 9:00
-copaw cron create \
+prowlr cron create \
   --type text \
   --name "Daily 9am" \
   --cron "0 9 * * *" \
@@ -270,8 +270,8 @@ copaw cron create \
   --target-session "session_id" \
   --text "Good morning!"
 
-# Agent: every 2 hours, ask CoPaw and forward the reply
-copaw cron create \
+# Agent: every 2 hours, ask ProwlrBot and forward the reply
+prowlr cron create \
   --type agent \
   --name "Check todos" \
   --cron "0 */2 * * *" \
@@ -287,10 +287,10 @@ Required: `--type`, `--name`, `--cron`, `--channel`, `--target-user`,
 **Option 2 — JSON file (complex or batch)**
 
 ```bash
-copaw cron create -f job_spec.json
+prowlr cron create -f job_spec.json
 ```
 
-JSON structure matches the output of `copaw cron get <job_id>`.
+JSON structure matches the output of `prowlr cron get <job_id>`.
 
 ### Additional options
 
@@ -317,44 +317,44 @@ Five fields: **minute hour day month weekday** (no seconds).
 
 ## Chats (sessions)
 
-Manage chat sessions via the API. **Requires `copaw app` to be running.**
+Manage chat sessions via the API. **Requires `prowlr app` to be running.**
 
-### copaw chats
+### prowlr chats
 
 | Command                                | What it does                                                  |
 | -------------------------------------- | ------------------------------------------------------------- |
-| `copaw chats list`                     | List all sessions (supports `--user-id`, `--channel` filters) |
-| `copaw chats get <id>`                 | View a session's details and message history                  |
-| `copaw chats create ...`               | Create a new session                                          |
-| `copaw chats update <id> --name "..."` | Rename a session                                              |
-| `copaw chats delete <id>`              | Delete a session                                              |
+| `prowlr chats list`                     | List all sessions (supports `--user-id`, `--channel` filters) |
+| `prowlr chats get <id>`                 | View a session's details and message history                  |
+| `prowlr chats create ...`               | Create a new session                                          |
+| `prowlr chats update <id> --name "..."` | Rename a session                                              |
+| `prowlr chats delete <id>`              | Delete a session                                              |
 
 ```bash
-copaw chats list
-copaw chats list --user-id alice --channel dingtalk
-copaw chats get 823845fe-dd13-43c2-ab8b-d05870602fd8
-copaw chats create --session-id "discord:alice" --user-id alice --name "My Chat"
-copaw chats create -f chat.json
-copaw chats update <chat_id> --name "Renamed"
-copaw chats delete <chat_id>
+prowlr chats list
+prowlr chats list --user-id alice --channel dingtalk
+prowlr chats get 823845fe-dd13-43c2-ab8b-d05870602fd8
+prowlr chats create --session-id "discord:alice" --user-id alice --name "My Chat"
+prowlr chats create -f chat.json
+prowlr chats update <chat_id> --name "Renamed"
+prowlr chats delete <chat_id>
 ```
 
 ---
 
 ## Skills
 
-Extend CoPaw's capabilities with skills (PDF reading, web search, etc.).
+Extend ProwlrBot's capabilities with skills (PDF reading, web search, etc.).
 
-### copaw skills
+### prowlr skills
 
 | Command               | What it does                                      |
 | --------------------- | ------------------------------------------------- |
-| `copaw skills list`   | Show all skills and their enabled/disabled status |
-| `copaw skills config` | Interactively enable/disable skills (checkbox UI) |
+| `prowlr skills list`   | Show all skills and their enabled/disabled status |
+| `prowlr skills config` | Interactively enable/disable skills (checkbox UI) |
 
 ```bash
-copaw skills list     # See what's available
-copaw skills config   # Toggle skills on/off interactively
+prowlr skills list     # See what's available
+prowlr skills config   # Toggle skills on/off interactively
 ```
 
 In the interactive UI: ↑/↓ to navigate, Space to toggle, Enter to confirm.
@@ -366,44 +366,44 @@ A preview of changes is shown before applying.
 
 ## Maintenance
 
-### copaw clean
+### prowlr clean
 
-Remove everything under the working directory (default `~/.copaw`).
+Remove everything under the working directory (default `~/.prowlr`).
 
 ```bash
-copaw clean             # Interactive confirmation
-copaw clean --yes       # No confirmation
-copaw clean --dry-run   # Only list what would be removed
+prowlr clean             # Interactive confirmation
+prowlr clean --yes       # No confirmation
+prowlr clean --dry-run   # Only list what would be removed
 ```
 
 ---
 
 ## Global options
 
-Every `copaw` subcommand inherits:
+Every `prowlr` subcommand inherits:
 
 | Option          | Default     | Description                                    |
 | --------------- | ----------- | ---------------------------------------------- |
-| `--host`        | `127.0.0.1` | API host (auto-detected from last `copaw app`) |
-| `--port`        | `8088`      | API port (auto-detected from last `copaw app`) |
+| `--host`        | `127.0.0.1` | API host (auto-detected from last `prowlr app`) |
+| `--port`        | `8088`      | API port (auto-detected from last `prowlr app`) |
 | `-h` / `--help` |             | Show help message                              |
 
 If the server runs on a non-default address, pass these globally:
 
 ```bash
-copaw --host 0.0.0.0 --port 9090 cron list
+prowlr --host 0.0.0.0 --port 9090 cron list
 ```
 
 ## Working directory
 
-All config and data live in `~/.copaw` by default: `config.json`,
+All config and data live in `~/.prowlr` by default: `config.json`,
 `HEARTBEAT.md`, `jobs.json`, `chats.json`, skills, memory, and agent persona
 files.
 
 | Variable            | Description                         |
 | ------------------- | ----------------------------------- |
-| `COPAW_WORKING_DIR` | Override the working directory path |
-| `COPAW_CONFIG_FILE` | Override the config file path       |
+| `PROWLRBOT_WORKING_DIR` | Override the working directory path |
+| `PROWLRBOT_CONFIG_FILE` | Override the config file path       |
 
 See [Config & Working Directory](./config) for full details.
 
@@ -413,21 +413,21 @@ See [Config & Working Directory](./config) for full details.
 
 | Command          | Subcommands                                                                                                                            | Requires server? |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- | :--------------: |
-| `copaw init`     | —                                                                                                                                      |        No        |
-| `copaw app`      | —                                                                                                                                      |  — (starts it)   |
-| `copaw models`   | `list` · `config` · `config-key` · `set-llm` · `download` · `local` · `remove-local` · `ollama-pull` · `ollama-list` · `ollama-remove` |        No        |
-| `copaw env`      | `list` · `set` · `delete`                                                                                                              |        No        |
-| `copaw channels` | `list` · `install` · `add` · `remove` · `config`                                                                                       |        No        |
-| `copaw cron`     | `list` · `get` · `state` · `create` · `delete` · `pause` · `resume` · `run`                                                            |     **Yes**      |
-| `copaw chats`    | `list` · `get` · `create` · `update` · `delete`                                                                                        |     **Yes**      |
-| `copaw skills`   | `list` · `config`                                                                                                                      |        No        |
-| `copaw clean`    | —                                                                                                                                      |        No        |
+| `prowlr init`     | —                                                                                                                                      |        No        |
+| `prowlr app`      | —                                                                                                                                      |  — (starts it)   |
+| `prowlr models`   | `list` · `config` · `config-key` · `set-llm` · `download` · `local` · `remove-local` · `ollama-pull` · `ollama-list` · `ollama-remove` |        No        |
+| `prowlr env`      | `list` · `set` · `delete`                                                                                                              |        No        |
+| `prowlr channels` | `list` · `install` · `add` · `remove` · `config`                                                                                       |        No        |
+| `prowlr cron`     | `list` · `get` · `state` · `create` · `delete` · `pause` · `resume` · `run`                                                            |     **Yes**      |
+| `prowlr chats`    | `list` · `get` · `create` · `update` · `delete`                                                                                        |     **Yes**      |
+| `prowlr skills`   | `list` · `config`                                                                                                                      |        No        |
+| `prowlr clean`    | —                                                                                                                                      |        No        |
 
 ---
 
 ## Related pages
 
-- [Introduction](./intro) — What CoPaw can do
+- [Introduction](./intro) — What ProwlrBot can do
 - [Console](./console) — Web-based management UI
 - [Channels](./channels) — DingTalk, Feishu, iMessage, Discord, QQ setup
 - [Heartbeat](./heartbeat) — Scheduled check-in / digest

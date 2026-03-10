@@ -11,11 +11,16 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "hero.sub":
       "你的AI个人助理；安装极简、本地与云上均可部署；支持多端接入、能力轻松扩展。",
     "hero.cta": "查看文档",
-    "brandstory.title": "Why ProwlrBot？",
+    "brandstory.title": "Why ProwlrBot?",
     "brandstory.para1":
-      "ProwlrBot 既是「你的搭档小爪子」（co-paw），也寓意 Co Personal Agent Workstation（协同个人智能体工作台）。",
+      "We were tired of paying $200/month for AI agent platforms that lock your data in someone else's cloud. Your conversations, your documents, your automations — they should live on YOUR machine, under YOUR control.",
     "brandstory.para2":
-      "我们希望它不是冰冷的工具，而是一只随时准备帮忙的温暖「小爪子」，是你数字生活中最默契的伙伴。",
+      "We wanted one platform that works everywhere — not a Discord bot AND a Telegram bot AND a Slack bot. One agent, eight channels, zero vendor lock-in.",
+    "brandstory.para3":
+      "Most agent platforms are all-or-nothing. We believe autonomy should be gradual. Start by watching. Then guiding. Then delegating. Then full autopilot — only when you're ready.",
+    "brandstory.para4":
+      "ProwlrBot is open source, built on open protocols, and will never charge you a subscription to run your own agents.",
+    "brandstory.cta": "Star us on GitHub",
     "features.title": "核心能力",
     "features.channels.title": "全域触达",
     "features.channels.desc":
@@ -25,43 +30,62 @@ export const i18n: Record<Lang, Record<string, string>> = {
       "记忆与个性化由你掌控，本地或云端均可；定时与协作发往指定频道。",
     "features.skills.title": "Skills 扩展",
     "features.skills.desc": "内置定时任务，自定义技能目录，ProwlrBot 自动加载。",
+    "features.agentverse.title": "AgentVerse",
+    "features.agentverse.desc":
+      "A virtual world where your agents live, form guilds, trade, and battle. Club Penguin meets AI.",
+    "features.autonomy.title": "Graduated Autonomy",
+    "features.autonomy.desc":
+      "Four levels: Watch, Guide, Delegate, Autonomous. You choose how much freedom your agent gets.",
+    "features.roar.title": "ROAR Protocol",
+    "features.roar.desc":
+      "The first 5-layer agent communication protocol. Built-in MCP + ACP + A2A backward compatibility.",
     "testimonials.title": "社区怎么说",
     "testimonials.viewAll": "查看全部",
     "testimonials.1": "ProwlrBot 就该这样：多频道一个入口，Python 好改好部署。",
     "testimonials.2": "定时和心跳很实用，Skills 自己加，数据都在本地。",
     "testimonials.3": "想完全掌控的团队用着很顺手。",
-    "usecases.title": "你可以用 ProwlrBot 做什么",
-    "usecases.sub": "",
-    "usecases.category.social": "社交媒体",
-    "usecases.category.creative": "创意与构建",
-    "usecases.category.productivity": "生产力",
-    "usecases.category.research": "研究与学习",
-    "usecases.category.assistant": "桌面与文件",
-    "usecases.category.explore": "探索更多",
+    "usecases.title": "What you can build with ProwlrBot",
+    "usecases.sub": "These are real workflows people run today — not demos.",
+    "usecases.category.social": "Monitoring & alerts",
+    "usecases.category.creative": "Creative & building",
+    "usecases.category.productivity": "Productivity",
+    "usecases.category.research": "Research & intelligence",
+    "usecases.category.assistant": "Desktop & files",
+    "usecases.category.explore": "Explore more",
     "usecases.social.1":
-      "每日将小红书、知乎、Reddit 上你关注的热帖整理成摘要并推送，并根据反馈优化推荐。",
+      "Monitor competitor pricing across 50+ sites and get instant Telegram alerts when prices drop below your threshold.",
     "usecases.social.2":
-      "每日抓取 B 站、YouTube 关注频道或关键词下的新视频并生成摘要，节省浏览时间。",
+      "Track Reddit, Hacker News, and Twitter for brand mentions — auto-summarize sentiment and flag urgent issues in Discord.",
     "usecases.social.3":
-      "分析小红书、知乎等账号的内容规律与特点，为内容创作提供参考。",
+      "Watch GitHub repos, npm packages, or API changelogs for breaking changes and notify your team before deployments break.",
     "usecases.creative.1":
-      "睡前向 ProwlrBot 说明目标并设定自动执行，次日即可获得可用的雏形。",
+      "Describe a side project at midnight, set ProwlrBot to autonomous mode, and wake up to a working prototype with tests.",
     "usecases.creative.2":
-      "从选题、找素材到确定方向，ProwlrBot 可协助完成视频内容创作全流程。",
+      "Generate blog posts, social media copy, and video scripts from a single brief — then schedule publishing across channels.",
     "usecases.productivity.1":
-      "每日汇总订阅邮件与 Newsletter 精华，并推送至钉钉、飞书或 QQ 会话。",
+      "Auto-respond to Discord and Telegram support tickets using your docs, escalating edge cases to humans.",
     "usecases.productivity.2":
-      "从邮件与日历自动整理联系人，支持用自然语言查询联系人及往来记录。",
+      "Summarize 200+ daily emails into a 5-minute brief delivered to your preferred channel every morning at 8am.",
     "usecases.productivity.3":
-      "记录饮食与身体反应，由 ProwlrBot 定期分析并呈现规律。",
+      "Auto-file expense receipts, extract amounts with OCR, and push weekly spending reports to your team chat.",
     "usecases.research.1":
-      "自动追踪科技与 AI 公司财报与重要资讯，筛选重点并生成摘要。",
+      "Track 30+ AI company earnings, patent filings, and funding rounds — get a weekly intelligence digest with trend analysis.",
     "usecases.research.2":
-      "将链接、文章与帖子存入个人知识库，便于在多场景中检索与复用。",
+      "Build a personal knowledge base from papers, articles, and bookmarks — then query it in natural language from any channel.",
     "usecases.assistant.1":
-      "协助整理与搜索本地文件、阅读文档并做摘要；在钉钉、飞书或 QQ 中通过对话将指定文件发至当前会话。",
+      "Search, organize, and summarize local documents. Ask for a file in Telegram and receive it instantly — no cloud upload needed.",
     "usecases.explore.1":
-      "你可以探索更多可能，用 Skills 与定时任务组合成 agentic app。",
+      "Chain skills, cron jobs, and MCP tools into custom agentic workflows — the only limit is your imagination.",
+    "stats.features.value": "60+",
+    "stats.features.label": "Features",
+    "stats.channels.value": "8",
+    "stats.channels.label": "Channels",
+    "stats.skills.value": "20+",
+    "stats.skills.label": "Skills",
+    "stats.protocols.value": "3",
+    "stats.protocols.label": "Protocols",
+    "stats.autonomy.value": "4",
+    "stats.autonomy.label": "Autonomy Levels",
     "quickstart.title": "快速开始",
     "quickstart.hintBefore": "安装 → 初始化 → 启动；频道配置见 ",
     "quickstart.hintLink": "文档",
@@ -127,11 +151,16 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "hero.sub":
       "Autonomous AI agent platform for monitoring, automation, and multi-channel communication. Deploy intelligent agents that watch your systems and respond across every channel.",
     "hero.cta": "Get Started",
-    "brandstory.title": "Why ProwlrBot?",
+    "brandstory.title": "Why we built ProwlrBot",
     "brandstory.para1":
-      "ProwlrBot is your AI operations center — agents that monitor, respond, and act 24/7 across every platform.",
+      "We were tired of paying $200/month for AI agent platforms that lock your data in someone else's cloud. Your conversations, your documents, your automations — they should live on YOUR machine, under YOUR control.",
     "brandstory.para2":
-      "Open source, multi-provider, security-first. From a single chatbot to a coordinated swarm of autonomous agents.",
+      "We wanted one platform that works everywhere — not a Discord bot AND a Telegram bot AND a Slack bot. One agent, eight channels, zero vendor lock-in. And when you connect a new AI provider, it should just work.",
+    "brandstory.para3":
+      "Most agent platforms are all-or-nothing: either the AI does everything or nothing. We believe autonomy should be gradual. Start by watching. Then guiding. Then delegating. Then full autopilot — only when you're ready.",
+    "brandstory.para4":
+      "ProwlrBot is open source, built on open protocols (MCP, ACP, A2A), and will never charge you a subscription to run your own agents. This is the agent platform we wished existed.",
+    "brandstory.cta": "Star us on GitHub",
     "features.title": "Core capabilities",
     "features.channels.title": "Every channel",
     "features.channels.desc":
@@ -142,6 +171,15 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "features.skills.title": "Skills & MCP",
     "features.skills.desc":
       "Extensible skill packs for PDF, Office docs, email, browser automation. Full MCP client with hot-reload.",
+    "features.agentverse.title": "AgentVerse",
+    "features.agentverse.desc":
+      "A virtual world where your agents live, form guilds, trade, and battle. Club Penguin meets AI.",
+    "features.autonomy.title": "Graduated Autonomy",
+    "features.autonomy.desc":
+      "Four levels: Watch, Guide, Delegate, Autonomous. You choose how much freedom your agent gets.",
+    "features.roar.title": "ROAR Protocol",
+    "features.roar.desc":
+      "The first 5-layer agent communication protocol. Built-in MCP + ACP + A2A backward compatibility.",
     "testimonials.title": "What people say",
     "testimonials.viewAll": "View all",
     "testimonials.1":
@@ -150,37 +188,47 @@ export const i18n: Record<Lang, Record<string, string>> = {
       "Cron and heartbeat are super practical. Add your own skills; data stays local.",
     "testimonials.3": "Teams who want full control love it.",
     "usecases.title": "What you can build with ProwlrBot",
-    "usecases.sub": "",
-    "usecases.category.social": "Social media",
+    "usecases.sub": "These are real workflows people run today — not demos.",
+    "usecases.category.social": "Monitoring & alerts",
     "usecases.category.creative": "Creative & building",
     "usecases.category.productivity": "Productivity",
-    "usecases.category.research": "Research & learning",
+    "usecases.category.research": "Research & intelligence",
     "usecases.category.assistant": "Desktop & files",
     "usecases.category.explore": "Explore more",
     "usecases.social.1":
-      "Daily digest of hot posts from Xiaohongshu, Zhihu, and Reddit based on your interests, with recommendations that improve over time.",
+      "Monitor competitor pricing across 50+ sites and get instant Telegram alerts when prices drop below your threshold.",
     "usecases.social.2":
-      "Daily summaries of new videos from Bilibili or YouTube by channel or keyword, saving you time browsing.",
+      "Track Reddit, Hacker News, and Twitter for brand mentions — auto-summarize sentiment and flag urgent issues in Discord.",
     "usecases.social.3":
-      "Analyze your Xiaohongshu or Zhihu account to uncover content patterns and inform what to post next.",
+      "Watch GitHub repos, npm packages, or API changelogs for breaking changes and notify your team before deployments break.",
     "usecases.creative.1":
-      "Describe your goal to ProwlrBot and set it to run overnight; get a working draft by the next day.",
+      "Describe a side project at midnight, set ProwlrBot to autonomous mode, and wake up to a working prototype with tests.",
     "usecases.creative.2":
-      "From topic selection and material gathering to direction setting, ProwlrBot supports the full video content workflow.",
+      "Generate blog posts, social media copy, and video scripts from a single brief — then schedule publishing across channels.",
     "usecases.productivity.1":
-      "Daily digests of newsletters and important emails, delivered to your DingTalk, Feishu or QQ chat.",
+      "Auto-respond to Discord and Telegram support tickets using your docs, escalating edge cases to humans.",
     "usecases.productivity.2":
-      "Contacts surfaced from email and calendar, with natural-language search for people and past interactions.",
+      "Summarize 200+ daily emails into a 5-minute brief delivered to your preferred channel every morning at 8am.",
     "usecases.productivity.3":
-      "Log diet and symptoms; ProwlrBot analyzes and surfaces patterns over time.",
+      "Auto-file expense receipts, extract amounts with OCR, and push weekly spending reports to your team chat.",
     "usecases.research.1":
-      "Track tech and AI company earnings and news; get key points and summaries automatically.",
+      "Track 30+ AI company earnings, patent filings, and funding rounds — get a weekly intelligence digest with trend analysis.",
     "usecases.research.2":
-      "Save links, articles, and posts to a personal knowledge base and reuse them across workflows.",
+      "Build a personal knowledge base from papers, articles, and bookmarks — then query it in natural language from any channel.",
     "usecases.assistant.1":
-      "Organize and search local files, read and summarize documents; request files in DingTalk, Feishu or QQ and receive them in the current chat.",
+      "Search, organize, and summarize local documents. Ask for a file in Telegram and receive it instantly — no cloud upload needed.",
     "usecases.explore.1":
-      "Explore more possibilities—combine Skills and cron into your own agentic app.",
+      "Chain skills, cron jobs, and MCP tools into custom agentic workflows — the only limit is your imagination.",
+    "stats.features.value": "60+",
+    "stats.features.label": "Features",
+    "stats.channels.value": "8",
+    "stats.channels.label": "Channels",
+    "stats.skills.value": "20+",
+    "stats.skills.label": "Skills",
+    "stats.protocols.value": "3",
+    "stats.protocols.label": "Protocols",
+    "stats.autonomy.value": "4",
+    "stats.autonomy.label": "Autonomy Levels",
     "quickstart.title": "Quick start",
     "quickstart.hintBefore":
       "Install → init → start. Configure channels to use ProwlrBot on Discord, Telegram, etc. See ",

@@ -1,5 +1,5 @@
 import type { LucideProps } from "lucide-react";
-import { MessageSquare, Shield, Puzzle } from "lucide-react";
+import { MessageSquare, Shield, Puzzle, Globe, Sliders, Layers } from "lucide-react";
 import { motion } from "motion/react";
 import { t, type Lang } from "../i18n";
 
@@ -10,6 +10,9 @@ const items: Array<{
   { key: "channels", icon: MessageSquare },
   { key: "private", icon: Shield },
   { key: "skills", icon: Puzzle },
+  { key: "agentverse", icon: Globe },
+  { key: "autonomy", icon: Sliders },
+  { key: "roar", icon: Layers },
 ];
 
 interface FeaturesProps {
