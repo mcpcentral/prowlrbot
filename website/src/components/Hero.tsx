@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Github } from "lucide-react";
 import { motion } from "motion/react";
-import { CopawMascot } from "./CopawMascot";
 import { t, type Lang } from "../i18n";
 
 interface HeroProps {
@@ -48,27 +47,20 @@ export function Hero({
         className="hero-brand-row"
         style={{
           marginBottom: "var(--space-4)",
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
+          display: "flex",
+          justifyContent: "center",
           alignItems: "center",
-          width: "100%",
         }}
       >
-        <span />
-        <div
+        <img
+          src="/prowlrlogo.png"
+          alt={projectName}
           style={{
-            display: "flex",
-            flexWrap: "nowrap",
-            alignItems: "center",
-            gap: "var(--space-3)",
+            height: 220,
+            width: "auto",
+            filter: "drop-shadow(0 0 40px rgba(0, 229, 255, 0.2))",
           }}
-          aria-label={projectName}
-        >
-          <span className="hero-brand-logo">
-            <CopawMascot size={200} />
-          </span>
-        </div>
-        <span />
+        />
       </motion.div>
       <motion.p
         variants={item}
@@ -97,7 +89,16 @@ export function Hero({
       >
         {t(lang, "hero.sub")}
       </motion.p>
-      <motion.div variants={item} style={{ marginBottom: "var(--space-5)" }}>
+      <motion.div
+        variants={item}
+        style={{
+          marginBottom: "var(--space-5)",
+          display: "flex",
+          gap: "var(--space-3)",
+          justifyContent: "center",
+          flexWrap: "wrap",
+        }}
+      >
         <Link
           to={docsPath.replace(/\/$/, "") || "/docs"}
           style={{
@@ -105,16 +106,38 @@ export function Hero({
             alignItems: "center",
             gap: "var(--space-1)",
             padding: "var(--space-2) var(--space-4)",
-            background: "var(--text)",
-            color: "var(--surface)",
+            background: "var(--accent)",
+            color: "var(--bg)",
             borderRadius: "0.5rem",
             fontSize: "1rem",
-            fontWeight: 600,
+            fontWeight: 700,
+            transition: "all 0.2s ease",
           }}
         >
           {t(lang, "hero.cta")}
           <ArrowRight size={20} strokeWidth={2} aria-hidden />
         </Link>
+        <a
+          href="https://github.com/mcpcentral/prowlrbot"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "var(--space-1)",
+            padding: "var(--space-2) var(--space-4)",
+            background: "transparent",
+            color: "var(--text)",
+            border: "1px solid var(--border)",
+            borderRadius: "0.5rem",
+            fontSize: "1rem",
+            fontWeight: 600,
+            transition: "all 0.2s ease",
+          }}
+        >
+          <Github size={18} strokeWidth={2} aria-hidden />
+          GitHub
+        </a>
       </motion.div>
     </motion.section>
   );

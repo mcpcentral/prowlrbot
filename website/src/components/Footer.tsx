@@ -1,15 +1,6 @@
-import { t, type Lang } from "../i18n";
+import { type Lang } from "../i18n";
 
-const AGENTSCOPE_ORG = "https://github.com/agentscope-ai";
-const AGENTSCOPE_REPO = "https://github.com/agentscope-ai/agentscope";
-const AGENTSCOPE_RUNTIME =
-  "https://github.com/agentscope-ai/agentscope-runtime";
-const REME_REPO = "https://github.com/agentscope-ai/ReMe";
-const OPENCLAW_URL = "https://openclaw.ai/";
-const ANTHROPIC_SKILLS_URL =
-  "https://github.com/anthropics/skills?tab=readme-ov-file";
-
-export function Footer({ lang }: { lang: Lang }) {
+export function Footer({ lang: _lang }: { lang: Lang }) {
   return (
     <footer
       style={{
@@ -21,73 +12,67 @@ export function Footer({ lang }: { lang: Lang }) {
         color: "var(--text-muted)",
       }}
     >
-      <div style={{ marginBottom: "var(--space-2)" }}>{t(lang, "footer")}</div>
-      <div style={{ fontSize: "0.8125rem", opacity: 0.9 }}>
-        {t(lang, "footer.poweredBy.p1")}
-        <a
-          href={AGENTSCOPE_ORG}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "inherit", textDecoration: "underline" }}
-        >
-          {t(lang, "footer.poweredBy.team")}
-        </a>
-        {t(lang, "footer.poweredBy.p2")}
-        <a
-          href={AGENTSCOPE_REPO}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "inherit", textDecoration: "underline" }}
-        >
-          {t(lang, "footer.poweredBy.agentscope")}
-        </a>
-        {t(lang, "footer.poweredBy.p3")}
-        <a
-          href={AGENTSCOPE_RUNTIME}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "inherit", textDecoration: "underline" }}
-        >
-          {t(lang, "footer.poweredBy.runtime")}
-        </a>
-        {t(lang, "footer.poweredBy.p3b")}
-        <a
-          href={REME_REPO}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "inherit", textDecoration: "underline" }}
-        >
-          {t(lang, "footer.poweredBy.reme")}
-        </a>
-        {t(lang, "footer.poweredBy.p4")}
-      </div>
       <div
         style={{
-          marginTop: "var(--space-3)",
-          fontSize: "0.8125rem",
-          opacity: 0.85,
+          display: "flex",
+          justifyContent: "center",
+          gap: "var(--space-4)",
+          flexWrap: "wrap",
+          marginBottom: "var(--space-3)",
         }}
       >
-        {t(lang, "footer.inspiredBy")}
         <a
-          href={OPENCLAW_URL}
+          href="https://github.com/mcpcentral/prowlrbot"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "inherit", textDecoration: "underline" }}
+          style={{ color: "inherit", transition: "color 0.2s" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = "var(--text-muted)")
+          }
         >
-          {t(lang, "footer.inspiredBy.name")}
+          GitHub
         </a>
-        {" · "}
-        {t(lang, "footer.thanksSkills")}
         <a
-          href={ANTHROPIC_SKILLS_URL}
+          href="https://github.com/mcpcentral/roar-protocol"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "inherit", textDecoration: "underline" }}
+          style={{ color: "inherit", transition: "color 0.2s" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = "var(--text-muted)")
+          }
         >
-          {t(lang, "footer.thanksSkills.name")}
+          ROAR Protocol
         </a>
-        {t(lang, "footer.thanksSkills.suffix")}
+        <a
+          href="https://github.com/mcpcentral/prowlr-marketplace"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "inherit", transition: "color 0.2s" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = "var(--text-muted)")
+          }
+        >
+          Marketplace
+        </a>
+        <a
+          href="https://github.com/mcpcentral/agentverse"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "inherit", transition: "color 0.2s" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = "var(--text-muted)")
+          }
+        >
+          AgentVerse
+        </a>
+      </div>
+      <div style={{ fontSize: "0.8125rem", opacity: 0.7 }}>
+        &copy; {new Date().getFullYear()} ProwlrBot. Always watching. Always
+        ready.
       </div>
     </footer>
   );

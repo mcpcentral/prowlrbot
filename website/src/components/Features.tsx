@@ -1,5 +1,5 @@
 import type { LucideProps } from "lucide-react";
-import { MessageSquare, Lock, Puzzle } from "lucide-react";
+import { MessageSquare, Shield, Puzzle } from "lucide-react";
 import { motion } from "motion/react";
 import { t, type Lang } from "../i18n";
 
@@ -8,7 +8,7 @@ const items: Array<{
   icon: React.ComponentType<LucideProps>;
 }> = [
   { key: "channels", icon: MessageSquare },
-  { key: "private", icon: Lock },
+  { key: "private", icon: Shield },
   { key: "skills", icon: Puzzle },
 ];
 

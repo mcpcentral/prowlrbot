@@ -14,14 +14,13 @@ export interface SiteConfig {
 }
 
 const defaultConfig: SiteConfig = {
-  projectName: "CoPaw",
-  projectTaglineEn: "Works for you, grows with you",
-  projectTaglineZh: "懂你所需，伴你左右",
-  repoUrl: "https://github.com/agentscope-ai/CoPaw",
+  projectName: "ProwlrBot",
+  projectTaglineEn: "Always watching. Always ready.",
+  projectTaglineZh: "Always watching. Always ready.",
+  repoUrl: "https://github.com/mcpcentral/prowlrbot",
   docsPath: "/docs/",
-  showTestimonials: true,
-  modelScopeForkUrl:
-    "https://modelscope.cn/studios/fork?target=AgentScope/CoPaw",
+  showTestimonials: false,
+  modelScopeForkUrl: "",
 };
 
 let cached: SiteConfig | null = null;

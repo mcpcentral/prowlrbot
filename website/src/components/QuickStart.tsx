@@ -5,23 +5,23 @@ import { motion } from "motion/react";
 import type { SiteConfig } from "../config";
 import { t, type Lang } from "../i18n";
 
-const DOCKER_IMAGE = "agentscope/copaw:latest";
+const DOCKER_IMAGE = "mcpcentral/prowlrbot:latest";
 
 const COMMANDS = {
-  pip: ["pip install copaw", "copaw init --defaults", "copaw app"],
+  pip: ["pip install prowlrbot", "prowlr init --defaults", "prowlr app"],
   unix: [
-    "curl -fsSL https://copaw.agentscope.io/install.sh | bash",
-    "copaw init --defaults",
-    "copaw app",
+    "pip install prowlrbot",
+    "prowlr init --defaults",
+    "prowlr app",
   ],
   windows: [
-    "irm https://copaw.agentscope.io/install.ps1 | iex",
-    "copaw init --defaults",
-    "copaw app",
+    "pip install prowlrbot",
+    "prowlr init --defaults",
+    "prowlr app",
   ],
   docker: [
     `docker pull ${DOCKER_IMAGE}`,
-    `docker run -p 8088:8088 -v copaw-data:/app/working ${DOCKER_IMAGE}`,
+    `docker run -p 8088:8088 -v prowlrbot-data:/app/working ${DOCKER_IMAGE}`,
   ],
 } as const;
 

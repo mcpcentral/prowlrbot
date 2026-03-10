@@ -1,14 +1,16 @@
-/* Original light palette */
+/* ProwlrBot — Black + White + Teal */
 :root {
-  --bg: #fafaf9;
-  --surface: #ffffff;
-  --text: #1c1c1c;
-  --text-muted: #6b6b6b;
-  --border: #e8e6e3;
-  --accent: #1c1c1c;
-  --mascot-accent: #d97706;
-  --logo-paw: #a8a29e;
-  --logo-paw-soft: #d6d3d1;
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --text: #f0f0f5;
+  --text-muted: #888899;
+  --border: #1e1e2a;
+  --accent: #00E5FF;
+  --accent-dim: rgba(0, 229, 255, 0.08);
+  --accent-glow: rgba(0, 229, 255, 0.15);
+  --mascot-accent: #00E5FF;
+  --logo-paw: #00BCD4;
+  --logo-paw-soft: #004d54;
 }
 
 :root {
@@ -55,10 +57,11 @@ body {
 a {
   color: var(--text);
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 a:hover {
-  color: var(--text-muted);
+  color: var(--accent);
 }
 
 button {
@@ -105,8 +108,8 @@ button {
 }
 
 .quickstart-tab:hover {
-  color: var(--text);
-  border-color: var(--text-muted);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .quickstart-tab[aria-pressed="true"] {
@@ -211,7 +214,8 @@ button {
 .quickstart-cta:hover {
   opacity: 0.92;
   transform: translateY(-1px);
-  color: var(--surface);
+  color: var(--bg);
+  box-shadow: 0 4px 20px var(--accent-glow);
 }
 
 .quickstart-ecs-btn {
@@ -243,6 +247,12 @@ button {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.usecases-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-dim);
 }
 
 .usecases-card-header {
@@ -601,7 +611,7 @@ button {
 }
 
 .docs-content a:hover {
-  color: var(--text-muted);
+  color: #66F2FF;
 }
 
 .docs-content img {
@@ -696,8 +706,8 @@ button {
 }
 
 .docs-search-results-page .docs-search-highlight {
-  background: rgba(217, 119, 6, 0.2);
-  color: inherit;
+  background: var(--accent-dim);
+  color: var(--accent);
   padding: 0 0.1em;
   border-radius: 0.15em;
   font-weight: 500;
@@ -762,7 +772,7 @@ button {
 }
 
 .docs-toc-item:hover {
-  color: var(--text);
+  color: var(--accent);
 }
 
 .docs-toc-item[data-active="true"] {

@@ -1,33 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, BookOpen, Github, Globe } from "lucide-react";
-import { CopawMascot } from "./CopawMascot";
+import { Menu, X, BookOpen, Github } from "lucide-react";
 import { t, type Lang } from "../i18n";
-
-const AGENTSCOPE_LOGO_SIZE = 22;
-
-const agentscopeLogoStyle: React.CSSProperties = {
-  display: "block",
-  flexShrink: 0,
-  width: AGENTSCOPE_LOGO_SIZE,
-  height: AGENTSCOPE_LOGO_SIZE,
-  objectFit: "contain",
-  verticalAlign: "middle",
-  marginTop: -2,
-};
-
-function AgentScopeLogo() {
-  return (
-    <img
-      src="/agentscope.svg"
-      alt=""
-      width={AGENTSCOPE_LOGO_SIZE}
-      height={AGENTSCOPE_LOGO_SIZE}
-      style={agentscopeLogoStyle}
-      aria-hidden
-    />
-  );
-}
 
 interface NavProps {
   projectName: string;
@@ -40,7 +14,7 @@ interface NavProps {
 export function Nav({
   projectName,
   lang,
-  onLangClick,
+  onLangClick: _onLangClick,
   docsPath,
   repoUrl: _repoUrl,
 }: NavProps) {
@@ -53,7 +27,8 @@ export function Nav({
         position: "sticky",
         top: 0,
         zIndex: 10,
-        background: "var(--surface)",
+        background: "rgba(10, 10, 15, 0.92)",
+        backdropFilter: "blur(12px)",
         borderBottom: "1px solid var(--border)",
       }}
     >
@@ -75,18 +50,17 @@ export function Nav({
             display: "flex",
             alignItems: "center",
             gap: "var(--space-2)",
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: "1.125rem",
             color: "var(--text)",
           }}
           aria-label={projectName}
         >
-          <span
-            className="nav-brand-logo"
-            style={{ marginTop: -5, display: "flex" }}
-          >
-            <CopawMascot size={60} />
-          </span>
+          <img
+            src="/prowlrlogo.png"
+            alt={projectName}
+            style={{ height: 36, width: "auto" }}
+          />
         </Link>
         <div
           className="nav-links"
@@ -96,20 +70,6 @@ export function Nav({
             gap: "var(--space-4)",
           }}
         >
-          <button
-            type="button"
-            onClick={onLangClick}
-            className={linkClass}
-            style={{
-              background: "none",
-              border: "none",
-              padding: "var(--space-1) var(--space-2)",
-            }}
-            aria-label={t(lang, "nav.lang")}
-          >
-            <Globe size={18} strokeWidth={1.5} aria-hidden />
-            <span>{t(lang, "nav.lang")}</span>
-          </button>
           <Link
             to={docsPath.replace(/\/$/, "") || "/docs"}
             className={linkClass}
@@ -118,37 +78,14 @@ export function Nav({
             <span>{t(lang, "nav.docs")}</span>
           </Link>
           <a
-            href="https://github.com/agentscope-ai/CoPaw"
+            href="https://github.com/mcpcentral/prowlrbot"
             target="_blank"
             rel="noopener noreferrer"
             className={linkClass}
-            title="CoPaw on GitHub"
+            title="ProwlrBot on GitHub"
           >
             <Github size={18} strokeWidth={1.5} aria-hidden />
             <span>{t(lang, "nav.github")}</span>
-          </a>
-          <a
-            href="https://agentscope.io/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-            title={
-              lang === "zh" ? "基于 AgentScope 打造" : "Built on AgentScope"
-            }
-            aria-label={t(lang, "nav.agentscopeTeam")}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "var(--space-1)",
-              whiteSpace: "nowrap",
-              fontSize: "inherit",
-              fontWeight: "inherit",
-            }}
-          >
-            <AgentScopeLogo />
-            <span style={{ fontSize: "inherit" }}>
-              {t(lang, "nav.agentscopeTeam")}
-            </span>
           </a>
         </div>
         <button
@@ -179,17 +116,6 @@ export function Nav({
           gap: "var(--space-2)",
         }}
       >
-        <button
-          type="button"
-          className={linkClass}
-          onClick={() => {
-            onLangClick();
-            setOpen(false);
-          }}
-          style={{ background: "none", border: "none", textAlign: "left" }}
-        >
-          <Globe size={18} /> {t(lang, "nav.lang")}
-        </button>
         <Link
           to={docsPath.replace(/\/$/, "") || "/docs"}
           className={linkClass}
@@ -198,35 +124,14 @@ export function Nav({
           <BookOpen size={18} /> {t(lang, "nav.docs")}
         </Link>
         <a
-          href="https://github.com/agentscope-ai/CoPaw"
+          href="https://github.com/mcpcentral/prowlrbot"
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
           onClick={() => setOpen(false)}
-          title="CoPaw on GitHub"
+          title="ProwlrBot on GitHub"
         >
           <Github size={18} /> {t(lang, "nav.github")}
-        </a>
-        <a
-          href="https://agentscope.io/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={linkClass}
-          onClick={() => setOpen(false)}
-          title={lang === "zh" ? "基于 AgentScope 打造" : "Built on AgentScope"}
-          aria-label={t(lang, "nav.agentscopeTeam")}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "var(--space-1)",
-            fontSize: "inherit",
-            fontWeight: "inherit",
-          }}
-        >
-          <AgentScopeLogo />
-          <span style={{ fontSize: "inherit" }}>
-            {t(lang, "nav.agentscopeTeam")}
-          </span>
         </a>
       </div>
       <style>{`

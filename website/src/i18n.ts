@@ -11,26 +11,26 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "hero.sub":
       "你的AI个人助理；安装极简、本地与云上均可部署；支持多端接入、能力轻松扩展。",
     "hero.cta": "查看文档",
-    "brandstory.title": "Why CoPaw？",
+    "brandstory.title": "Why ProwlrBot？",
     "brandstory.para1":
-      "CoPaw 既是「你的搭档小爪子」（co-paw），也寓意 Co Personal Agent Workstation（协同个人智能体工作台）。",
+      "ProwlrBot 既是「你的搭档小爪子」（co-paw），也寓意 Co Personal Agent Workstation（协同个人智能体工作台）。",
     "brandstory.para2":
       "我们希望它不是冰冷的工具，而是一只随时准备帮忙的温暖「小爪子」，是你数字生活中最默契的伙伴。",
     "features.title": "核心能力",
     "features.channels.title": "全域触达",
     "features.channels.desc":
-      "支持钉钉、飞书、QQ、Discord、iMessage 等频道，一个 CoPaw 按需连接。",
+      "支持钉钉、飞书、QQ、Discord、iMessage 等频道，一个 ProwlrBot 按需连接。",
     "features.private.title": "由你掌控",
     "features.private.desc":
       "记忆与个性化由你掌控，本地或云端均可；定时与协作发往指定频道。",
     "features.skills.title": "Skills 扩展",
-    "features.skills.desc": "内置定时任务，自定义技能目录，CoPaw 自动加载。",
+    "features.skills.desc": "内置定时任务，自定义技能目录，ProwlrBot 自动加载。",
     "testimonials.title": "社区怎么说",
     "testimonials.viewAll": "查看全部",
-    "testimonials.1": "CoPaw 就该这样：多频道一个入口，Python 好改好部署。",
+    "testimonials.1": "ProwlrBot 就该这样：多频道一个入口，Python 好改好部署。",
     "testimonials.2": "定时和心跳很实用，Skills 自己加，数据都在本地。",
     "testimonials.3": "想完全掌控的团队用着很顺手。",
-    "usecases.title": "你可以用 CoPaw 做什么",
+    "usecases.title": "你可以用 ProwlrBot 做什么",
     "usecases.sub": "",
     "usecases.category.social": "社交媒体",
     "usecases.category.creative": "创意与构建",
@@ -45,15 +45,15 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "usecases.social.3":
       "分析小红书、知乎等账号的内容规律与特点，为内容创作提供参考。",
     "usecases.creative.1":
-      "睡前向 CoPaw 说明目标并设定自动执行，次日即可获得可用的雏形。",
+      "睡前向 ProwlrBot 说明目标并设定自动执行，次日即可获得可用的雏形。",
     "usecases.creative.2":
-      "从选题、找素材到确定方向，CoPaw 可协助完成视频内容创作全流程。",
+      "从选题、找素材到确定方向，ProwlrBot 可协助完成视频内容创作全流程。",
     "usecases.productivity.1":
       "每日汇总订阅邮件与 Newsletter 精华，并推送至钉钉、飞书或 QQ 会话。",
     "usecases.productivity.2":
       "从邮件与日历自动整理联系人，支持用自然语言查询联系人及往来记录。",
     "usecases.productivity.3":
-      "记录饮食与身体反应，由 CoPaw 定期分析并呈现规律。",
+      "记录饮食与身体反应，由 ProwlrBot 定期分析并呈现规律。",
     "usecases.research.1":
       "自动追踪科技与 AI 公司财报与重要资讯，筛选重点并生成摘要。",
     "usecases.research.2":
@@ -65,7 +65,7 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "quickstart.title": "快速开始",
     "quickstart.hintBefore": "安装 → 初始化 → 启动；频道配置见 ",
     "quickstart.hintLink": "文档",
-    "quickstart.hintAfter": "，即可通过钉钉、飞书、QQ 等频道使用 CoPaw。",
+    "quickstart.hintAfter": "，即可通过钉钉、飞书、QQ 等频道使用 ProwlrBot。",
     "quickstart.optionLocal": "一键安装（uv 建虚拟环境并安装，无需 Python）",
     "quickstart.badgeRecommended": "推荐",
     "quickstart.badgeBeta": "Beta",
@@ -92,7 +92,7 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "quickstart.optionAliyun": "阿里云 ECS 一键部署",
     "quickstart.aliyunDeployLink": "部署链接",
     "quickstart.aliyunDocLink": "说明文档",
-    footer: "CoPaw — 懂你所需，伴你左右",
+    footer: "ProwlrBot — 懂你所需，伴你左右",
     "footer.poweredBy.p1": "由 ",
     "footer.poweredBy.p2": " 基于 ",
     "footer.poweredBy.p3": "、",
@@ -123,25 +123,25 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "nav.githubComingSoon": "Coming Soon",
     "nav.lang": "中文",
     "nav.agentscopeTeam": "AgentScope",
-    "hero.slogan": "Works for you, grows with you",
+    "hero.slogan": "Always watching. Always ready.",
     "hero.sub":
-      "Your Personal AI Assistant; easy to install, deploy on your own machine or on the cloud; supports multiple chat apps with easily extensible capabilities.",
-    "hero.cta": "Read the docs",
-    "brandstory.title": "Why CoPaw?",
+      "Autonomous AI agent platform for monitoring, automation, and multi-channel communication. Deploy intelligent agents that watch your systems and respond across every channel.",
+    "hero.cta": "Get Started",
+    "brandstory.title": "Why ProwlrBot?",
     "brandstory.para1":
-      'CoPaw represents both a Co Personal Agent Workstation and a "co-paw"—a partner always by your side.',
+      "ProwlrBot is your AI operations center — agents that monitor, respond, and act 24/7 across every platform.",
     "brandstory.para2":
-      'More than just a cold tool, CoPaw is a warm "little paw" always ready to lend a hand (or a paw!). It is the ultimate teammate for your digital life.',
-    "features.title": "Key capabilities",
+      "Open source, multi-provider, security-first. From a single chatbot to a coordinated swarm of autonomous agents.",
+    "features.title": "Core capabilities",
     "features.channels.title": "Every channel",
     "features.channels.desc":
-      "DingTalk, Feishu, QQ, Discord, iMessage, and more — one assistant, connect as you need.",
-    "features.private.title": "Under your control",
+      "Discord, Telegram, DingTalk, Feishu, QQ, iMessage, and a built-in web console. One agent, every platform.",
+    "features.private.title": "Security first",
     "features.private.desc":
-      "Memory and personalization under your control. Deploy locally or in the cloud; scheduled reminders and collaboration to any channel.",
-    "features.skills.title": "Skills",
+      "API auth, rate limiting, path sandboxing, shell blocklist, prompt injection detection, and secret redaction. Your data stays yours.",
+    "features.skills.title": "Skills & MCP",
     "features.skills.desc":
-      "Built-in Cron; custom skills in your workspace, auto-loaded.",
+      "Extensible skill packs for PDF, Office docs, email, browser automation. Full MCP client with hot-reload.",
     "testimonials.title": "What people say",
     "testimonials.viewAll": "View all",
     "testimonials.1":
@@ -149,7 +149,7 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "testimonials.2":
       "Cron and heartbeat are super practical. Add your own skills; data stays local.",
     "testimonials.3": "Teams who want full control love it.",
-    "usecases.title": "What you can do with CoPaw",
+    "usecases.title": "What you can build with ProwlrBot",
     "usecases.sub": "",
     "usecases.category.social": "Social media",
     "usecases.category.creative": "Creative & building",
@@ -164,15 +164,15 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "usecases.social.3":
       "Analyze your Xiaohongshu or Zhihu account to uncover content patterns and inform what to post next.",
     "usecases.creative.1":
-      "Describe your goal to CoPaw and set it to run overnight; get a working draft by the next day.",
+      "Describe your goal to ProwlrBot and set it to run overnight; get a working draft by the next day.",
     "usecases.creative.2":
-      "From topic selection and material gathering to direction setting, CoPaw supports the full video content workflow.",
+      "From topic selection and material gathering to direction setting, ProwlrBot supports the full video content workflow.",
     "usecases.productivity.1":
       "Daily digests of newsletters and important emails, delivered to your DingTalk, Feishu or QQ chat.",
     "usecases.productivity.2":
       "Contacts surfaced from email and calendar, with natural-language search for people and past interactions.",
     "usecases.productivity.3":
-      "Log diet and symptoms; CoPaw analyzes and surfaces patterns over time.",
+      "Log diet and symptoms; ProwlrBot analyzes and surfaces patterns over time.",
     "usecases.research.1":
       "Track tech and AI company earnings and news; get key points and summaries automatically.",
     "usecases.research.2":
@@ -183,7 +183,7 @@ export const i18n: Record<Lang, Record<string, string>> = {
       "Explore more possibilities—combine Skills and cron into your own agentic app.",
     "quickstart.title": "Quick start",
     "quickstart.hintBefore":
-      "Install → init → start. Configure channels to use CoPaw on DingTalk, Feishu, QQ, etc. See ",
+      "Install → init → start. Configure channels to use ProwlrBot on Discord, Telegram, etc. See ",
     "quickstart.hintLink": "docs",
     "quickstart.hintAfter": ".",
     "quickstart.optionLocal":
@@ -214,7 +214,7 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "quickstart.optionAliyun": "Deploy on Alibaba Cloud ECS",
     "quickstart.aliyunDeployLink": "Deployment link",
     "quickstart.aliyunDocLink": "Guide",
-    footer: "CoPaw — Works for you, grows with you",
+    footer: "ProwlrBot — Always watching. Always ready.",
     "footer.poweredBy.p1": "Built by ",
     "footer.poweredBy.p2": " with ",
     "footer.poweredBy.p3": ", ",
