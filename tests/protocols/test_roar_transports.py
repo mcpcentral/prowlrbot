@@ -90,7 +90,7 @@ class TestROARServer(unittest.TestCase):
             payload={"task": "run-tests"},
         )
 
-        response = asyncio.get_event_loop().run_until_complete(
+        response = asyncio.run(
             self.server.handle_message(incoming)
         )
         assert response.intent == MessageIntent.RESPOND
@@ -113,7 +113,7 @@ class TestROARServer(unittest.TestCase):
             payload={"event": "build_complete"},
         )
 
-        response = asyncio.get_event_loop().run_until_complete(
+        response = asyncio.run(
             self.server.handle_message(incoming)
         )
         assert response.payload["ack"] is True
@@ -126,7 +126,7 @@ class TestROARServer(unittest.TestCase):
             payload={"question": "who are you?"},
         )
 
-        response = asyncio.get_event_loop().run_until_complete(
+        response = asyncio.run(
             self.server.handle_message(incoming)
         )
         assert response.payload["error"] == "unhandled_intent"
@@ -241,7 +241,7 @@ class TestTransportDispatcher(unittest.TestCase):
         )
 
         with self.assertRaises((ConnectionError, NotImplementedError)):
-            asyncio.get_event_loop().run_until_complete(
+            asyncio.run(
                 send_message(config, msg)
             )
 

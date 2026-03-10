@@ -266,6 +266,13 @@ class A2ATaskStore:
 router = APIRouter(tags=["a2a"])
 _store = A2ATaskStore()
 _agent_card = A2AAgentCard()
+_event_bus = None  # Injected by app startup when ROAR server is available
+
+
+def set_event_bus(bus: Any) -> None:
+    """Inject a ROAR EventBus for real-time A2A SSE streaming."""
+    global _event_bus
+    _event_bus = bus
 
 
 @router.get("/.well-known/agent.json")
@@ -337,11 +344,27 @@ async def send_task_subscribe(request: SendTaskRequest) -> StreamingResponse:
 
     async def _event_stream() -> Any:
         import json
+        from .roar import StreamEvent, StreamEventType
 
         # Emit initial status
         yield f"data: {json.dumps({'type': 'status', 'task_id': task.id, 'status': task.status})}\n\n"
-        # Placeholder: in production, subscribe to an event bus here
-        yield f"data: {json.dumps({'type': 'done', 'task_id': task.id})}\n\n"
+
+        # Subscribe to ROAR EventBus for real-time updates
+        if _event_bus is not None:
+            from .sdk.streaming import StreamFilter
+
+            sub = _event_bus.subscribe(StreamFilter(
+                session_ids=[task.id],
+            ))
+            try:
+                async for event in sub:
+                    yield f"data: {json.dumps({'type': event.type, 'task_id': task.id, 'data': event.data, 'timestamp': event.timestamp})}\n\n"
+                    if event.type in (StreamEventType.TASK_UPDATE,) and event.data.get("status") in ("completed", "failed", "canceled"):
+                        break
+            finally:
+                sub.close()
+        else:
+            yield f"data: {json.dumps({'type': 'done', 'task_id': task.id})}\n\n"
 
     return StreamingResponse(_event_stream(), media_type="text/event-stream")
 
@@ -360,10 +383,7 @@ async def subscribe_task(task_id: str) -> StreamingResponse:
     """Subscribe to real-time updates for a task via SSE.
 
     Returns a Server-Sent Events stream that emits status changes
-    and new artifacts as they are produced.
-
-    Note: Placeholder implementation. Requires async event bus
-    integration for production use.
+    and new artifacts as they are produced. Backed by ROAR EventBus.
     """
     task = _store.get(task_id)
     if not task:
@@ -371,9 +391,25 @@ async def subscribe_task(task_id: str) -> StreamingResponse:
 
     async def _event_stream() -> Any:
         import json
+        from .roar import StreamEventType
 
         yield f"data: {json.dumps({'type': 'status', 'task_id': task.id, 'status': task.status})}\n\n"
-        yield f"data: {json.dumps({'type': 'done', 'task_id': task.id})}\n\n"
+
+        if _event_bus is not None:
+            from .sdk.streaming import StreamFilter
+
+            sub = _event_bus.subscribe(StreamFilter(
+                session_ids=[task.id],
+            ))
+            try:
+                async for event in sub:
+                    yield f"data: {json.dumps({'type': event.type, 'task_id': task.id, 'data': event.data, 'timestamp': event.timestamp})}\n\n"
+                    if event.type in (StreamEventType.TASK_UPDATE,) and event.data.get("status") in ("completed", "failed", "canceled"):
+                        break
+            finally:
+                sub.close()
+        else:
+            yield f"data: {json.dumps({'type': 'done', 'task_id': task.id})}\n\n"
 
     return StreamingResponse(_event_stream(), media_type="text/event-stream")
 

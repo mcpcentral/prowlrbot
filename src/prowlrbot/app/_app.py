@@ -253,6 +253,28 @@ from ..protocols.a2a_server import router as a2a_router
 
 app.include_router(a2a_router)  # Mounted at root for /.well-known/agent.json
 
+# --- ROAR Protocol (unified agent communication) ---
+from ..protocols.roar import AgentIdentity
+from ..protocols.sdk import ROARServer, create_roar_router
+
+_roar_identity = AgentIdentity(
+    display_name="ProwlrBot",
+    agent_type="agent",
+    capabilities=["execute", "delegate", "monitor", "stream"],
+)
+roar_server = ROARServer(
+    _roar_identity,
+    description="ProwlrBot — Always watching. Always ready.",
+    skills=["code", "monitor", "chat", "mcp", "a2a"],
+    channels=["console", "discord", "telegram"],
+)
+app.include_router(create_roar_router(roar_server))
+
+# Wire ROAR EventBus into A2A SSE streaming
+from ..protocols.a2a_server import set_event_bus as _a2a_set_event_bus
+
+_a2a_set_event_bus(roar_server.event_bus)
+
 # Mount console: root static files (logo.png etc.) then assets, then SPA
 # fallback.
 if os.path.isdir(_CONSOLE_STATIC_DIR):
