@@ -51,6 +51,23 @@ DID auto-generation: if `did` is empty on creation, it is set to `did:roar:<agen
 - The `agent_type` field is informational; authorization decisions should use capabilities, not type.
 - Agent cards should not contain secrets. Signing keys are stored separately.
 
+## Standards Alignment
+
+ROAR Identity is designed to be compatible with:
+
+- **W3C DID Core v1.0**: The `did:roar:` method follows W3C DID syntax. External agents can use `did:web` or `did:key` methods.
+- **W3C Verifiable Credentials v2.0**: Capability delegation can be expressed as VCs for cross-organization trust.
+- **A2A Agent Cards**: ROAR `AgentCard` maps to A2A's `.well-known/agent.json` convention for HTTP-based discovery.
+- **AAIF Identity & Trust WG**: ROAR will adopt emerging AAIF identity standards as they are published.
+
+### DID Method Tiers
+
+| Tier | Method | Use Case | Resolution |
+|------|--------|----------|------------|
+| Ephemeral | `did:key` | Short-lived tools, session agents | Self-resolving (key in DID) |
+| Persistent | `did:web` | Published services, org agents | DNS + HTTPS (.well-known/did.json) |
+| Native | `did:roar` | ProwlrBot-native agents | ROAR Directory lookup |
+
 ## Example
 
 ```python

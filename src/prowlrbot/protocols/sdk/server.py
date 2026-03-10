@@ -12,7 +12,9 @@ from ..roar import (
     DiscoveryEntry,
     MessageIntent,
     ROARMessage,
+    StreamEvent,
 )
+from .streaming import EventBus, StreamFilter
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +53,7 @@ class ROARServer:
         description: str = "",
         skills: Optional[List[str]] = None,
         channels: Optional[List[str]] = None,
+        signing_secret: str = "",
     ) -> None:
         self._identity = identity
         self._host = host
@@ -58,7 +61,9 @@ class ROARServer:
         self._description = description
         self._skills = skills or []
         self._channels = channels or []
+        self._signing_secret = signing_secret
         self._handlers: Dict[MessageIntent, HandlerFunc] = {}
+        self._event_bus = EventBus()
 
     # -- public API -----------------------------------------------------------
 
@@ -74,6 +79,22 @@ class ROARServer:
     @property
     def port(self) -> int:
         return self._port
+
+    @property
+    def event_bus(self) -> EventBus:
+        """Return the server's event bus for pub/sub streaming."""
+        return self._event_bus
+
+    async def emit(self, event: StreamEvent) -> int:
+        """Publish a stream event to all subscribers.
+
+        Args:
+            event: The event to broadcast.
+
+        Returns:
+            Number of subscribers that received the event.
+        """
+        return await self._event_bus.publish(event)
 
     def on(
         self, intent: MessageIntent

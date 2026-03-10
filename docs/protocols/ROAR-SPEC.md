@@ -110,3 +110,14 @@ async def handle_delegate(msg: ROARMessage) -> ROARMessage:
         payload={"status": "ok", "review": "LGTM"},
     )
 ```
+
+## References
+
+- [MCP Specification v2025-11-25](https://spec.modelcontextprotocol.io/) — Anthropic / AAIF. Tool integration protocol.
+- [A2A Protocol v0.3.0](https://github.com/google/A2A) — Google / Linux Foundation. Agent-to-agent collaboration.
+- [ACP Specification v0.2.3](https://github.com/agntcy/acp-spec) — Agntcy Collective. IDE-agent communication.
+- [W3C DID Core v1.0](https://www.w3.org/TR/did-core/) — W3C Recommendation, July 2022. Decentralized identifiers.
+- [W3C VC Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/) — W3C Recommendation, March 2025.
+- [DIDComm Messaging v2.1](https://identity.foundation/didcomm-messaging/spec/) — Decentralized Identity Foundation.
+- [AAIF Technical Committee](https://github.com/aaif/technical-committee) — Agentic AI Foundation, Linux Foundation. Founded March 2026.
+- [IETF BANDAID](https://datatracker.ietf.org/doc/draft-mozleywilliams-dnsop-dnsaid/) — DNS-based Agent Discovery.

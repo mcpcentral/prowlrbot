@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
-"""ROAR Protocol SDK — Client for agent-to-agent communication."""
+"""ROAR Protocol SDK — Client for agent-to-agent communication.
+
+Supports local (in-memory) and remote (HTTP, WebSocket, stdio) message dispatch.
+Transport selection is automatic based on the target agent's registered endpoints.
+"""
 from __future__ import annotations
 
 import hashlib
 import hmac
 import json
+import logging
 import time
 import uuid
-from contextlib import contextmanager
-from typing import Any, Callable, Dict, List, Optional
+from contextlib import asynccontextmanager, contextmanager
+from typing import Any, AsyncIterator, Callable, Dict, List, Optional
 
 from ..roar import (
     AgentCard,
@@ -18,12 +23,19 @@ from ..roar import (
     DiscoveryEntry,
     MessageIntent,
     ROARMessage,
+    StreamEvent,
     TransportType,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ROARClient:
     """Client for discovering agents and sending ROAR messages.
+
+    Supports both local (construct-only) and remote (transport-dispatched)
+    message sending. When a target agent has registered endpoints, ``send_remote``
+    dispatches over the wire. Otherwise, ``send`` constructs and signs locally.
 
     Usage::
 
@@ -37,9 +49,16 @@ class ROARClient:
         # Discover other agents
         agents = client.discover(capability="code-review")
 
-        # Send a message
-        response = client.send(
+        # Send a message (local — construct and sign)
+        msg = client.send(
             to_agent_id=agents[0].agent_card.identity.did,
+            intent=MessageIntent.DELEGATE,
+            content={"task": "review this PR"},
+        )
+
+        # Send remotely (over HTTP/WebSocket/stdio)
+        response = await client.send_remote(
+            to_agent_id="did:roar:agent:reviewer-abc123",
             intent=MessageIntent.DELEGATE,
             content={"task": "review this PR"},
         )
@@ -63,6 +82,11 @@ class ROARClient:
     def identity(self) -> AgentIdentity:
         """Return the client's agent identity."""
         return self._identity
+
+    @property
+    def directory(self) -> AgentDirectory:
+        """Return the local agent directory."""
+        return self._directory
 
     def register(self, card: AgentCard) -> DiscoveryEntry:
         """Register this agent with the local directory.
@@ -96,11 +120,10 @@ class ROARClient:
         content: Dict[str, Any],
         context: Optional[Dict[str, Any]] = None,
     ) -> ROARMessage:
-        """Create, sign, and return a ROAR message.
+        """Create, sign, and return a ROAR message (local, no transport).
 
-        In a full implementation this would transmit the message over the
-        configured transport.  The current SDK version constructs and signs
-        the message locally so callers can inspect or forward it themselves.
+        Constructs the message locally. For actual network dispatch,
+        use ``send_remote`` instead.
 
         Args:
             to_agent_id: DID of the target agent.
@@ -125,6 +148,59 @@ class ROARClient:
             context=context or {},
         )
         return self._sign_message(msg)
+
+    async def send_remote(
+        self,
+        to_agent_id: str,
+        intent: MessageIntent,
+        content: Dict[str, Any],
+        context: Optional[Dict[str, Any]] = None,
+        transport: Optional[TransportType] = None,
+    ) -> ROARMessage:
+        """Send a message over the wire and return the response.
+
+        Looks up the target agent's endpoints, selects the best transport,
+        dispatches the message, and returns the remote agent's response.
+
+        Args:
+            to_agent_id: DID of the target agent.
+            intent: What the sender wants.
+            content: Payload dictionary.
+            context: Optional context metadata.
+            transport: Preferred transport (auto-selects if None).
+
+        Returns:
+            The response ``ROARMessage`` from the remote agent.
+
+        Raises:
+            ConnectionError: If no endpoint is found or transport fails.
+        """
+        # Build and sign the message
+        msg = self.send(to_agent_id, intent, content, context)
+
+        # Resolve connection config
+        config = self.connect(
+            to_agent_id,
+            transport=transport or self._best_transport(to_agent_id),
+        )
+
+        if not config.url:
+            raise ConnectionError(
+                f"No endpoint found for agent {to_agent_id}. "
+                "Register the agent or provide a transport override."
+            )
+
+        # Dispatch over the wire
+        from .transports import send_message
+
+        logger.info(
+            "Sending %s to %s via %s",
+            intent.value,
+            to_agent_id[:40],
+            config.transport.value,
+        )
+        response = await send_message(config, msg, self._signing_secret)
+        return response
 
     def connect(
         self,
@@ -156,25 +232,102 @@ class ROARClient:
             secret=self._signing_secret,
         )
 
-    @contextmanager
-    def stream_events(self, callback: Callable[..., Any]):
-        """Context manager placeholder for real-time event streaming.
+    @asynccontextmanager
+    async def stream_events(
+        self,
+        agent_id: str,
+        callback: Callable[..., Any],
+        transport: Optional[TransportType] = None,
+        filter_types: Optional[List[str]] = None,
+        session_id: str = "",
+    ) -> AsyncIterator[None]:
+        """Open a streaming connection to a remote agent.
 
-        In a full implementation this would open a persistent connection
-        (e.g. WebSocket or SSE) and invoke ``callback`` for each incoming
-        ``StreamEvent``.
+        Uses WebSocket (preferred) or SSE (HTTP fallback) to receive
+        real-time ``StreamEvent`` objects from the target agent.
 
         Args:
-            callback: Callable invoked with each ``StreamEvent``.
+            agent_id: DID of the agent to stream from.
+            callback: Called with each ``StreamEvent`` or dict.
+            transport: Override transport (default: auto-select).
+            filter_types: Event types to subscribe to (empty = all).
+            session_id: Filter to a specific session.
 
         Yields:
-            ``None`` — the caller can perform work inside the ``with`` block.
+            None — events arrive via the callback while inside the block.
         """
-        # Placeholder: a real implementation would open a websocket / SSE
-        # connection and call ``callback(event)`` for each incoming event.
+        selected = transport or self._best_transport(agent_id)
+        config = self.connect(agent_id, selected)
+
+        if selected == TransportType.WEBSOCKET:
+            from .transports.websocket import WebSocketConnection
+
+            conn = WebSocketConnection(config)
+            await conn.connect()
+            try:
+                # Start a background task to receive and dispatch events
+                async def _ws_listener():
+                    try:
+                        async for data in conn.events():
+                            callback(data)
+                    except Exception:
+                        pass
+
+                import asyncio
+
+                task = asyncio.create_task(_ws_listener())
+                yield
+            finally:
+                task.cancel()
+                await conn.close()
+        elif selected == TransportType.HTTP:
+            from .transports.http import http_stream_events
+
+            import asyncio
+
+            async def _sse_listener():
+                try:
+                    async for event in http_stream_events(config, session_id):
+                        callback(event)
+                except Exception:
+                    pass
+
+            task = asyncio.create_task(_sse_listener())
+            try:
+                yield
+            finally:
+                task.cancel()
+        else:
+            yield
+
+    @contextmanager
+    def stream_events_sync(self, callback: Callable[..., Any]):
+        """Synchronous placeholder for backward compatibility.
+
+        Deprecated: Use ``stream_events`` (async) instead.
+        """
         yield
 
     # -- internal -------------------------------------------------------------
+
+    def _best_transport(self, agent_id: str) -> TransportType:
+        """Select the best transport for a given agent.
+
+        Priority: WebSocket > HTTP > stdio.
+        Falls back to HTTP if no endpoints are registered.
+        """
+        entry = self._directory.lookup(agent_id)
+        if not entry:
+            return TransportType.HTTP
+
+        endpoints = entry.agent_card.endpoints
+        if "websocket" in endpoints:
+            return TransportType.WEBSOCKET
+        if "http" in endpoints:
+            return TransportType.HTTP
+        if "stdio" in endpoints:
+            return TransportType.STDIO
+        return TransportType.HTTP
 
     def _sign_message(self, msg: ROARMessage) -> ROARMessage:
         """Sign a message with HMAC-SHA256 using the client's secret.

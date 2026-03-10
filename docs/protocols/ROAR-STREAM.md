@@ -91,6 +91,27 @@ When a consumer cannot keep up with the event rate:
 - Monitor alerts should be rate-limited to prevent notification flooding.
 - Event data should not contain secrets or credentials.
 
+## Standards Alignment
+
+### Streaming Comparison
+
+| Feature | ROAR Stream | A2A SSE | MCP Streamable HTTP |
+|---------|------------|---------|---------------------|
+| Transport | WebSocket, SSE, gRPC, stdio | SSE only | SSE (server-initiated) |
+| Bidirectional | Yes (WebSocket) | No | No |
+| Backpressure | AIMD adaptive | None | None |
+| Event types | 8 application-level | 1 (task update) | 1 (tool progress) |
+| Pub/Sub | NATS JetStream (planned) | — | — |
+| Delivery | At-least-once + idempotency | At-most-once | At-most-once |
+
+### Planned: NATS JetStream Integration
+
+For production pub/sub streaming, ROAR will optionally use NATS JetStream:
+- Subject-based routing maps to DID-based topics (`roar.events.<did>`)
+- Optional persistence for replay from checkpoints
+- Sub-millisecond latency, ~50MB memory footprint
+- Embedded mode (no external dependency required)
+
 ## Example
 
 ```python

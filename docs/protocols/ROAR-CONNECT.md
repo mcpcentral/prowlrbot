@@ -77,6 +77,19 @@ High-performance binary transport. Service definitions use Protocol Buffers. Sup
 - Connection timeouts prevent resource exhaustion from unresponsive agents.
 - mTLS provides the strongest transport-level authentication but requires certificate management.
 
+## Standards Alignment
+
+### Transport Selection vs. Existing Protocols
+
+| Transport | ROAR Use | Also Used By |
+|-----------|----------|-------------|
+| stdio | Local tools, MCP compat | MCP (primary), ACP |
+| HTTP | Request-response, REST | MCP (Streamable HTTP), A2A (primary), ACP |
+| WebSocket | Real-time bidirectional | — (gap in MCP/A2A) |
+| gRPC | Internal high-throughput | — (gap in MCP/A2A) |
+
+WebSocket and gRPC are ROAR's differentiators — no existing agent protocol supports persistent bidirectional connections or high-performance binary transport.
+
 ## Example
 
 ```python

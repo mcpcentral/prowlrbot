@@ -92,6 +92,25 @@ response = ROARMessage(
 - Payload content is not encrypted by the Exchange layer; transport-level encryption (TLS) handles confidentiality.
 - The signing secret must be pre-shared via a secure out-of-band channel.
 
+## Standards Alignment
+
+### Intent Mapping to Existing Protocols
+
+| ROAR Intent | MCP Equivalent | A2A Equivalent | ACP Equivalent |
+|-------------|---------------|----------------|----------------|
+| `execute` | Tool call | — | Run |
+| `delegate` | — | tasks/send | — |
+| `update` | — | Task status update | — |
+| `ask` | Elicitation | input-required state | session/prompt |
+| `respond` | Tool result | Task artifact | Run result |
+| `notify` | Notification | Push notification | — |
+| `discover` | — | Agent Card GET | agents/search |
+
+### Signing
+
+Current: HMAC-SHA256 with pre-shared secrets (symmetric).
+Planned: Ed25519 asymmetric signing for cross-organization trust (aligns with W3C DID verification methods).
+
 ## Example
 
 ```python

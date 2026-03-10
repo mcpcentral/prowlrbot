@@ -73,6 +73,23 @@ Multiple directories can federate by exchanging `DiscoveryEntry` records. The `h
 - Stale entries (where `last_seen` exceeds a configurable TTL) should be pruned periodically.
 - Federated queries should validate the authenticity of entries received from remote hubs.
 
+## Standards Alignment
+
+### Four-Tier Hybrid Discovery
+
+| Tier | Mechanism | Latency | Source |
+|------|-----------|---------|--------|
+| 1. Local Cache | In-memory `AgentDirectory` | Sub-ms | ROAR native |
+| 2. DNS/SVCB | `_roar._tcp.example.com` SVCB records | 50-200ms | IETF BANDAID draft |
+| 3. Federated Hub | HTTP API, hub-to-hub gossip | 200-1000ms | ROAR native |
+| 4. DHT + mDNS | libp2p Kademlia, DNS-SD | 1-5s | Peer-to-peer fallback |
+
+### Interoperability
+
+- **A2A Agent Cards**: Agents discovered via A2A's `/.well-known/agent.json` are automatically imported into the ROAR directory.
+- **IETF BANDAID**: DNS-based discovery using SVCB records (`protocol="roar"`) enables internet-scale agent lookup without centralized registries.
+- **MCP**: MCP servers have no discovery mechanism; ROAR directory acts as the registry MCP lacks.
+
 ## Example
 
 ```python
