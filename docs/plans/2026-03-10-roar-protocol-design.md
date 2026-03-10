@@ -21,17 +21,17 @@ ROAR (Real-time Open Agent Runtime) is a five-layer protocol for agent identity,
 | Protocol | Owner | Focus | Transport | Maturity | Adoption |
 |----------|-------|-------|-----------|----------|----------|
 | **MCP** | Anthropic | Tool integration | stdio, SSE, Streamable HTTP | Production (v2025-11-25) | Very High |
-| **A2A** | Google | Agent collaboration | HTTP+SSE, Push Notifications | Production (v0.2+) | High |
+| **A2A** | Google/Linux Foundation | Agent collaboration | HTTP+SSE, Push Notifications | Production (v0.3.0, proto3) | Very High (22K stars) |
 | **ACP** | agentscope-ai/OpenClaw | IDE-agent comm | HTTP, stdio | Early (v0.1) | Low |
 | **ANP** | Community | Agent networking | HTTP/WebSocket | Draft | Very Low |
 | **DIDComm** | W3C/DIF | Secure messaging | HTTP, WebSocket, Bluetooth | Spec Complete | Medium |
 
 ### 1.2 Standards Bodies
 
-- **W3C**: DIDs (v1.0 CR), Verifiable Credentials (v2.0), DIDComm (v2.1)
-- **IETF**: No formal BANDAID WG yet; HTTP/3 + WebTransport relevant
-- **FIPA**: Legacy ACL/interaction protocols; conceptually relevant but not actively maintained
-- **AAIF**: Early-stage AI agent interoperability forum; monitoring only
+- **AAIF** (Agentic AI Foundation): Founded March 2026, Linux Foundation. TC: Anthropic (chair), Microsoft (co-chair), Google, OpenAI, AWS, Block, Bloomberg, Cloudflare. MCP is its first project. Working groups on "Identity & Trust" and "Workflows & Process Integration" will define standards ROAR must adopt.
+- **W3C**: DIDs (v1.0 Recommendation), Verifiable Credentials (v2.0 Recommendation), DIDComm (v2.1). AI Agent Protocol Community Group uses ANP white paper.
+- **IETF**: BANDAID draft (`draft-mozleywilliams-dnsop-dnsaid-01`) — DNS-based agent discovery, already MCP-aware. Validates ROAR Tier 2 approach.
+- **FIPA**: Legacy ACL/interaction protocols (IEEE); valuable lessons on what NOT to do (over-specification, academic focus, no reference implementations).
 
 ### 1.3 Gap Analysis — Why ROAR?
 
@@ -499,7 +499,32 @@ Phase 1 (Type Unification) ──→ Phase 2 (Transport) ──→ Phase 3 (Stre
 
 ---
 
-## 10. Open Questions
+## 10. Strategic Positioning
+
+**ROAR is a runtime, not a competing protocol.** It bridges MCP (tools), A2A (agent collaboration), ACP (IDE), and ANP (discovery) under a unified identity and message format.
+
+### Positioning Rules
+
+1. **Do not compete with AAIF** — Position as complementary; adopt AAIF standards as they emerge
+2. **Do not create new wire protocols** — JSON-RPC, proto3, and OpenAPI all work fine
+3. **Do not repeat FIPA's mistakes** — Keep it simple, ship working code, focus on DX
+4. **Do not require all protocols** — Each adapter is optional; ROAR works standalone
+
+### Watch List
+
+- AAIF "Identity & Trust" WG output → may define agent identity for MCP (adopt, don't compete)
+- AAIF "Workflows & Process Integration" WG → may define orchestration patterns
+- Whether A2A becomes an AAIF project (Google is on the TC)
+- IETF BANDAID progression → validates DNS-based discovery approach
+- MCP draft spec evolution beyond 2025-11-25
+
+### Full Research
+
+See `docs/research/2026-03-10-agent-protocol-landscape.md` for the complete protocol landscape analysis with live GitHub metrics, AAIF governance details, and FIPA historical lessons.
+
+---
+
+## 11. Open Questions
 
 1. **gRPC proto definitions**: Define now or defer? (Recommendation: defer)
 2. **NATS vs embedded**: Should NATS be required or optional? (Recommendation: optional with in-process fallback)
