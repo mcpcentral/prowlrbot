@@ -56,7 +56,7 @@ class TestPathSecurity:
         for path in malicious_paths:
             full_path = os.path.abspath(os.path.expanduser(path))
             # Path should be outside home
-            assert not full_path.startswith(home + "/copaw")
+            assert not full_path.startswith(home + "/prowlrbot")
 
     def test_safe_path_within_home(self):
         """Test that safe paths within home are allowed."""

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Any
 
-from copaw.agents.hooks.memory_compaction import MemoryCompactionHook
+from prowlrbot.agents.hooks.memory_compaction import MemoryCompactionHook
 
 
 @dataclass
@@ -117,11 +117,11 @@ async def test_compaction_triggers_on_total_context_budget(
     monkeypatch,
 ) -> None:
     monkeypatch.setattr(
-        "copaw.agents.hooks.memory_compaction.safe_count_message_tokens",
+        "prowlrbot.agents.hooks.memory_compaction.safe_count_message_tokens",
         _fake_safe_count_message_tokens,
     )
     monkeypatch.setattr(
-        "copaw.agents.hooks.memory_compaction.safe_count_str_tokens",
+        "prowlrbot.agents.hooks.memory_compaction.safe_count_str_tokens",
         _fake_safe_count_str_tokens,
     )
 
@@ -157,11 +157,11 @@ async def test_compaction_not_triggered_when_total_under_threshold(
     monkeypatch,
 ) -> None:
     monkeypatch.setattr(
-        "copaw.agents.hooks.memory_compaction.safe_count_message_tokens",
+        "prowlrbot.agents.hooks.memory_compaction.safe_count_message_tokens",
         _fake_safe_count_message_tokens,
     )
     monkeypatch.setattr(
-        "copaw.agents.hooks.memory_compaction.safe_count_str_tokens",
+        "prowlrbot.agents.hooks.memory_compaction.safe_count_str_tokens",
         _fake_safe_count_str_tokens,
     )
 
