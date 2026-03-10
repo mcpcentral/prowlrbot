@@ -1,12 +1,20 @@
-# ProwlrBot Setup
+# ProwlrBot War Room Setup
 
-> **Tell your Claude Code agent:** *"Connect me to the ProwlrBot war room using the instructions at https://github.com/mcpcentral/prowlrbot/blob/main/INSTALL.md"*
+> **Just tell your Claude Code agent:**
 >
-> Your agent will handle the rest.
+> *"Set up the war room using https://github.com/mcpcentral/prowlrbot/blob/main/INSTALL.md"*
+>
+> Your agent will clone the repo, ask you a few questions, configure everything, and verify the connection. You don't need to do anything manually.
 
 ---
 
-## Quick Start (2 minutes)
+## For the Agent
+
+You are setting up ProwlrHub — a shared war room that connects multiple Claude Code terminals so they can coordinate instead of stepping on each other's work.
+
+Follow these steps exactly. Ask the user questions where indicated.
+
+### Step 1: Clone and install
 
 ```bash
 git clone https://github.com/mcpcentral/prowlrbot.git
@@ -14,291 +22,146 @@ cd prowlrbot
 pip install -e .
 ```
 
-Then add the MCP server to your Claude Code. Pick **one** method:
+If the repo already exists, `cd` into it and run `git pull && pip install -e .` instead.
 
-### Option A: Setup Wizard (recommended)
+### Step 2: Ask the user 3 questions
 
-```bash
-./scripts/setup-warroom.sh
-```
+**Question 1: "What should I call this agent?"**
+- Examples: `architect`, `frontend`, `security`, `marketplace-dev`, `docs`
+- This name shows up on the mission board so other agents know who's who
+- Default if they skip: `claude-agent`
 
-Names your agent, sets capabilities, configures `.mcp.json`, verifies the connection. Restart Claude Code when done.
+**Question 2: "What are this agent's capabilities?"**
+- Comma-separated list: `python,api,database` or `react,typescript,css` or `security,testing`
+- This helps with task matching — agents with the right capabilities get the right work
+- Default if they skip: `general`
 
-### Option B: One-liner
+**Question 3: "Are you connecting from the same machine, or a different machine (like WSL)?"**
+- **Same machine** → use local mode (no bridge needed)
+- **Different machine** → need the bridge URL. Ask: "What's the bridge URL? (e.g., http://192.168.12.21:8099)"
 
-```bash
-claude mcp add prowlr-hub -s local -- python3 -m prowlrbot.hub
-```
+### Step 3: Register the MCP server
 
-Then set the PYTHONPATH so the module is found:
-
-```bash
-claude mcp add prowlr-hub -s local -e PYTHONPATH="$(pwd)/src" -- python3 -m prowlrbot.hub
-```
-
-### Option C: Manual `.mcp.json`
-
-Add this to your project's `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "prowlr-hub": {
-      "command": "python3",
-      "args": ["-m", "prowlrbot.hub"],
-      "cwd": "/absolute/path/to/prowlrbot",
-      "env": {
-        "PYTHONPATH": "/absolute/path/to/prowlrbot/src",
-        "PROWLR_AGENT_NAME": "my-agent",
-        "PROWLR_CAPABILITIES": "code,review,testing"
-      }
-    }
-  }
-}
-```
-
-Replace `/absolute/path/to/prowlrbot` with your clone location.
-
-## Verify
-
-Restart Claude Code, then ask your agent:
-
-```
-Use the check_mission_board tool
-```
-
-You should see the mission board (empty or with tasks). If you see it, you're connected.
-
-## Verify (CLI)
+**If same machine (local mode):**
 
 ```bash
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | PYTHONPATH=src python3 -m prowlrbot.hub
+claude mcp add prowlr-hub -s local \
+  -e PYTHONPATH="$(pwd)/src" \
+  -e PROWLR_AGENT_NAME="<agent_name>" \
+  -e PROWLR_CAPABILITIES="<capabilities>" \
+  -- python3 -m prowlrbot.hub
 ```
 
-You should see JSON with 13 tools listed.
+**If different machine (remote mode):**
+
+```bash
+claude mcp add prowlr-hub -s local \
+  -e PYTHONPATH="$(pwd)/src" \
+  -e PROWLR_AGENT_NAME="<agent_name>" \
+  -e PROWLR_CAPABILITIES="<capabilities>" \
+  -e PROWLR_HUB_URL="<bridge_url>" \
+  -- python3 -m prowlrbot.hub
+```
+
+Replace `<agent_name>`, `<capabilities>`, and `<bridge_url>` with the user's answers.
+
+### Step 4: Tell the user to restart Claude Code
+
+Say: "Restart Claude Code now (not just the conversation — fully quit and reopen). The war room tools will be available when you come back."
+
+### Step 5: Verify (after restart)
+
+Call `check_mission_board`. If you see the mission board (even if empty), you're connected. Tell the user:
+
+"You're connected to the war room. You now have 13 coordination tools. Use `/board` to see the mission board, `/claim` to grab a task, `/team` to see other agents."
+
+If it fails, check:
+1. Is `PYTHONPATH` pointing to the `src/` directory inside the prowlrbot clone?
+2. Did the user fully restart Claude Code?
+3. Run `claude mcp list` to see if `prowlr-hub` is registered
 
 ---
 
-## Multiple Terminals (Same Machine)
+## Starting the Bridge (for cross-machine setups)
 
-Every terminal on the same machine shares `~/.prowlrbot/warroom.db` automatically. Just give each a unique name:
+If agents are on different machines (Mac + WSL, multiple computers), one machine needs to run the bridge.
 
-**Terminal 1** — `.mcp.json`:
-```json
-"PROWLR_AGENT_NAME": "architect",
-"PROWLR_CAPABILITIES": "python,api,architecture"
-```
-
-**Terminal 2** — `.mcp.json`:
-```json
-"PROWLR_AGENT_NAME": "frontend",
-"PROWLR_CAPABILITIES": "typescript,react,css"
-```
-
-**Terminal 3** — `.mcp.json`:
-```json
-"PROWLR_AGENT_NAME": "security",
-"PROWLR_CAPABILITIES": "security,testing,audit"
-```
-
-No bridge, no network config. They all see each other on the mission board instantly.
-
----
-
-## Cross-Machine Setup (Mac + WSL)
-
-SQLite can't be shared across Mac and WSL filesystems. ProwlrBot includes an HTTP bridge for this.
-
-> **Different networks?** If your machines are on different WiFi networks (e.g., guest vs main), you need a tunnel. See the [Cross-Network Setup Guide](docs/guides/cross-network-setup.md) for Tailscale, Cloudflare Tunnel, ngrok, and SSH tunnel instructions. Or just run `./scripts/setup-warroom.sh` — the wizard handles it.
-
-### Step 1: Start the bridge (on the machine with the database)
+**On the host machine (the one that owns the database):**
 
 ```bash
 cd prowlrbot
 PYTHONPATH=src python3 -m prowlrbot.hub.bridge
 ```
 
-The bridge starts on port `8099`. Verify:
+This starts on port 8099. Get the host IP:
+- macOS: `ipconfig getifaddr en0`
+- Linux: `hostname -I | awk '{print $1}'`
 
-```bash
-curl http://localhost:8099/health
-# → {"status":"ok","room_id":"...","agents":0,"tasks":0}
-```
+Remote agents connect with `PROWLR_HUB_URL=http://<host_ip>:8099`.
 
-To run in background:
-
-```bash
-PYTHONPATH=src nohup python3 -m prowlrbot.hub.bridge &
-```
-
-### Step 2: Find the host IP
-
-```bash
-# macOS
-ipconfig getifaddr en0
-
-# Linux
-hostname -I | awk '{print $1}'
-```
-
-### Step 3: Configure remote terminals
-
-On the remote machine (WSL, another Mac, Linux), set `PROWLR_HUB_URL` in `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "prowlr-hub": {
-      "command": "python3",
-      "args": ["-m", "prowlrbot.hub"],
-      "cwd": "/path/to/prowlrbot",
-      "env": {
-        "PYTHONPATH": "/path/to/prowlrbot/src",
-        "PROWLR_AGENT_NAME": "wsl-agent",
-        "PROWLR_CAPABILITIES": "code,testing",
-        "PROWLR_HUB_URL": "http://192.168.1.100:8099"
-      }
-    }
-  }
-}
-```
-
-Replace `192.168.1.100` with the host IP from Step 2.
-
-### Step 4: Verify cross-machine
-
-From the remote terminal, ask your agent:
-
-```
-Use the get_agents tool
-```
-
-You should see agents from **both** machines listed.
-
-### Bridge Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PROWLR_HUB_DB` | `~/.prowlrbot/warroom.db` | Database file path |
-| `PROWLR_BRIDGE_HOST` | `0.0.0.0` | Bind address |
-| `PROWLR_BRIDGE_PORT` | `8099` | HTTP port |
+**If machines are on different networks** (guest WiFi, VPN, etc), see the [Cross-Network Setup Guide](docs/guides/cross-network-setup.md) for Tailscale, Cloudflare Tunnel, and other tunnel options.
 
 ---
 
-## What Your Agent Can Do
+## What You Get
 
-Once connected, your agent has these war room tools:
+Once connected, every agent has these tools:
 
-| Tool | Purpose |
-|------|---------|
-| `check_mission_board` | See all tasks, who owns what |
-| `claim_task` | Grab a task, lock its files |
-| `update_task` | Post progress updates |
-| `complete_task` | Finish and release locks |
+| Tool | What it does |
+|------|-------------|
+| `check_mission_board` | See all tasks, owners, and progress |
+| `claim_task` | Create and claim a task, atomically lock files |
+| `update_task` | Post progress notes for the team |
+| `complete_task` | Mark done, release all file locks |
 | `fail_task` | Mark failed, release locks |
 | `lock_file` / `unlock_file` | Advisory file locking |
-| `check_conflicts` | See if files are locked |
+| `check_conflicts` | Check if files are locked before editing |
 | `get_agents` | See who's connected |
-| `broadcast_status` | Announce to all agents |
-| `share_finding` | Share discoveries |
-| `get_shared_context` | Read shared findings |
-| `get_events` | See recent activity |
+| `broadcast_status` | Send a message to all agents |
+| `share_finding` | Store a discovery for other agents |
+| `get_shared_context` | Read what other agents have found |
+| `get_events` | See recent war room activity |
+
+And these slash commands: `/board`, `/claim`, `/team`, `/broadcast`, `/warroom`
 
 ---
 
-## Agent Instructions
-
-Tell your Claude Code agent how to use the war room by adding this to your `CLAUDE.md`:
-
-```markdown
 ## War Room Protocol
 
-You are connected to ProwlrHub. Before starting any work:
-1. Call `check_mission_board` to see what's available
-2. Call `get_agents` to see who else is working
-3. Call `check_conflicts` on files you plan to edit
-4. Call `claim_task` to claim your work and lock files
-5. Call `broadcast_status` when you hit milestones
-6. Call `complete_task` when done — this releases all locks
+Add this to your project's `CLAUDE.md` to make agents follow the protocol automatically:
+
+```markdown
+## War Room
+
+You are connected to ProwlrHub. Before any work:
+1. `check_mission_board` — see what's available
+2. `get_agents` — see who else is working
+3. `check_conflicts` on files you'll edit
+4. `claim_task` with file scopes before editing
+5. `share_finding` when you discover something useful
+6. `complete_task` when done — releases all locks
 ```
 
 ---
 
 ## Troubleshooting
 
-### "No module named prowlrbot"
-
-The `PYTHONPATH` in your `.mcp.json` must point to the `src/` directory:
-
-```bash
-# Test it manually
-PYTHONPATH=/path/to/prowlrbot/src python3 -c "import prowlrbot.hub; print('OK')"
-```
-
-### Tools not appearing in Claude Code
-
-1. Ensure `.mcp.json` is in your **project root** (where you launched Claude Code)
-2. Restart Claude Code fully (not just the conversation)
-3. Run `claude mcp list` to see registered servers
-
-### "Database is locked"
-
-SQLite WAL mode handles most concurrency. If persistent:
-
-```bash
-# Find stuck processes
-ps aux | grep prowlrbot.hub
-# Kill stale ones
-kill <pid>
-```
-
-### Bridge connection refused
-
-```bash
-# Check bridge is running
-curl http://HOST:8099/health
-
-# Check firewall (macOS)
-sudo pfctl -sr | grep 8099
-
-# Check WSL can reach Mac
-ping HOST_IP
-```
-
-### Agent not on the board
-
-Agents auto-register on first tool call. Just use any tool (`check_mission_board` is the easiest) and you'll appear.
-
----
-
-## Requirements
-
-- Python 3.10+
-- Claude Code CLI
-- Git
-- FastAPI + uvicorn (for bridge mode only, installed with `pip install -e ".[dev]"`)
-
----
-
-## Architecture
-
-```
-Terminal 1 ──┐
-Terminal 2 ──┤── SQLite (same machine, automatic)
-Terminal 3 ──┘
-
-Terminal 4 (WSL) ──── HTTP Bridge ──── SQLite (cross-machine)
-Terminal 5 (Mac) ───┘
-```
-
-All terminals see the same mission board, same agents, same shared context. Changes are instant.
+| Problem | Fix |
+|---------|-----|
+| "No module named prowlrbot" | `PYTHONPATH` must point to `prowlrbot/src/` |
+| Tools not appearing | Restart Claude Code fully, check `claude mcp list` |
+| "Database is locked" | Kill stale processes: `ps aux \| grep prowlrbot.hub` |
+| Bridge connection refused | Check bridge is running: `curl http://HOST:8099/health` |
+| Agent not on board | Call any tool — agents auto-register on first use |
+| Can't reach bridge from WSL | Check firewall, try `ping HOST_IP` first |
+| Different networks | Use Tailscale or Cloudflare Tunnel — see [guide](docs/guides/cross-network-setup.md) |
 
 ---
 
 ## Links
 
-- **Docs**: https://mcpcentral.github.io/prowlr-docs
-- **GitHub**: https://github.com/mcpcentral/prowlrbot
-- **Issues**: https://github.com/mcpcentral/prowlrbot/issues
-- **War Room Protocol**: `src/prowlrbot/hub/SKILL.md`
-- **ROAR Protocol**: `src/prowlrbot/protocols/roar/`
+- [Cross-Network Setup Guide](docs/guides/cross-network-setup.md) — Tailscale, Cloudflare, ngrok, SSH tunnels
+- [War Room Protocol](src/prowlrbot/hub/SKILL.md) — The 7 Iron Rules
+- [Hub Architecture](src/prowlrbot/hub/README.md) — Database schema, bridge API, developer guide
+- [GitHub](https://github.com/mcpcentral/prowlrbot) — Source code
+- [Issues](https://github.com/mcpcentral/prowlrbot/issues) — Bug reports
