@@ -80,3 +80,7 @@ DASHSCOPE_BASE_URL = os.environ.get(
 # Example: PROWLRBOT_CORS_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
 # When unset, CORS middleware is not applied.
 CORS_ORIGINS = os.environ.get("PROWLRBOT_CORS_ORIGINS", "").strip()
+
+# API authentication — set to a SHA-256 hash of your token.
+# Generate with: python -c "from prowlrbot.app.auth import generate_api_token, hash_token; t=generate_api_token(); print(f'Token: {t}\nHash:  {hash_token(t)}')"
+PROWLRBOT_API_TOKEN_HASH = os.environ.get("PROWLRBOT_API_TOKEN_HASH", "")

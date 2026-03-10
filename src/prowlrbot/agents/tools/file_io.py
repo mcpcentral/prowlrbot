@@ -11,6 +11,65 @@ from agentscope.tool import ToolResponse
 from ...constant import WORKING_DIR
 
 
+# Directories that are always blocked
+_BLOCKED_PREFIXES = [
+    Path.home() / ".ssh",
+    Path.home() / ".prowlrbot.secret",
+    Path.home() / ".copaw.secret",
+    Path.home() / ".aws",
+    Path.home() / ".gnupg",
+    Path("/etc"),
+    Path("/dev"),
+    Path("/proc"),
+    Path("/sys"),
+]
+
+# Directories that are always allowed
+_ALLOWED_PREFIXES = [
+    Path("/tmp"),
+]
+
+
+def validate_file_path(file_path: str) -> bool:
+    """Validate that a file path is safe to access.
+
+    Returns True if the path is within allowed directories
+    and not in any blocked directory.
+    """
+    try:
+        resolved = Path(file_path).resolve()
+    except (ValueError, OSError):
+        return False
+
+    # Check blocked paths first
+    for blocked in _BLOCKED_PREFIXES:
+        try:
+            blocked_resolved = blocked.resolve()
+            if str(resolved).startswith(str(blocked_resolved)):
+                return False
+        except (ValueError, OSError):
+            continue
+
+    # Always allow /tmp
+    for allowed in _ALLOWED_PREFIXES:
+        try:
+            allowed_resolved = allowed.resolve()
+            if str(resolved).startswith(str(allowed_resolved)):
+                return True
+        except (ValueError, OSError):
+            continue
+
+    # Allow WORKING_DIR
+    try:
+        wd = WORKING_DIR.resolve()
+        if str(resolved).startswith(str(wd)):
+            return True
+    except (ValueError, OSError):
+        pass
+
+    return False
+
+
 def _resolve_file_path(file_path: str) -> str:
     """Resolve file path: use absolute path as-is,
     resolve relative path from WORKING_DIR.
@@ -48,6 +107,16 @@ async def read_file(  # pylint: disable=too-many-return-statements
     """
 
     file_path = _resolve_file_path(file_path)
+
+    if not validate_file_path(file_path):
+        return ToolResponse(
+            content=[
+                TextBlock(
+                    type="text",
+                    text=f"Error: Access denied — path '{file_path}' is outside allowed directories.",
+                ),
+            ],
+        )
 
     if not os.path.exists(file_path):
         return ToolResponse(
@@ -164,6 +233,16 @@ async def write_file(
 
     file_path = _resolve_file_path(file_path)
 
+    if not validate_file_path(file_path):
+        return ToolResponse(
+            content=[
+                TextBlock(
+                    type="text",
+                    text=f"Error: Access denied — path '{file_path}' is outside allowed directories.",
+                ),
+            ],
+        )
+
     try:
         with open(file_path, "w", encoding="utf-8") as file:
             file.write(content)
@@ -272,6 +351,16 @@ async def append_file(
         )
 
     file_path = _resolve_file_path(file_path)
+
+    if not validate_file_path(file_path):
+        return ToolResponse(
+            content=[
+                TextBlock(
+                    type="text",
+                    text=f"Error: Access denied — path '{file_path}' is outside allowed directories.",
+                ),
+            ],
+        )
 
     try:
         with open(file_path, "a", encoding="utf-8") as file:

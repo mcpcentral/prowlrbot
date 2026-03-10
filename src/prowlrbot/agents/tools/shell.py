@@ -5,13 +5,67 @@
 
 import asyncio
 import locale
+import re
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional, Tuple
 
 from agentscope.tool import ToolResponse
 from agentscope.message import TextBlock
 
 from prowlrbot.constant import WORKING_DIR
+
+
+@dataclass
+class ShellPolicy:
+    """Policy for shell command validation."""
+
+    blocked_patterns: List[str] = field(default_factory=lambda: [
+        r"\brm\b.*-[rR].*-[fF]",       # rm -rf variants
+        r"\brm\b.*-[fF].*-[rR]",       # rm -fr variants
+        r"\brm\b\s+-rf\b",             # rm -rf
+        r"\bdd\b.*\bof=/dev/",          # dd to device
+        r"\bmkfs\b",                     # format filesystem
+        r"\bchmod\b.*\b777\b",          # chmod 777
+        r"\bchmod\b.*\+s\b",           # setuid
+        r"\bchown\b.*root",             # chown to root
+        r">\s*/dev/[sh]d",              # write to disk device
+        r"\bcurl\b.*\|\s*\bbash\b",    # curl | bash
+        r"\bwget\b.*\|\s*\bbash\b",   # wget | bash
+        r"\bcurl\b.*\|\s*\bsh\b",     # curl | sh
+        r"\bwget\b.*\|\s*\bsh\b",     # wget | sh
+        r"\b(sudo|su)\b",              # privilege escalation
+        r"\bkill\s+-9\s+1\b",         # kill init
+        r":()\{.*\|.*&.*\};:",         # fork bomb
+    ])
+
+    def check(self, command: str) -> Tuple[bool, str]:
+        """Check if a command is allowed.
+
+        Returns (allowed, reason).
+        """
+        for pattern in self.blocked_patterns:
+            if re.search(pattern, command, re.IGNORECASE):
+                return False, "Command blocked: matches safety pattern"
+
+        # Also check individual segments for pipe/semicolon chains
+        segments = re.split(r"[;|&]", command)
+        for segment in segments:
+            segment = segment.strip()
+            for pattern in self.blocked_patterns:
+                if re.search(pattern, segment, re.IGNORECASE):
+                    return False, "Command blocked: matches safety pattern"
+
+        return True, "allowed"
+
+
+# Module-level default policy
+_default_policy = ShellPolicy()
+
+
+def validate_shell_command(command: str) -> Tuple[bool, str]:
+    """Validate a shell command against the default policy."""
+    return _default_policy.check(command)
 
 
 # pylint: disable=too-many-branches
@@ -42,6 +96,18 @@ async def execute_shell_command(
     """
 
     cmd = (command or "").strip()
+
+    # Validate command safety
+    allowed, reason = validate_shell_command(cmd)
+    if not allowed:
+        return ToolResponse(
+            content=[
+                TextBlock(
+                    type="text",
+                    text=f"Error: {reason}",
+                ),
+            ],
+        )
 
     # Set working directory
     working_dir = cwd if cwd is not None else WORKING_DIR

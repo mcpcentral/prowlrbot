@@ -12,6 +12,15 @@ from ...envs import load_envs, save_envs, delete_env_var
 router = APIRouter(prefix="/envs", tags=["envs"])
 
 
+def mask_env_value(value: str) -> str:
+    """Mask a secret value, showing only first 4 chars."""
+    if not value:
+        return ""
+    if len(value) <= 4:
+        return "***"
+    return value[:4] + "***"
+
+
 # ------------------------------------------------------------------
 # Request / Response models
 # ------------------------------------------------------------------
@@ -37,7 +46,7 @@ class EnvVar(BaseModel):
 async def list_envs() -> List[EnvVar]:
     """Return all configured env vars."""
     envs = load_envs()
-    return [EnvVar(key=k, value=v) for k, v in sorted(envs.items())]
+    return [EnvVar(key=k, value=mask_env_value(v)) for k, v in sorted(envs.items())]
 
 
 @router.put(

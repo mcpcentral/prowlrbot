@@ -18,7 +18,7 @@ from ..config import (  # pylint: disable=no-name-in-module
     ConfigWatcher,
 )
 from ..config.utils import get_jobs_path, get_chats_path, get_config_path
-from ..constant import DOCS_ENABLED, LOG_LEVEL_ENV, CORS_ORIGINS
+from ..constant import DOCS_ENABLED, LOG_LEVEL_ENV, CORS_ORIGINS, PROWLRBOT_API_TOKEN_HASH
 from ..__version__ import __version__
 from ..utils.logging import setup_logger
 from .channels import ChannelManager  # pylint: disable=no-name-in-module
@@ -29,6 +29,8 @@ from .crons.repo.json_repo import JsonJobRepository
 from .crons.manager import CronManager
 from .runner.manager import ChatManager
 from .routers import router as api_router
+from .auth import AuthConfig, AuthDependency
+from .rate_limit import RateLimitMiddleware
 from ..envs import load_envs_into_environ
 
 # Apply log level on load so reload child process gets same level as CLI.
@@ -210,7 +212,19 @@ def get_version():
     return {"version": __version__}
 
 
-app.include_router(api_router, prefix="/api")
+from fastapi import Depends
+
+# --- Rate Limiting ---
+app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
+
+# --- API Authentication ---
+auth_config = AuthConfig(
+    enabled=bool(PROWLRBOT_API_TOKEN_HASH),
+    token_hash=PROWLRBOT_API_TOKEN_HASH,
+)
+auth_dep = AuthDependency(auth_config)
+
+app.include_router(api_router, prefix="/api", dependencies=[Depends(auth_dep)])
 
 app.include_router(
     agent_app.router,
