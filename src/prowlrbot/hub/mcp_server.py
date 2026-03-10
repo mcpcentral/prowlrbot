@@ -24,10 +24,12 @@ logger = logging.getLogger(__name__)
 
 # Per-process state
 _engine: Optional[WarRoomEngine] = None
+_remote: Optional[Any] = None  # RemoteWarRoom when using bridge
 _agent_id: Optional[str] = None
 _session_id: Optional[str] = None
 _room_id: Optional[str] = None
 _agent_name: Optional[str] = None
+_is_remote: bool = False
 
 
 def _get_engine() -> WarRoomEngine:
@@ -38,18 +40,30 @@ def _get_engine() -> WarRoomEngine:
     return _engine
 
 
+def _get_remote():
+    """Get the remote client for bridge mode."""
+    global _remote
+    if _remote is None:
+        from .remote_client import RemoteWarRoom
+        url = os.environ["PROWLR_HUB_URL"]
+        _remote = RemoteWarRoom(url)
+    return _remote
+
+
 def _auto_register() -> Dict[str, str]:
     """Auto-register this Claude Code instance on first tool call."""
-    global _agent_id, _session_id, _room_id, _agent_name
+    global _agent_id, _session_id, _room_id, _agent_name, _is_remote
+
+    hub_url = os.environ.get("PROWLR_HUB_URL", "")
+    _is_remote = bool(hub_url)
 
     if _agent_id:
         # Already registered — just heartbeat
-        _get_engine().heartbeat(_agent_id)
+        if _is_remote:
+            _get_remote().heartbeat()
+        else:
+            _get_engine().heartbeat(_agent_id)
         return {"agent_id": _agent_id, "room_id": _room_id}
-
-    engine = _get_engine()
-    room = engine.get_or_create_default_room()
-    _room_id = room["room_id"]
 
     # Generate agent name from environment
     terminal_id = os.environ.get("PROWLR_AGENT_NAME", "")
@@ -59,16 +73,27 @@ def _auto_register() -> Dict[str, str]:
     capabilities = os.environ.get("PROWLR_CAPABILITIES", "").split(",")
     capabilities = [c.strip() for c in capabilities if c.strip()]
 
-    result = engine.register_agent(
-        name=terminal_id,
-        room_id=_room_id,
-        capabilities=capabilities or ["general"],
-    )
-    _agent_id = result["agent_id"]
-    _session_id = result["session_id"]
-    _agent_name = terminal_id
+    if _is_remote:
+        remote = _get_remote()
+        result = remote.register(terminal_id, capabilities or ["general"])
+        _agent_id = result.get("agent_id", "")
+        _room_id = result.get("room_id", "")
+        _agent_name = terminal_id
+        logger.info("Registered (remote) as %s (agent_id=%s)", terminal_id, _agent_id)
+    else:
+        engine = _get_engine()
+        room = engine.get_or_create_default_room()
+        _room_id = room["room_id"]
+        result = engine.register_agent(
+            name=terminal_id,
+            room_id=_room_id,
+            capabilities=capabilities or ["general"],
+        )
+        _agent_id = result["agent_id"]
+        _session_id = result["session_id"]
+        _agent_name = terminal_id
+        logger.info("Registered (local) as %s (agent_id=%s) in room %s", terminal_id, _agent_id, _room_id)
 
-    logger.info("Registered as %s (agent_id=%s) in room %s", terminal_id, _agent_id, _room_id)
     return {"agent_id": _agent_id, "room_id": _room_id}
 
 
@@ -260,9 +285,14 @@ TOOLS = {
 def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Execute a war room tool and return the result."""
     reg = _auto_register()
+    agent_id = _agent_id
+
+    # Route through remote client if using bridge
+    if _is_remote:
+        return _handle_remote_tool(tool_name, arguments)
+
     engine = _get_engine()
     room_id = _room_id
-    agent_id = _agent_id
 
     if tool_name == "check_mission_board":
         tasks = engine.get_mission_board(room_id)
@@ -392,6 +422,115 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
             payload_str = json.dumps(e["payload"]) if e["payload"] else ""
             lines.append(f"[{e['timestamp']}] {e['type']} | {agent}{task} {payload_str}")
         return {"content": [{"type": "text", "text": "\n".join(lines)}]}
+
+    return {"content": [{"type": "text", "text": f"Unknown tool: {tool_name}"}], "isError": True}
+
+
+def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle tool calls via the HTTP bridge (remote mode)."""
+    remote = _get_remote()
+
+    def _text(msg: str) -> Dict[str, Any]:
+        return {"content": [{"type": "text", "text": msg}]}
+
+    if tool_name == "check_mission_board":
+        tasks = remote.get_mission_board(arguments.get("filter_status", ""))
+        if not tasks:
+            return _text("Mission board is empty. No tasks yet.")
+        lines = ["# Mission Board\n"]
+        for t in tasks:
+            status_icon = {"pending": "⬜", "claimed": "🔵", "in_progress": "🟡", "done": "✅", "failed": "❌"}.get(t.get("status", ""), "❓")
+            owner = f" → {t.get('owner_name', 'unknown')}" if t.get("owner_agent_id") else ""
+            blocked = " [BLOCKED]" if t.get("is_blocked") else ""
+            prio = f" [{t.get('priority', 'normal').upper()}]" if t.get("priority") != "normal" else ""
+            files = f" files: {t.get('file_scopes', [])}" if t.get("file_scopes") else ""
+            note = f"\n   Note: {t.get('progress_note')}" if t.get("progress_note") else ""
+            lines.append(f"{status_icon} {t.get('task_id', '?')} | {t.get('title', '?')}{prio}{owner}{blocked}{files}{note}")
+        return _text("\n".join(lines))
+
+    elif tool_name == "claim_task":
+        result = remote.claim_task(
+            title=arguments.get("title", ""),
+            task_id=arguments.get("task_id", ""),
+            file_scopes=arguments.get("file_scopes", []),
+            description=arguments.get("description", ""),
+            priority=arguments.get("priority", "normal"),
+        )
+        if result.get("success"):
+            return _text(f"Claimed task. Lock token: {result.get('lock_token', '')}. Proceed with your work.")
+        return _text(f"Claim FAILED: {result.get('reason', 'unknown')}. Pick a different task.")
+
+    elif tool_name == "update_task":
+        remote.update_task(arguments["task_id"], arguments["progress_note"])
+        return _text(f"Updated task {arguments['task_id']}")
+
+    elif tool_name == "complete_task":
+        result = remote.complete_task(arguments["task_id"], arguments.get("summary", ""))
+        return _text(f"Task {arguments['task_id']} completed." if result.get("ok") else "Failed to complete.")
+
+    elif tool_name == "fail_task":
+        result = remote.fail_task(arguments["task_id"], arguments.get("reason", ""))
+        return _text(f"Task {arguments['task_id']} failed." if result.get("ok") else "Failed to mark task.")
+
+    elif tool_name == "lock_file":
+        result = remote.lock_file(arguments["path"])
+        if result.get("success"):
+            return _text(f"Locked {arguments['path']}. Token: {result.get('lock_token', '')}")
+        return _text(f"Lock failed: {result.get('reason', 'unknown')}")
+
+    elif tool_name == "unlock_file":
+        result = remote.unlock_file(arguments["path"])
+        return _text(f"{'Unlocked' if result.get('ok') else 'Not found:'} {arguments['path']}")
+
+    elif tool_name == "check_conflicts":
+        conflicts = remote.check_conflicts(arguments["paths"])
+        if not conflicts:
+            return _text("All files are free — safe to edit.")
+        lines = ["File conflicts:"] + [f"  {c['file']} → locked by {c.get('agent_name', c.get('agent_id', '?'))}" for c in conflicts]
+        return _text("\n".join(lines))
+
+    elif tool_name == "get_agents":
+        agents = remote.get_agents()
+        if not agents:
+            return _text("No agents connected.")
+        lines = ["# War Room Agents\n"]
+        for a in agents:
+            status_icon = {"idle": "🟢", "working": "🔵", "disconnected": "⚪"}.get(a.get("status", ""), "❓")
+            task_info = f" → task {a['current_task_id']}" if a.get("current_task_id") else ""
+            caps = ", ".join(a.get("capabilities", [])) if a.get("capabilities") else "general"
+            me = " (you)" if a.get("agent_id") == _agent_id else ""
+            lines.append(f"{status_icon} {a.get('name', '?')}{me} | caps: [{caps}] | {a.get('status', '?')}{task_info}")
+        return _text("\n".join(lines))
+
+    elif tool_name == "broadcast_status":
+        remote.broadcast_status(arguments["message"])
+        return _text(f"Broadcast: {arguments['message']}")
+
+    elif tool_name == "share_finding":
+        remote.share_finding(arguments["key"], arguments["value"])
+        return _text(f"Shared finding '{arguments['key']}'")
+
+    elif tool_name == "get_shared_context":
+        ctx = remote.get_shared_context(arguments.get("key", ""))
+        if not ctx:
+            return _text("No shared context found.")
+        lines = ["# Shared Findings\n"]
+        for c in ctx:
+            lines.append(f"**{c.get('key', '?')}** (by {c.get('agent_id', '?')}, {c.get('updated_at', '?')}):")
+            lines.append(f"  {c.get('value', '')}\n")
+        return _text("\n".join(lines))
+
+    elif tool_name == "get_events":
+        events = remote.get_events(arguments.get("limit", 20), arguments.get("event_type", ""))
+        if not events:
+            return _text("No events yet.")
+        lines = ["# Recent Events\n"]
+        for e in events:
+            agent = str(e.get("agent_id", "system"))[:20]
+            task = f" task={e['task_id']}" if e.get("task_id") else ""
+            payload_str = json.dumps(e.get("payload", {}))
+            lines.append(f"[{e.get('timestamp', '?')}] {e.get('type', '?')} | {agent}{task} {payload_str}")
+        return _text("\n".join(lines))
 
     return {"content": [{"type": "text", "text": f"Unknown tool: {tool_name}"}], "isError": True}
 
