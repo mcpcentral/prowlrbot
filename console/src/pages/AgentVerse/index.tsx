@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Badge, Tabs, Tag, Empty, Space } from "antd";
+import { Badge, Tabs, Tag, Space } from "antd";
 import {
   Map,
   Users,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Progress, Tag, Table, Tabs, Avatar, Badge, Tooltip, Empty } from "antd";
+import { Card, Tag, Table, Tabs, Tooltip, Empty } from "antd";
 import {
   Trophy,
   Star,

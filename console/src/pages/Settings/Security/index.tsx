@@ -1,15 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  Card,
-  Switch,
-  Form,
-  InputNumber,
   Button,
   Alert,
   Descriptions,
   Tag,
   Table,
-  message,
 } from "antd";
 import { request } from "../../../api";
 import styles from "./index.module.less";
