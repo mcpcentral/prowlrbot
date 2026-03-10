@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, BookOpen, Github } from "lucide-react";
+import { Menu, X, BookOpen, Github, Newspaper } from "lucide-react";
 import { t, type Lang } from "../i18n";
 
 interface NavProps {
@@ -78,6 +78,16 @@ export function Nav({
             <span>{t(lang, "nav.docs")}</span>
           </Link>
           <a
+            href="https://github.com/mcpcentral/prowlrbot/tree/main/docs/blog"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClass}
+            title="ProwlrBot Blog"
+          >
+            <Newspaper size={18} strokeWidth={1.5} aria-hidden />
+            <span>Blog</span>
+          </a>
+          <a
             href="https://github.com/mcpcentral/prowlrbot"
             target="_blank"
             rel="noopener noreferrer"
@@ -123,6 +133,16 @@ export function Nav({
         >
           <BookOpen size={18} /> {t(lang, "nav.docs")}
         </Link>
+        <a
+          href="https://github.com/mcpcentral/prowlrbot/tree/main/docs/blog"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkClass}
+          onClick={() => setOpen(false)}
+          title="ProwlrBot Blog"
+        >
+          <Newspaper size={18} /> Blog
+        </a>
         <a
           href="https://github.com/mcpcentral/prowlrbot"
           target="_blank"

@@ -58,6 +58,18 @@ export function Footer({ lang: _lang }: { lang: Lang }) {
           Marketplace
         </a>
         <a
+          href="https://github.com/mcpcentral/prowlrbot/tree/main/docs/blog"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "inherit", transition: "color 0.2s" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = "var(--text-muted)")
+          }
+        >
+          Blog
+        </a>
+        <a
           href="https://github.com/mcpcentral/agentverse"
           target="_blank"
           rel="noopener noreferrer"

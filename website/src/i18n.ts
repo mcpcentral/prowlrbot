@@ -21,15 +21,24 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "brandstory.para4":
       "ProwlrBot is open source, built on open protocols, and will never charge you a subscription to run your own agents.",
     "brandstory.cta": "Star us on GitHub",
-    "features.title": "核心能力",
-    "features.channels.title": "全域触达",
+    "features.title": "Core capabilities",
+    "features.warroom.title": "War Room",
+    "features.warroom.desc":
+      "Multi-agent coordination with mission board, file locks, shared context, and real-time broadcasts. Zero merge conflicts.",
+    "features.channels.title": "Every channel",
     "features.channels.desc":
-      "支持钉钉、飞书、QQ、Discord、iMessage 等频道，一个 ProwlrBot 按需连接。",
-    "features.private.title": "由你掌控",
+      "Discord, Telegram, DingTalk, Feishu, QQ, iMessage, and a built-in web console. One agent, every platform.",
+    "features.private.title": "Security first",
     "features.private.desc":
-      "记忆与个性化由你掌控，本地或云端均可；定时与协作发往指定频道。",
-    "features.skills.title": "Skills 扩展",
-    "features.skills.desc": "内置定时任务，自定义技能目录，ProwlrBot 自动加载。",
+      "API auth, rate limiting, path sandboxing, shell blocklist, prompt injection detection, and secret redaction. Your data stays yours.",
+    "features.skills.title": "Skills & MCP",
+    "features.skills.desc": "Extensible skill packs for PDF, Office, email, browser. Full MCP client with hot-reload.",
+    "features.monitoring.title": "Web Monitoring",
+    "features.monitoring.desc":
+      "Watch websites and APIs for changes. Content diffing, price tracking, competitor monitoring with instant alerts.",
+    "features.providers.title": "7 AI Providers",
+    "features.providers.desc":
+      "OpenAI, Anthropic, Groq, Z.ai, Ollama, llama.cpp, MLX. Smart routing picks the best model automatically.",
     "features.agentverse.title": "AgentVerse",
     "features.agentverse.desc":
       "A virtual world where your agents live, form guilds, trade, and battle. Club Penguin meets AI.",
@@ -162,6 +171,9 @@ export const i18n: Record<Lang, Record<string, string>> = {
       "ProwlrBot is open source, built on open protocols (MCP, ACP, A2A), and will never charge you a subscription to run your own agents. This is the agent platform we wished existed.",
     "brandstory.cta": "Star us on GitHub",
     "features.title": "Core capabilities",
+    "features.warroom.title": "War Room",
+    "features.warroom.desc":
+      "Multi-agent coordination with mission board, file locks, shared context, and real-time broadcasts. Zero merge conflicts.",
     "features.channels.title": "Every channel",
     "features.channels.desc":
       "Discord, Telegram, DingTalk, Feishu, QQ, iMessage, and a built-in web console. One agent, every platform.",
@@ -171,6 +183,12 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "features.skills.title": "Skills & MCP",
     "features.skills.desc":
       "Extensible skill packs for PDF, Office docs, email, browser automation. Full MCP client with hot-reload.",
+    "features.monitoring.title": "Web Monitoring",
+    "features.monitoring.desc":
+      "Watch websites and APIs for changes. Content diffing, price tracking, competitor monitoring with instant alerts.",
+    "features.providers.title": "7 AI Providers",
+    "features.providers.desc":
+      "OpenAI, Anthropic, Groq, Z.ai, Ollama, llama.cpp, MLX. Smart routing picks the cheapest, fastest, most available model.",
     "features.agentverse.title": "AgentVerse",
     "features.agentverse.desc":
       "A virtual world where your agents live, form guilds, trade, and battle. Club Penguin meets AI.",

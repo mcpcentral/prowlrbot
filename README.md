@@ -14,181 +14,434 @@
 </p>
 
 <p align="center">
-  Autonomous AI agent platform for monitoring, automation, and multi-channel communication.<br/>
-  Deploy intelligent agents that watch your systems, automate workflows, and respond across every channel.
+  <a href="#-30-second-install">Install</a> · <a href="#-what-makes-prowlrbot-different">Why ProwlrBot</a> · <a href="docs/README.md">Full Docs</a> · <a href="docs/blog/">Blog</a> · <a href="https://github.com/mcpcentral/prowlrbot/issues">Issues</a>
 </p>
 
 ---
 
-## What is ProwlrBot?
-
-ProwlrBot is an open-source AI agent platform that turns any LLM into an autonomous agent with tools, skills, memory, and multi-channel communication. Think of it as your AI operations center — agents that monitor, respond, and act 24/7.
-
-### Key Features
-
-- **Multi-Provider AI** — OpenAI, Anthropic, Groq, Z.ai, Ollama, and any OpenAI-compatible API. Smart routing picks the best provider automatically.
-- **Multi-Channel** — Discord, Telegram, DingTalk, Feishu, QQ, iMessage, and a built-in web console. One agent, every channel.
-- **Built-in Tools** — Shell execution, file I/O, browser automation, screenshots, memory search — agents can actually do things.
-- **Skills System** — Extensible skill packs for PDF, DOCX, PPTX, XLSX, email, news, cron scheduling, and more.
-- **MCP Support** — Full Model Context Protocol client with hot-reload. Connect to any MCP server.
-- **Real-time Dashboard** — Live WebSocket-powered command center showing agent activity, tool calls, and system health.
-- **Security First** — API token auth, rate limiting, path sandboxing, shell command blocklist, prompt injection detection, secret redaction.
-- **Monitoring Engine** — Web change detection, API monitoring, content diffing, and webhook notifications.
-- **Cron Jobs** — Schedule agents to run tasks on intervals or cron expressions.
-- **Docker Swarm** — Multi-device agent coordination with Redis-backed task queues.
-- **Per-Agent Config** — Each agent gets its own personality, tools, skills, model, memory, and autonomy level.
-
-## Quick Start
-
-### Install
+## 30-Second Install
 
 ```bash
 pip install prowlrbot
-```
-
-### Initialize
-
-```bash
 prowlr init --defaults
-```
-
-This creates `~/.prowlrbot/config.json` with default settings. Add your API key:
-
-```bash
-prowlr env set OPENAI_API_KEY sk-your-key-here
-# or
-prowlr env set ANTHROPIC_API_KEY sk-ant-your-key-here
-```
-
-### Run
-
-```bash
+prowlr env set OPENAI_API_KEY sk-your-key
 prowlr app
 ```
 
-Open [http://localhost:8088](http://localhost:8088) — you'll see the Dashboard with your agent ready to go.
+Open **http://localhost:8088** — your agent is live.
 
-### Chat
+> **No API key?** Run locally with Ollama: `prowlr init --defaults && prowlr app` — ProwlrBot auto-detects local models.
+
+---
+
+## What Makes ProwlrBot Different
+
+Most AI agent platforms give you **one agent in one terminal**. ProwlrBot gives you an **operations center**.
+
+<table>
+<tr>
+<td width="50%">
+
+### The Problem
+
+You open 3 Claude Code terminals to parallelize work. Terminal A edits `models.py`. Terminal B edits `models.py`. Git conflict. Wasted work. You babysit agents instead of shipping.
+
+</td>
+<td width="50%">
+
+### The ProwlrBot Solution
+
+Agents share a **war room** — a mission board with file locks, shared context, and real-time coordination. Terminal A claims `models.py`. Terminal B sees the lock and works on something else. Zero conflicts.
+
+</td>
+</tr>
+</table>
+
+### Feature Comparison
+
+| Capability | ProwlrBot | Manus | Devin | AutoGPT | Claude Code |
+|:-----------|:---------:|:-----:|:-----:|:-------:|:-----------:|
+| Multi-agent coordination | **War Room** | -- | -- | Basic | -- |
+| Cross-machine execution | **Swarm** | -- | -- | -- | -- |
+| Communication channels | **8** | 1 | 1 | 1 | 1 |
+| AI providers | **7** | 1 | 1 | 2 | 1 |
+| Smart model routing | **Yes** | -- | -- | -- | -- |
+| Protocol support | **MCP+ACP+A2A** | -- | -- | -- | MCP |
+| Web monitoring | **Yes** | -- | -- | -- | -- |
+| Skills marketplace | **Yes** | -- | -- | Yes | -- |
+| Open source | **Yes** | No | No | Yes | Yes |
+
+---
+
+## How It Works
+
+```
+                    YOU
+                     │
+          ┌──────────┼──────────┐
+          ▼          ▼          ▼
+      Discord    Telegram    Console     ← 8 channels
+          │          │          │
+          └──────────┼──────────┘
+                     ▼
+             ChannelManager              ← queue + debounce
+                     │
+                     ▼
+              AgentRunner                ← session management
+                     │
+                     ▼
+           ProwlrBotAgent (ReAct)        ← reasoning loop
+            ┌────┬────┬────┐
+            ▼    ▼    ▼    ▼
+         Tools Skills MCP Memory         ← capabilities
+            │    │    │    │
+            └────┼────┼────┘
+                 ▼    ▼
+         ┌───────────────────┐
+         │   Smart Router    │           ← picks best model
+         ├───────────────────┤
+         │ OpenAI │Anthropic │
+         │ Groq   │ Z.ai    │
+         │ Ollama │ llama   │
+         │ MLX    │         │
+         └───────────────────┘
+```
+
+**One message in. Best model picked. Tools executed. Response out.**
+
+---
+
+## The Stack At A Glance
+
+<table>
+<tr><td>
+
+### Providers (7)
+| Provider | How |
+|:---------|:----|
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| Groq | `GROQ_API_KEY` |
+| Z.ai | `ZAI_API_KEY` |
+| Ollama | Local (no key) |
+| llama.cpp | Local (no key) |
+| MLX | Local (Apple Silicon) |
+
+Smart Router scores: `cost × w₁ + speed × w₂ + availability × w₃` → picks the winner.
+
+</td><td>
+
+### Channels (8)
+| Channel | Setup |
+|:--------|:------|
+| Console | Built-in at `:8088` |
+| Discord | `prowlr channels add discord` |
+| Telegram | `prowlr channels add telegram` |
+| DingTalk | `prowlr channels add dingtalk` |
+| Feishu | `prowlr channels add feishu` |
+| QQ | `prowlr channels add qq` |
+| iMessage | `prowlr channels add imessage` |
+| Custom | Drop into `~/.prowlrbot/custom_channels/` |
+
+</td></tr>
+<tr><td>
+
+### Tools (Built-in)
+| Tool | What it does |
+|:-----|:-------------|
+| `shell` | Execute commands |
+| `file_io` | Read/write files |
+| `browser` | Open URLs, automate |
+| `screenshot` | Capture screens |
+| `send_file` | Send files via channel |
+| `memory_search` | Search agent memory |
+
+</td><td>
+
+### Skills (Extensible)
+| Skill | Enable with |
+|:------|:------------|
+| PDF processing | `prowlr skills enable pdf` |
+| Word documents | `prowlr skills enable docx` |
+| Spreadsheets | `prowlr skills enable xlsx` |
+| Presentations | `prowlr skills enable pptx` |
+| News feeds | `prowlr skills enable news` |
+| Browser (visible) | `prowlr skills enable browser_visible` |
+| Email (Himalaya) | `prowlr skills enable himalaya` |
+| Cron scheduling | `prowlr skills enable cron` |
+
+</td></tr>
+</table>
+
+---
+
+## Multi-Agent War Room
+
+> **The killer feature.** Multiple AI agents coordinating in real-time without stepping on each other.
+
+### Quick Setup
 
 ```bash
-# Web console (built-in)
-open http://localhost:8088
+# Install
+git clone https://github.com/mcpcentral/prowlrbot.git && cd prowlrbot && pip install -e .
 
-# CLI chat
-prowlr chat "What's the weather like?"
-
-# Connect a channel
-prowlr channels add discord --token YOUR_BOT_TOKEN
-prowlr channels add telegram --token YOUR_BOT_TOKEN
+# Tell your Claude Code agent:
+# "Set up the war room using https://github.com/mcpcentral/prowlrbot/blob/main/INSTALL.md"
+# It handles everything.
 ```
 
-## Architecture
+### What You Get
 
 ```
-User Message → Channel → ChannelManager → AgentRunner
-→ ProwlrBotAgent (ReAct) → Model → Response
-→ Channel Output + Memory Persistence
+╔══════════════════════════════════════════════════════════════╗
+║                      MISSION BOARD                          ║
+╠════╦══════════════════════╦═══════════╦══════════════════════╣
+║ ID ║ Task                 ║ Agent     ║ Status               ║
+╠════╬══════════════════════╬═══════════╬══════════════════════╣
+║  1 ║ Build auth API       ║ backend   ║ In Progress          ║
+║  2 ║ Login page           ║ frontend  ║ In Progress          ║
+║  3 ║ Write auth tests     ║ tester    ║ Waiting (locked)     ║
+║  4 ║ API documentation    ║ --        ║ Available            ║
+╚════╩══════════════════════╩═══════════╩══════════════════════╝
+
+Locked Files:
+  src/api/auth.py ─── backend (Task #1)
+  src/api/models.py ─── backend (Task #1)
+  src/components/Login.tsx ─── frontend (Task #2)
+
+Shared Findings:
+  backend: "Auth requires JWT — using PyJWT with RS256"
+  frontend: "Using shadcn/ui form components for login"
 ```
 
-### Source Layout
+### 13 Coordination Tools
+
+| Tool | Purpose | When to use |
+|:-----|:--------|:------------|
+| `check_mission_board` | See all tasks and owners | Before starting work |
+| `claim_task` | Create task + lock files atomically | When starting a task |
+| `update_task` | Post progress notes | During work |
+| `complete_task` | Mark done + release locks | When finished |
+| `fail_task` | Mark failed + release locks | When blocked |
+| `lock_file` | Lock additional files | Need more files mid-task |
+| `unlock_file` | Release a specific lock | No longer need a file |
+| `check_conflicts` | Check if files are available | Before editing |
+| `get_agents` | See who's connected | Coordinate with team |
+| `broadcast_status` | Message all agents | Announce blockers/decisions |
+| `share_finding` | Store a discovery | Found something others need |
+| `get_shared_context` | Read team findings | Learn what others discovered |
+| `get_events` | See recent activity | Catch up on what happened |
+
+### Cross-Machine Support
+
+Agents on different machines? The HTTP bridge connects them:
 
 ```
-src/prowlrbot/
-├── agents/           # ReAct agent, tools, skills, memory, prompts
-├── app/              # FastAPI app, channels, cron, MCP, routers, WebSocket
-├── cli/              # Click CLI (prowlr command)
-├── config/           # Pydantic models, hot-reload watcher
-├── dashboard/        # Real-time event bus, activity log
-├── envs/             # Encrypted environment variable store
-├── local_models/     # llama.cpp, MLX, Ollama backends
-├── monitor/          # Web/API change detection, diffing, notifications
-├── providers/        # Provider registry, health checker, smart router
-└── console/          # Built React frontend (served by FastAPI)
-
-console/              # React 18 + Vite + Ant Design frontend source
-├── src/pages/        # Dashboard, Chat, Agent Config, Channels, etc.
-└── src/api/          # TypeScript API client
+Mac (host)                    WSL (remote)
+┌─────────────┐               ┌─────────────┐
+│ Agent A     │               │ Agent B     │
+│ Agent C     │               │ Agent D     │
+│             │               │             │
+│ SQLite DB   │◄──HTTP:8099──►│ Bridge      │
+│ (war room)  │   (bridge)    │ Client      │
+└─────────────┘               └─────────────┘
 ```
 
-## Configuration
+Different networks? Use [Tailscale](docs/guides/cross-network-setup.md#option-1-tailscale-recommended), [Cloudflare Tunnel](docs/guides/cross-network-setup.md#option-2-cloudflare-tunnel), or [SSH tunnel](docs/guides/cross-network-setup.md#option-4-ssh-reverse-tunnel).
 
-Main config: `~/.prowlrbot/config.json`
+> **Full guide:** [docs/guides/cross-network-setup.md](docs/guides/cross-network-setup.md)
 
-### Providers
+---
 
-ProwlrBot auto-detects available providers from environment variables:
+## Web Monitoring
 
-| Provider | Env Var | Models |
-|----------|---------|--------|
-| OpenAI | `OPENAI_API_KEY` | GPT-4o, GPT-4, GPT-3.5 |
-| Anthropic | `ANTHROPIC_API_KEY` | Claude 4.5/4.6, Haiku |
-| Groq | `GROQ_API_KEY` | Llama, Mixtral |
-| Z.ai | `ZAI_API_KEY` | Various |
-| Ollama | (local) | Any pulled model |
-
-### Local Models
-
-Run LLMs entirely on your machine — no API keys or cloud required:
-
-| Backend | Best for | Install |
-|---------|----------|---------|
-| **llama.cpp** | Cross-platform | `pip install 'prowlrbot[llamacpp]'` |
-| **MLX** | Apple Silicon (M1-M4) | `pip install 'prowlrbot[mlx]'` |
-| **Ollama** | Cross-platform | `pip install 'prowlrbot[ollama]'` |
-
-### Channels
+ProwlrBot watches websites and APIs for changes — then notifies you or triggers agent actions.
 
 ```bash
-prowlr channels add discord --token BOT_TOKEN
-prowlr channels add telegram --token BOT_TOKEN
-prowlr channels list
+# Monitor a webpage for changes
+prowlr monitor add https://example.com/pricing --interval 1h
+
+# Monitor an API endpoint
+prowlr monitor add https://api.example.com/v2/status --type api --interval 5m
+
+# List active monitors
+prowlr monitor list
+
+# View change history
+prowlr monitor history
 ```
 
-### Skills
+**How it works:** Content diffing → change detection → webhook/channel notifications. Useful for price tracking, competitor monitoring, API status, content updates.
+
+---
+
+## Cron Jobs
+
+Schedule your agents to run tasks automatically:
 
 ```bash
-prowlr skills list          # List available skills
-prowlr skills enable pdf    # Enable a skill
-prowlr skills disable pdf   # Disable a skill
+# Run every morning at 9 AM
+prowlr cron add "Check email and summarize" --schedule "0 9 * * *"
+
+# Run every 30 minutes
+prowlr cron add "Monitor competitors" --interval 30m
+
+# Run once at a specific time
+prowlr cron add "Send weekly report" --schedule "0 17 * * FRI"
 ```
 
-### MCP Servers
+---
 
-Add to `~/.prowlrbot/config.json`:
+## REST API
+
+ProwlrBot exposes a full API at `http://localhost:8088/api`:
+
+```bash
+# Set an API token
+prowlr env set PROWLRBOT_API_TOKEN your-secret-token
+
+# Then use it
+curl -H "Authorization: Bearer your-secret-token" http://localhost:8088/api/agents
+```
+
+| Endpoint | Method | Description |
+|:---------|:-------|:------------|
+| `/api/version` | GET | Server version |
+| `/api/agents` | GET/POST | List or create agents |
+| `/api/agents/{id}` | GET/PUT/DELETE | Manage a specific agent |
+| `/api/channels` | GET/POST | Channel management |
+| `/api/skills` | GET | Available skills |
+| `/api/cron` | GET/POST | Cron job management |
+| `/api/providers` | GET | Available AI providers |
+| `/api/config` | GET/PUT | System configuration |
+| `/ws/dashboard` | WebSocket | Real-time event stream |
+
+---
+
+## MCP Integration
+
+Connect any MCP server — tools appear instantly:
 
 ```json
+// ~/.prowlrbot/config.json
 {
   "mcp": {
     "servers": {
       "filesystem": {
         "command": "npx",
         "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path"]
+      },
+      "github": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-github"],
+        "env": { "GITHUB_TOKEN": "ghp_..." }
       }
     }
   }
 }
 ```
 
-## API
+Hot-reload: edit config → tools update automatically. No restart needed.
 
-ProwlrBot exposes a REST API at `/api`:
+---
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/version` | GET | Server version |
-| `/api/agents` | GET/POST | List/create agents |
-| `/api/agents/{id}` | GET/PUT/DELETE | Agent CRUD |
-| `/api/channels` | GET/POST | List/manage channels |
-| `/api/skills` | GET | List available skills |
-| `/api/cron` | GET/POST | Cron job management |
-| `/api/providers` | GET | Available AI providers |
-| `/ws/dashboard` | WS | Real-time event stream |
+## Local Models (No Cloud Required)
 
-Secure with an API token:
+Run everything on your machine:
 
-```bash
-prowlr env set PROWLRBOT_API_TOKEN your-secret-token
+| Backend | Best For | Install | Run |
+|:--------|:---------|:--------|:----|
+| **Ollama** | Cross-platform, easy | [ollama.ai](https://ollama.ai) | `ollama pull llama3.2 && prowlr app` |
+| **llama.cpp** | GGUF models, CPU/GPU | `pip install 'prowlrbot[llamacpp]'` | Point to model file in config |
+| **MLX** | Apple Silicon M1-M4 | `pip install 'prowlrbot[mlx]'` | Fastest on Mac |
+
+ProwlrBot auto-detects local models. No API keys. No cloud. Your data stays on your machine.
+
+---
+
+## Project Structure
+
 ```
+prowlrbot/
+├── src/prowlrbot/
+│   ├── agents/            # ReAct agent, tools, skills, memory
+│   │   ├── react_agent.py # Core agent (ProwlrBotAgent)
+│   │   ├── model_factory  # Provider → model creation
+│   │   ├── tools/         # shell, file_io, browser, screenshot
+│   │   ├── skills/        # Built-in skill packs
+│   │   └── memory/        # Conversation memory + compaction
+│   ├── app/
+│   │   ├── _app.py        # FastAPI app + lifespan
+│   │   ├── channels/      # Discord, Telegram, etc.
+│   │   ├── crons/         # APScheduler-based scheduling
+│   │   ├── mcp/           # MCP client lifecycle
+│   │   └── routers/       # REST API endpoints
+│   ├── cli/               # Click CLI → `prowlr` command
+│   ├── config/            # Pydantic models + hot-reload
+│   ├── providers/         # Registry, detector, smart router
+│   ├── monitor/           # Web/API change detection
+│   ├── hub/               # ProwlrHub war room (MCP server)
+│   └── envs/              # Encrypted secret store
+├── console/               # React 18 + Vite + Ant Design
+├── swarm/                 # Cross-machine Redis execution
+├── plugins/               # Claude Code plugins
+├── docs/                  # Documentation hub
+│   ├── blog/              # Humanized posts + updates
+│   ├── guides/            # Setup + troubleshooting guides
+│   ├── protocols/         # ROAR protocol specs
+│   ├── plans/             # Design documents
+│   └── README.md          # Documentation index
+└── website/               # GitHub Pages docs site
+```
+
+---
+
+## Documentation
+
+> **Start here:** [docs/README.md](docs/README.md) — the documentation hub with links to everything.
+
+| What you need | Where to go |
+|:--------------|:------------|
+| First-time setup | [Quick Start](#-30-second-install) (above) |
+| War room setup | [INSTALL.md](INSTALL.md) |
+| Cross-machine networking | [Cross-Network Guide](docs/guides/cross-network-setup.md) |
+| Architecture deep-dive | [CLAUDE.md](CLAUDE.md) |
+| ROAR Protocol | [Protocol Specs](docs/protocols/ROAR-SPEC.md) |
+| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Security policy | [SECURITY.md](SECURITY.md) |
+| Blog & updates | [docs/blog/](docs/blog/) |
+| Full docs site | [mcpcentral.github.io/prowlr-docs](https://mcpcentral.github.io/prowlr-docs) |
+
+---
+
+## Ecosystem
+
+<table>
+<tr>
+<td align="center" width="20%">
+<a href="https://github.com/mcpcentral/prowlrbot"><strong>ProwlrBot</strong></a><br/>
+<sub>Core agent platform</sub>
+</td>
+<td align="center" width="20%">
+<a href="https://github.com/mcpcentral/roar-protocol"><strong>ROAR Protocol</strong></a><br/>
+<sub>Agent communication</sub>
+</td>
+<td align="center" width="20%">
+<a href="https://github.com/mcpcentral/prowlr-marketplace"><strong>Marketplace</strong></a><br/>
+<sub>Skills & agents</sub>
+</td>
+<td align="center" width="20%">
+<a href="https://mcpcentral.github.io/prowlr-docs"><strong>Docs</strong></a><br/>
+<sub>Guides & reference</sub>
+</td>
+<td align="center" width="20%">
+<a href="https://github.com/mcpcentral/agentverse"><strong>AgentVerse</strong></a><br/>
+<sub>Virtual agent world</sub>
+</td>
+</tr>
+</table>
+
+---
 
 ## Development
 
@@ -196,42 +449,22 @@ prowlr env set PROWLRBOT_API_TOKEN your-secret-token
 git clone https://github.com/mcpcentral/prowlrbot.git
 cd prowlrbot
 pip install -e ".[dev]"
-pytest
-pre-commit install && pre-commit run --all-files
+pytest                                          # run all tests
+pre-commit install && pre-commit run --all-files  # lint + format
 
-# Build frontend
+# Frontend
 cd console && npm ci && npm run build
 ```
-# Easy Setup War Room Example
-```
-Set up the war room using                                                   
-  https://github.com/mcpcentral/prowlrbot/blob/main/INSTALL.md
-                                                                              
-  My answers to your questions:                                             
-  1. Agent name: wsl-marketplace-dev                                          
-  2. Capabilities: marketplace,skills,themes,publishing         
-  3. Different machine — bridge URL: http://192.168.12.21:8099 
-```
 
-## Ecosystem
-
-| Project | Description |
-|---------|-------------|
-| [ProwlrBot](https://github.com/mcpcentral/prowlrbot) | Core agent platform |
-| [ROAR Protocol](https://github.com/mcpcentral/roar-protocol) | Unified agent communication protocol |
-| [Marketplace](https://github.com/mcpcentral/prowlr-marketplace) | Community skill & agent marketplace |
-| [Docs](https://mcpcentral.github.io/prowlr-docs) | Documentation & guides |
-| [AgentVerse](https://github.com/mcpcentral/agentverse) | Interactive agent virtual world |
-
-## License
-
-[Apache 2.0](LICENSE)
+See [CONTRIBUTING.md](CONTRIBUTING.md) for commit conventions, skill structure, and PR guidelines.
 
 ---
 
 <p align="center">
-  <strong>ProwlrBot</strong> — Always watching. Always ready.<br/>
-  <a href="https://mcpcentral.github.io/prowlr-docs">Docs</a> ·
+  <strong>ProwlrBot</strong> — Always watching. Always ready.<br/><br/>
+  <a href="docs/README.md">Docs</a> ·
+  <a href="docs/blog/">Blog</a> ·
   <a href="https://github.com/mcpcentral/prowlrbot/issues">Issues</a> ·
-  <a href="https://github.com/mcpcentral/prowlr-marketplace">Marketplace</a>
+  <a href="https://github.com/mcpcentral/prowlr-marketplace">Marketplace</a> ·
+  <a href="CONTRIBUTING.md">Contribute</a>
 </p>
