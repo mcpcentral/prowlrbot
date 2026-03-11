@@ -11,7 +11,8 @@ else:
     class StrEnum(str, Enum):
         """Backport of StrEnum for Python < 3.11."""
 
-        pass
+        def __str__(self) -> str:
+            return self.value
 
 
 __all__ = ["StrEnum"]
