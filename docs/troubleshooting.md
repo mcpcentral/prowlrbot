@@ -13,7 +13,14 @@ Common issues and solutions for ProwlrBot installation and operation.
 - WSL crashes or becomes unresponsive after the error
 - WSL won't start after restarting the terminal
 
-**Cause:** pip installing a large number of packages (223+) can overwhelm the WSL virtual filesystem, especially on NTFS-mounted paths or when disk space is low.
+**Cause:** pip installing a large number of packages (240+) can overwhelm the WSL virtual filesystem. The most common hidden trigger is **NTFS compression enabled on the WSL VHDX file** — this causes write failures under heavy I/O and can crash the entire WSL VM, potentially destroying the WslService registry entry.
+
+**First, check for NTFS compression** (this is the #1 cause):
+
+```powershell
+Get-ChildItem "$env:LOCALAPPDATA\wsl" -Recurse -Filter "ext4.vhdx" | Select-Object FullName, Attributes
+# If Attributes includes "Compressed" — that's your problem. See the NTFS compression fix below.
+```
 
 **Fix:**
 
@@ -179,6 +186,74 @@ prowlr app
 ---
 
 ## WSL-Specific Issues
+
+### WSL: WslService Destroyed After Crash (0x80070422 / Error 1058)
+
+**Symptoms:**
+- Every WSL command fails with `Wsl/0x80070422`
+- `sc.exe query WslService` shows STOPPED (exit code 1077) or "service does not exist"
+- `sc.exe start WslService` fails with error 1058
+- Reinstalling WSL via `winget`, `wsl --install`, or Appx re-registration does NOT fix it
+- Rebooting does NOT fix it
+
+**Cause:** A crash during heavy I/O (like pip installing 240+ packages) can corrupt or destroy the WslService registry entry. The WSL Store package's AppxManifest does not define the service, so no standard reinstall method can recreate it.
+
+**Fix (requires elevated PowerShell):**
+
+```powershell
+# 1. Delete the broken service entry if it exists
+sc.exe delete WslService
+
+# 2. Recreate the service with correct configuration
+New-Service -Name 'WslService' `
+    -BinaryPathName '"C:\Program Files\WSL\wslservice.exe"' `
+    -DisplayName 'WSL Service' `
+    -StartupType Manual `
+    -Description 'Windows Subsystem for Linux Service'
+
+# 3. Add the vmcompute dependency
+sc.exe config WslService depend= vmcompute
+
+# 4. Start it
+sc.exe start WslService
+
+# 5. Verify
+wsl -l -v
+```
+
+**Important details:**
+- The binary path MUST be quoted (space in "Program Files") or you get error 1058 again
+- StartupType must be Manual, not Automatic
+- The vmcompute dependency is required -- without it, WslService may fail on cold boot
+- Your distro VHDX files survive this -- they are not deleted
+
+**Prevention -- export your working service key:**
+
+```powershell
+reg export "HKLM\SYSTEM\CurrentControlSet\Services\WslService" WslService-backup.reg
+```
+
+If it breaks again, just double-click the .reg file to restore it.
+
+**If WSL starts but shows SCSI errors or HCS_E_CONNECTION_TIMEOUT:**
+
+The VHDX disk may be in a dirty state from the crash. Try:
+
+```powershell
+wsl --shutdown
+# Wait 10 seconds
+wsl -d kali-linux   # or your distro
+```
+
+If disk errors persist, run filesystem repair from another distro or recovery mode:
+
+```bash
+sudo e2fsck -f /dev/sdX   # replace with actual device
+```
+
+See the [full blog post](blog/2026-03-11-pip-install-broke-my-wsl.md) for the complete story.
+
+---
 
 ### WSL filesystem best practices
 
