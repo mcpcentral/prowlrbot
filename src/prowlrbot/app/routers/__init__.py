@@ -38,6 +38,7 @@ from .research import router as research_router
 from .templates import router as templates_router
 from .privacy import router as privacy_router
 from .settings_api import router as settings_api_router
+from .studio import router as studio_router
 
 router = APIRouter()
 
@@ -78,5 +79,6 @@ router.include_router(research_router)
 router.include_router(templates_router)
 router.include_router(privacy_router)
 router.include_router(settings_api_router)
+router.include_router(studio_router)
 
 __all__ = ["router"]
