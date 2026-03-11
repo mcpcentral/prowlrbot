@@ -216,6 +216,8 @@ const DOC_SLUGS: DocEntry[] = [
   { slug: "community", titleKey: "docs.community" },
   { slug: "contributing", titleKey: "docs.contributing" },
   { slug: "roadmap", titleKey: "docs.roadmap" },
+  { slug: "privacy", titleKey: "docs.privacy" },
+  { slug: "terms", titleKey: "docs.terms" },
 ];
 
 /** Collect all valid slugs (parents + children). */
@@ -245,6 +247,8 @@ const DOC_TITLES: Record<Lang, Record<string, string>> = {
     "docs.community": "问题反馈与交流",
     "docs.contributing": "开源与贡献",
     "docs.roadmap": "路线图",
+    "docs.privacy": "隐私政策",
+    "docs.terms": "服务条款",
   },
   en: {
     "docs.intro": "Introduction",
@@ -263,6 +267,8 @@ const DOC_TITLES: Record<Lang, Record<string, string>> = {
     "docs.community": "Bug reports & community",
     "docs.contributing": "Open source & contribution",
     "docs.roadmap": "Roadmap",
+    "docs.privacy": "Privacy",
+    "docs.terms": "Terms",
   },
 };
 
