@@ -13,7 +13,7 @@ import hmac
 import json
 import time
 import uuid
-from enum import StrEnum
+from prowlrbot.compat import StrEnum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field

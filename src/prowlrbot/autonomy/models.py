@@ -3,7 +3,7 @@
 
 import time
 import uuid
-from enum import StrEnum
+from prowlrbot.compat import StrEnum
 from typing import Dict, List
 
 from pydantic import BaseModel, Field

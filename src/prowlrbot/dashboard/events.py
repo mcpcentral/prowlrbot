@@ -4,7 +4,7 @@
 import json
 import time
 from dataclasses import dataclass, field
-from enum import StrEnum
+from prowlrbot.compat import StrEnum
 from typing import Any, Callable, Coroutine, Dict, List
 
 

@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import time
 import uuid
-from enum import StrEnum
+from prowlrbot.compat import StrEnum
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException

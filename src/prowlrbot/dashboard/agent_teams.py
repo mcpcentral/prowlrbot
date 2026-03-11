@@ -5,7 +5,7 @@ import json
 import sqlite3
 import time
 import uuid
-from enum import StrEnum
+from prowlrbot.compat import StrEnum
 from pathlib import Path
 from typing import List, Optional
 

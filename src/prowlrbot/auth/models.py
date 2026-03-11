@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from enum import StrEnum
+from prowlrbot.compat import StrEnum
 from typing import List
 
 from pydantic import BaseModel, Field

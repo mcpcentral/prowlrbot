@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import uuid
-from enum import StrEnum
+from prowlrbot.compat import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
