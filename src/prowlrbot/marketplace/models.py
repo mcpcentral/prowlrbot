@@ -95,3 +95,34 @@ class InstallRecord(BaseModel):
     installed_at: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat(),
     )
+
+
+class TipRecord(BaseModel):
+    """A tip from a user to a listing author."""
+
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex)
+    listing_id: str
+    author_id: str
+    tipper_id: str = "anonymous"
+    amount: float = Field(gt=0, description="Tip amount in USD")
+    message: str = ""
+    created_at: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat(),
+    )
+
+
+class ProTier(StrEnum):
+    """Platform subscription tiers."""
+
+    free = "free"
+    starter = "starter"  # $5/mo — up to 3 agents, 1 team
+    pro = "pro"  # $15/mo — unlimited agents, 5 teams, marketplace publish
+    team = "team"  # $29/mo — unlimited everything, priority support
+
+
+PRO_TIER_LIMITS = {
+    ProTier.free: {"agents": 2, "teams": 1, "marketplace_publish": False},
+    ProTier.starter: {"agents": 3, "teams": 1, "marketplace_publish": False},
+    ProTier.pro: {"agents": 999, "teams": 5, "marketplace_publish": True},
+    ProTier.team: {"agents": 999, "teams": 999, "marketplace_publish": True},
+}

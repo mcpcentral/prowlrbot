@@ -14,6 +14,7 @@ from .models import (
     MarketplaceCategory,
     MarketplaceListing,
     ReviewEntry,
+    TipRecord,
 )
 
 
@@ -78,6 +79,17 @@ class MarketplaceStore:
                 user_id      TEXT NOT NULL,
                 version      TEXT NOT NULL DEFAULT '1.0.0',
                 installed_at TEXT NOT NULL,
+                FOREIGN KEY (listing_id) REFERENCES listings(id)
+            );
+
+            CREATE TABLE IF NOT EXISTS tips (
+                id         TEXT PRIMARY KEY,
+                listing_id TEXT NOT NULL,
+                author_id  TEXT NOT NULL,
+                tipper_id  TEXT NOT NULL DEFAULT 'anonymous',
+                amount     REAL NOT NULL CHECK(amount > 0),
+                message    TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL,
                 FOREIGN KEY (listing_id) REFERENCES listings(id)
             );
             """)
@@ -300,6 +312,46 @@ class MarketplaceStore:
             (listing_id,),
         ).fetchone()
         return row["cnt"] if row else 0
+
+    # ------------------------------------------------------------------
+    # Tips
+    # ------------------------------------------------------------------
+
+    def add_tip(self, tip: TipRecord) -> TipRecord:
+        """Record a tip for a listing author."""
+        self._conn.execute(
+            """
+            INSERT INTO tips (id, listing_id, author_id, tipper_id, amount, message, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                tip.id,
+                tip.listing_id,
+                tip.author_id,
+                tip.tipper_id,
+                tip.amount,
+                tip.message,
+                tip.created_at,
+            ),
+        )
+        self._conn.commit()
+        return tip
+
+    def get_tips_for_author(self, author_id: str) -> list[TipRecord]:
+        """Return all tips received by an author."""
+        rows = self._conn.execute(
+            "SELECT * FROM tips WHERE author_id = ? ORDER BY created_at DESC",
+            (author_id,),
+        ).fetchall()
+        return [TipRecord(**r) for r in rows]
+
+    def get_tip_total(self, author_id: str) -> float:
+        """Return total tip amount for an author."""
+        row = self._conn.execute(
+            "SELECT COALESCE(SUM(amount), 0) AS total FROM tips WHERE author_id = ?",
+            (author_id,),
+        ).fetchone()
+        return row["total"] if row else 0.0
 
     # ------------------------------------------------------------------
     # Helpers

@@ -126,6 +126,16 @@ from .market_cmd import market_group  # noqa: E402
 
 _record(".market_cmd", time.perf_counter() - _t)
 
+_t = time.perf_counter()
+from .agent_cmd import agent_group  # noqa: E402
+
+_record(".agent_cmd", time.perf_counter() - _t)
+
+_t = time.perf_counter()
+from .team_cmd import team_group  # noqa: E402
+
+_record(".team_cmd", time.perf_counter() - _t)
+
 _total = time.perf_counter() - _t0_main
 _init_timings.append(("(total imports)", _total))
 logger.debug("%.3fs (total imports)", _total)
@@ -182,3 +192,5 @@ cli.add_command(completion_group)
 cli.add_command(migrate_group)
 cli.add_command(acp_cmd)
 cli.add_command(market_group)
+cli.add_command(agent_group)
+cli.add_command(team_group)
