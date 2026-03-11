@@ -55,7 +55,7 @@ agentverse
 | ~~P2~~ | ~~`file_io.py` — legacy `.copaw.secret` backward compat: add deprecation warning~~ | **done** |
 | ~~P2~~ | ~~Add marketplace/credits/tiers documentation pages~~ | **done** |
 | ~~P2~~ | ~~Add team builder documentation pages~~ | **done** |
-| P2 | Add agent install documentation page (external agents, backends) | todo |
+| ~~P2~~ | ~~Add agent install documentation page (external agents, backends)~~ | **done** |
 
 ---
 
@@ -143,7 +143,7 @@ workflows/
 ### Missing doc topics
 
 - ~~`marketplace.en.md`~~ **done** — Browsing, installing, publishing, credits, tiers
-- `agents-external.en.md` — Installing external agents (Claude Code, Codex, custom)
+- ~~`agents-external.en.md`~~ **done** — Installing external agents (Claude Code, Codex, custom)
 - ~~`teams.en.md`~~ **done** — Creating teams, coordination modes, config files
 - ~~`credits.en.md`~~ **done** — Credits economy, earning, spending, premium content
 - ~~`privacy.en.md`~~ **done** — Privacy policy
@@ -228,13 +228,13 @@ Week 1:  ███████████████████████�
   ✅ agentverse — README rebrand
   ✅ Core — Privacy/Terms pages, CoPaw purge, market update tested
 
-Week 2:  ████████████████████████████████████████░░ 95%
+Week 2:  ████████████████████████████████████████ 100%
   ✅ roar-protocol — VERSION.json with layer versioning (v0.1.0)
   ✅ agentverse — 6 zone definitions with XP table and tier gating
   ✅ All repos — CONTRIBUTING.md, LICENSE, issue templates, SECURITY.md, PR templates
   ✅ All repos — CI workflows (manifest validation, spec checks, zone validation, doc checks)
   ✅ prowlr-docs — marketplace, teams, credits doc pages created
-  ☐ prowlr-docs — sync audit (verify all topics match website/public/docs/)
+  ✅ prowlr-docs — sync audit complete (23 topics, all sidebar entries match files)
 
 Week 3:  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0%
   ☐ prowlr-marketplace — CONTRIBUTING.md, template verification
