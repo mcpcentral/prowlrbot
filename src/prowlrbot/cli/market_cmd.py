@@ -10,10 +10,15 @@ import click
 
 from ..constant import WORKING_DIR
 from ..marketplace.models import (
+    CREDIT_PURCHASE_PACKS,
+    CreditTransactionType,
     InstallRecord,
     MarketplaceCategory,
     MarketplaceListing,
+    PREMIUM_CONTENT_PRICES,
+    PRO_TIER_LIMITS,
     PricingModel,
+    ProTier,
     ReviewEntry,
     TipRecord,
 )
@@ -336,4 +341,161 @@ def market_categories():
     click.echo("\n  Marketplace Categories:")
     for cat in MarketplaceCategory:
         click.echo(f"    {cat.value}")
+    click.echo()
+
+
+# ── Credits ──────────────────────────────────────────────────────────────────
+
+
+@market_group.command(name="credits")
+@click.option("--user", "-u", default="local", help="User ID")
+def market_credits(user: str):
+    """Show your credit balance and recent transactions."""
+    store = _get_store()
+    balance = store.get_balance(user)
+    tier_limits = PRO_TIER_LIMITS.get(ProTier(balance.tier), {})
+
+    click.echo()
+    click.echo("  ╔══════════════════════════════════════╗")
+    click.echo(f"  ║   Credits: {balance.balance:>6}                    ║")
+    click.echo("  ╚══════════════════════════════════════╝")
+    click.echo()
+    click.echo(f"  Tier:         {balance.tier.upper()}")
+    click.echo(f"  Balance:      {balance.balance} credits")
+    click.echo(f"  Total earned: {balance.total_earned}")
+    click.echo(f"  Total spent:  {balance.total_spent}")
+    click.echo(f"  Monthly:      +{tier_limits.get('monthly_credits', 0)} credits/mo")
+    click.echo(f"  Earn bonus:   {tier_limits.get('credit_earn_multiplier', 1)}x multiplier")
+
+    txns = store.get_transactions(user, limit=10)
+    if txns:
+        click.echo(f"\n  Recent transactions:")
+        for t in txns:
+            sign = "+" if t.amount > 0 else ""
+            click.echo(f"    {sign}{t.amount:>6}  {t.transaction_type:<22} {t.description}")
+
+    click.echo()
+    store.close()
+
+
+@market_group.command(name="buy-credits")
+@click.option("--user", "-u", default="local", help="User ID")
+def market_buy_credits(user: str):
+    """Purchase credit packs."""
+    click.echo("\n  Credit Packs:")
+    click.echo(f"  {'Pack':<10} {'Credits':<10} {'Price':<10} {'Bonus'}")
+    click.echo(f"  {'─'*10} {'─'*10} {'─'*10} {'─'*10}")
+
+    packs = list(CREDIT_PURCHASE_PACKS.items())
+    for i, (name, info) in enumerate(packs, 1):
+        base = info["credits"]
+        price = info["price"]
+        per_dollar = base / price
+        click.echo(f"  {i}) {name:<8} {base:<10} ${price:<9.2f} {per_dollar:.0f} credits/$")
+
+    click.echo()
+    choice = click.prompt("  Select pack [1-4]", type=int)
+    if choice < 1 or choice > len(packs):
+        click.echo("  Invalid choice.")
+        return
+
+    pack_name, pack_info = packs[choice - 1]
+    credits = pack_info["credits"]
+    price = pack_info["price"]
+
+    click.echo(f"\n  Purchasing {credits} credits for ${price:.2f}")
+    if not click.confirm("  Confirm purchase?"):
+        click.echo("  Cancelled.")
+        return
+
+    store = _get_store()
+    balance = store.add_credits(
+        user_id=user,
+        amount=credits,
+        transaction_type=CreditTransactionType.purchased,
+        description=f"Purchased {pack_name} pack ({credits} credits)",
+    )
+    click.echo(f"\n  Added {credits} credits!")
+    click.echo(f"  New balance: {balance.balance} credits")
+    click.echo()
+    store.close()
+
+
+@market_group.command(name="unlock")
+@click.argument("content_key")
+@click.option("--user", "-u", default="local", help="User ID")
+def market_unlock(content_key: str, user: str):
+    """Unlock premium content with credits."""
+    if content_key not in PREMIUM_CONTENT_PRICES:
+        click.echo(f"  Unknown content: '{content_key}'")
+        click.echo(f"\n  Available premium content:")
+        for key, price in sorted(PREMIUM_CONTENT_PRICES.items()):
+            click.echo(f"    {key:<30} {price:>5} credits")
+        return
+
+    cost = PREMIUM_CONTENT_PRICES[content_key]
+    store = _get_store()
+    balance = store.get_balance(user)
+
+    click.echo(f"\n  Unlock: {content_key}")
+    click.echo(f"  Cost:   {cost} credits")
+    click.echo(f"  Balance: {balance.balance} credits")
+
+    if balance.balance < cost:
+        click.echo(f"\n  Insufficient credits! Need {cost - balance.balance} more.")
+        click.echo("  Run 'prowlr market buy-credits' to purchase more.")
+        store.close()
+        return
+
+    if not click.confirm("  Confirm unlock?"):
+        click.echo("  Cancelled.")
+        store.close()
+        return
+
+    # Determine transaction type from content key
+    if content_key.startswith("workflow"):
+        txn_type = CreditTransactionType.workflow_unlock
+    elif content_key.startswith("spec"):
+        txn_type = CreditTransactionType.spec_generate
+    elif content_key.startswith("insight"):
+        txn_type = CreditTransactionType.insight_purchase
+    elif content_key.startswith("blueprint"):
+        txn_type = CreditTransactionType.blueprint_unlock
+    else:
+        txn_type = CreditTransactionType.listing_purchase
+
+    new_balance = store.spend_credits(
+        user_id=user,
+        amount=cost,
+        transaction_type=txn_type,
+        reference_id=content_key,
+        description=f"Unlocked {content_key}",
+    )
+    click.echo(f"\n  Unlocked: {content_key}")
+    click.echo(f"  Remaining: {new_balance.balance} credits")
+    click.echo()
+    store.close()
+
+
+@market_group.command(name="tiers")
+def market_tiers():
+    """Show subscription tiers and pricing."""
+    click.echo()
+    click.echo("  ╔══════════════════════════════════════════════════════╗")
+    click.echo("  ║   ProwlrBot Pro Tiers                               ║")
+    click.echo("  ╚══════════════════════════════════════════════════════╝")
+    click.echo()
+    click.echo(f"  {'Tier':<10} {'Price':<10} {'Agents':<8} {'Teams':<8} {'Credits/mo':<12} {'Earn':<6} {'Publish'}")
+    click.echo(f"  {'─'*10} {'─'*10} {'─'*8} {'─'*8} {'─'*12} {'─'*6} {'─'*7}")
+
+    tier_prices = {"free": "$0", "starter": "$5/mo", "pro": "$15/mo", "team": "$29/mo"}
+    for tier in ProTier:
+        limits = PRO_TIER_LIMITS[tier]
+        agents = "∞" if limits["agents"] >= 999 else str(limits["agents"])
+        teams = "∞" if limits["teams"] >= 999 else str(limits["teams"])
+        publish = "Yes" if limits["marketplace_publish"] else "No"
+        click.echo(
+            f"  {tier.value:<10} {tier_prices[tier.value]:<10} {agents:<8} {teams:<8} "
+            f"{limits['monthly_credits']:<12} {limits['credit_earn_multiplier']}x{'':<4} {publish}"
+        )
     click.echo()

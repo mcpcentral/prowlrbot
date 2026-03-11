@@ -8,10 +8,14 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 
 from ...marketplace.models import (
+    CreditBalance,
+    CreditTransactionType,
     InstallRecord,
     MarketplaceCategory,
     MarketplaceListing,
+    PREMIUM_CONTENT_PRICES,
     ReviewEntry,
+    TipRecord,
 )
 from ...marketplace.store import MarketplaceStore
 
@@ -132,3 +136,96 @@ async def get_top_rated(limit: int = 20) -> list[MarketplaceListing]:
 async def list_categories() -> list[str]:
     """Return all available marketplace categories."""
     return [c.value for c in MarketplaceCategory]
+
+
+# ------------------------------------------------------------------
+# Tips
+# ------------------------------------------------------------------
+
+
+@router.post("/listings/{listing_id}/tip", response_model=TipRecord)
+async def tip_author(listing_id: str, tip: TipRecord) -> TipRecord:
+    """Tip a listing's author."""
+    listing = _get_store().get_listing(listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    tip.listing_id = listing_id
+    tip.author_id = listing.author_id
+    return _get_store().add_tip(tip)
+
+
+# ------------------------------------------------------------------
+# Credits
+# ------------------------------------------------------------------
+
+
+@router.get("/credits/{user_id}", response_model=CreditBalance)
+async def get_credits(user_id: str) -> CreditBalance:
+    """Get a user's credit balance."""
+    return _get_store().get_balance(user_id)
+
+
+@router.post("/credits/{user_id}/add", response_model=CreditBalance)
+async def add_credits(
+    user_id: str,
+    amount: int,
+    transaction_type: str = "purchased",
+    description: str = "",
+) -> CreditBalance:
+    """Add credits to a user's balance."""
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be positive")
+    return _get_store().add_credits(
+        user_id=user_id,
+        amount=amount,
+        transaction_type=CreditTransactionType(transaction_type),
+        description=description,
+    )
+
+
+@router.post("/credits/{user_id}/spend", response_model=CreditBalance)
+async def spend_credits(
+    user_id: str,
+    amount: int,
+    transaction_type: str = "listing_purchase",
+    reference_id: str = "",
+    description: str = "",
+) -> CreditBalance:
+    """Spend credits from a user's balance."""
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be positive")
+    try:
+        return _get_store().spend_credits(
+            user_id=user_id,
+            amount=amount,
+            transaction_type=CreditTransactionType(transaction_type),
+            reference_id=reference_id,
+            description=description,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=402, detail=str(e))
+
+
+@router.post("/credits/{user_id}/unlock/{content_key}", response_model=CreditBalance)
+async def unlock_content(user_id: str, content_key: str) -> CreditBalance:
+    """Unlock premium content with credits."""
+    if content_key not in PREMIUM_CONTENT_PRICES:
+        raise HTTPException(status_code=404, detail=f"Unknown content: {content_key}")
+
+    cost = PREMIUM_CONTENT_PRICES[content_key]
+    try:
+        return _get_store().spend_credits(
+            user_id=user_id,
+            amount=cost,
+            transaction_type=CreditTransactionType.listing_purchase,
+            reference_id=content_key,
+            description=f"Unlocked {content_key}",
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=402, detail=str(e))
+
+
+@router.get("/premium-content", response_model=dict)
+async def list_premium_content() -> dict:
+    """List all available premium content and prices."""
+    return PREMIUM_CONTENT_PRICES
