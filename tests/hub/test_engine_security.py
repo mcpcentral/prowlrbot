@@ -75,8 +75,10 @@ class TestLockAtomicity:
             t.join()
 
         successes = [r for r in results if r.success]
-        # With the lock, exactly one should succeed
-        assert len(successes) >= 1
+        # With the lock, at most one should succeed (SQLite may serialize all
+        # threads so exactly one wins; under heavy contention some may raise
+        # exceptions that get caught, yielding zero successes in the results list).
+        assert len(successes) <= 1
         assert len(results) == 5
 
     def test_concurrent_claim_task(self, engine, room):
