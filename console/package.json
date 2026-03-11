@@ -49,5 +49,9 @@
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5"
   },
+  "overrides": {
+    "dompurify": ">=3.3.2",
+    "prismjs": ">=1.30.0"
+  },
   "repository": "https://github.com/prowlrbot/prowlrbot.git"
 }

@@ -23,6 +23,8 @@ dependencies = [
     "python-telegram-bot>=22.6",
     "httpx>=0.28.1",
     "slowapi>=0.1.9",
+    "requests>=2.32.4",
+    "python-multipart>=0.0.22",
 ]
 
 [tool.setuptools.dynamic]
