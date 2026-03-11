@@ -39,17 +39,76 @@ Two backends, one frontend. Python handles agents/channels/providers/ROAR. TypeS
 
 **Studio Worker (Bun):** Component Execution, Docker Container Runner, Playwright Browser Instances, PTY Terminal Streaming. Optional Temporal integration for durable workflows.
 
-### Progressive Infrastructure
+### 3.1 Backend Integration Contract
 
-| Service | Default | What It Unlocks |
-|---------|---------|-----------------|
-| SQLite | Yes (zero config) | Workflows, traces, secrets, basic storage |
-| Filesystem | Yes | Artifact storage, file uploads |
-| Redis | Optional | Streaming buffers, rate limiting, terminal PTY relay, MCP session tokens |
-| Temporal | Optional | Durable workflow execution, retries, sub-workflows, scheduling |
-| MinIO | Optional | Large artifact storage (S3-compatible) |
-| Kafka/Redpanda | Optional | Telemetry at scale, log aggregation, trace ingestion pipeline |
-| PostgreSQL | Optional | Production database (replaces SQLite for scale) |
+The two backends communicate via REST and SSE. ProwlrBot is the source of truth for agents, channels, and providers. Studio is the source of truth for workflows, executions, and UI state.
+
+**ProwlrBot exposes to Studio (REST, port 8088):**
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/agents` | GET | List all agents with status, config, capabilities |
+| `/api/agents/{id}/run` | POST | Start an agent run, returns `run_id` |
+| `/api/agents/{id}/stop` | POST | Stop a running agent |
+| `/api/agents/{id}/message` | POST | Send human message to running agent |
+| `/api/agents/{id}/stream` | GET (SSE) | Real-time agent event stream (see 3.2) |
+| `/api/agents/{id}/autonomy` | PUT | Change autonomy level mid-run |
+| `/api/channels` | GET/POST/PUT/DELETE | Channel CRUD |
+| `/api/providers` | GET | Available providers + health |
+| `/api/monitors` | GET/POST/PUT/DELETE | Monitor CRUD |
+| `/api/crons` | GET/POST/PUT/DELETE | Cron job CRUD |
+| `/api/mcp/clients` | GET | MCP client connections |
+| `/api/auth/validate` | POST | Validate JWT token (Studio calls this) |
+| `/api/auth/token` | POST | Issue JWT token (login) |
+
+**Studio exposes to ProwlrBot (REST, port 3211):**
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/webhooks/agent-event` | POST | ProwlrBot pushes agent events for trace storage |
+| `/api/webhooks/workflow-trigger` | POST | Trigger workflow from channel/monitor/cron |
+
+**JWT validation flow:** Studio's NestJS `AuthGuard` receives JWT from the browser, then calls `PROWLRBOT_API_URL/api/auth/validate` to verify it against ProwlrBot's signing key. ProwlrBot returns `{ valid: true, user: { id, role } }` or `401`. Studio caches validation for 5 minutes (configurable via `JWT_CACHE_TTL`). When `AUTH_PROVIDER=clerk`, Studio validates directly against Clerk's JWKS endpoint instead.
+
+### 3.2 Agent Event Stream Protocol
+
+The Agent Workspace's 12 tabs are powered by a single SSE connection per agent at `/api/agents/{id}/stream`. Events are JSON with a `type` field that maps to tabs:
+
+| Event Type | Tab(s) | Payload |
+|------------|--------|---------|
+| `thought` | Reasoning | `{ step, content, decision, timestamp }` |
+| `tool_call` | Tools | `{ tool, inputs, outputs, duration_ms, tokens }` |
+| `tool_start` | Tools | `{ tool, inputs, timestamp }` |
+| `terminal_output` | Terminal | `{ data: base64 }` (PTY bytes) |
+| `terminal_input` | Terminal | `{ data: base64 }` (user sends via POST) |
+| `browser_screenshot` | Screen, Browser | `{ url, png_base64, width, height }` |
+| `browser_action` | Browser | `{ action, selector, value }` |
+| `file_change` | Files, Code | `{ path, op: create/modify/delete, content?, diff? }` |
+| `chat_message` | Chat | `{ from: agent/human, content }` |
+| `memory_update` | Memory | `{ op: add/remove/compact, entry }` |
+| `cost_update` | Cost | `{ tokens_in, tokens_out, cost_usd, model, total_cost }` |
+| `log` | Logs | `{ level, message, timestamp, metadata }` |
+| `config_change` | Config | `{ field, old_value, new_value }` |
+| `status` | All | `{ state: running/paused/stopped/error, message? }` |
+
+**"Take Control" mechanics:** User clicks "Take Control" on Screen or Browser tab. Studio sends `POST /api/agents/{id}/autonomy` with `level: "watch"` to pause autonomous actions. User interactions (clicks, keystrokes) are sent via `POST /api/agents/{id}/browser/input` or `POST /api/agents/{id}/terminal/input`. Click "Release Control" to restore previous autonomy level.
+
+**State persistence:** Agent run state is persisted to ProwlrBot's SQLite (or PostgreSQL) as `agent_runs` table with `run_id`, `agent_id`, `status`, `started_at`, `ended_at`, `cost_total`, `tokens_total`. Individual events are stored in Studio's trace database for timeline replay.
+
+**Without Redis fallback:** When Redis is absent, PTY streaming uses in-process queues (limits to single-worker mode). Browser screenshots are sent directly via SSE instead of pub/sub. MCP session tokens use SQLite. This means no horizontal scaling of workers, but single-user local dev works fine.
+
+### 3.3 Progressive Infrastructure (with fallbacks)
+
+| Service | Default | What It Unlocks | Without It |
+|---------|---------|-----------------|------------|
+| SQLite | Yes (zero config) | Workflows, traces, secrets, basic storage | N/A (always present) |
+| Filesystem | Yes | Artifact storage, file uploads | N/A (always present) |
+| Docker | Required for Agent Workspace | Container isolation, Playwright browsers, PTY | Agent Workspace tabs disabled; workflow builder and hub still work |
+| Redis | Optional | Multi-worker PTY relay, pub/sub screenshots, rate limiting | Single-worker mode; in-process queues; MCP tokens in SQLite |
+| Temporal | Optional | Durable workflow execution, retries, sub-workflows | Workflows run in-process via Bun worker (no retry/durability guarantees) |
+| MinIO | Optional | Large artifact storage (S3-compatible) | Filesystem storage (local disk) |
+| Kafka/Redpanda | Optional | Telemetry at scale, log aggregation | Direct SQLite trace writes (fine for < 10 agents) |
+| PostgreSQL | Optional | Production database (replaces SQLite for scale) | SQLite (fine for < 100 workflows, single-node) |
 
 ---
 
@@ -100,9 +159,17 @@ Users can arrange agent workspaces freely:
 - Model + provider display
 - Running cost + tokens + runtime
 
-### 4.5 Collaboration
+### 4.5 Collaboration Canvas
 
-Agents share findings via ROAR protocol into a shared Collaboration Canvas. Human can see all agent outputs merged, intervene, redirect, or approve.
+A shared workspace where multiple agents' outputs converge. The canvas is a dedicated view (not a per-agent tab) accessible from the top nav.
+
+**How it works:**
+- Agents publish findings via ROAR `share_finding` messages. Each finding has: `agent_id`, `type` (text/code/image/link/file), `content`, `confidence`, `tags`.
+- The canvas renders findings as cards in a timeline or board layout. Cards are grouped by topic/tag and linked to their source agent's workspace.
+- Human can: approve/reject findings, add annotations, redirect an agent ("investigate this further"), merge findings into a summary, export as report.
+- Canvas state persists per-session in ProwlrBot's SQLite via the existing `shared_context` mechanism in ProwlrHub.
+
+**Phase 1 scope:** Read-only view of agent findings with approve/reject. Full editing and export in Phase 2.
 
 ---
 
@@ -149,11 +216,14 @@ Existing ReactFlow-based visual workflow builder, adapted for ProwlrBot.
 - Component author type: `'shipsecai'` to `'prowlrbot'`
 
 ### 6.3 New Components
-- `prowlrbot.agent` -- Wraps a ProwlrBot agent as a workflow node
-- `prowlrbot.channel-trigger` -- Triggers workflow from channel message
-- `prowlrbot.monitor-trigger` -- Triggers workflow from monitor alert
-- `prowlrbot.roar-message` -- Send/receive ROAR protocol messages
-- `prowlrbot.hub-task` -- Create/claim ProwlrHub tasks
+
+| Component | Inputs | Outputs | Description |
+|-----------|--------|---------|-------------|
+| `prowlrbot.agent` | `agent_id: string`, `query: string`, `autonomy?: string`, `timeout_s?: number` | `response: string`, `artifacts: File[]`, `cost: CostSummary`, `run_id: string` | Wraps a ProwlrBot agent as a workflow node |
+| `prowlrbot.channel-trigger` | `channel: string`, `filter?: regex` | `message: string`, `sender: string`, `channel_id: string`, `metadata: object` | Entry point: triggers workflow from channel message |
+| `prowlrbot.monitor-trigger` | `monitor_id: string`, `severity?: string[]` | `alert: MonitorAlert`, `diff: string`, `url: string` | Entry point: triggers workflow from monitor alert |
+| `prowlrbot.roar-message` | `target_agent: string`, `message: string`, `protocol?: string` | `response: string`, `status: string` | Send/receive ROAR protocol messages between agents |
+| `prowlrbot.hub-task` | `action: create/claim/complete/fail`, `task_id?: string`, `description?: string` | `task_id: string`, `status: string`, `assigned_to?: string` | Create/claim/complete ProwlrHub tasks |
 
 ---
 
@@ -310,17 +380,28 @@ Community-contributed workflow components published to marketplace. SDK (@prowlr
 
 ## 12. Success Criteria
 
+### Phase 1: Ship Studio (target)
 - All 400+ ShipSec references replaced with ProwlrBot branding
-- All 4 CRITICAL security findings fixed
-- All 6 HIGH security findings fixed
+- All 4 CRITICAL and 6 HIGH security findings fixed
 - Studio starts with `prowlr studio` CLI command
 - Agent Hub page shows all installed agents with status
-- Agent Workspace shows live browser/terminal/code per agent
-- 6 layout modes functional (tile, stack, float, split, PiP, focus)
-- 12 tabs per agent workspace functional
-- Cost tracking visible and accurate
+- Agent Workspace shows live browser/terminal/code per agent (requires Docker)
+- At minimum Screen, Terminal, Code, Tools, Cost, Logs tabs functional
+- Tile and Stack layout modes functional
 - ProwlrBot JWT auth working as default provider
-- Progressive infra: works with zero extra services (SQLite + filesystem)
-- Security scan components extracted to marketplace package
-- Old console pages rebuilt in Studio (Phase 2)
+- Works with zero optional services (SQLite + filesystem only; Docker for workspaces)
+- Collaboration Canvas shows agent findings (read-only)
 - 713+ existing ProwlrBot tests still passing
+
+### Phase 2: Full Feature Parity
+- All 12 tabs per agent workspace functional
+- All 6 layout modes functional
+- Chat, Channels, Settings, Monitors, Cron pages rebuilt in Studio
+- Collaboration Canvas with editing and export
+- Security scan components extracted to marketplace package
+- Float, Split, PiP, Focus layout modes
+
+### Phase 3: Console Retirement
+- Old console removed from codebase
+- Studio is the only frontend
+- Migration guide published for users upgrading
