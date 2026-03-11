@@ -362,9 +362,10 @@ curl -H "Authorization: Bearer your-secret-token" http://localhost:8088/api/agen
 ## MCP Integration
 
 Connect any MCP server — tools appear instantly:
-
+```
+~/.prowlrbot/config.json
+```
 ```json
-// ~/.prowlrbot/config.json
 {
   "mcp": {
     "servers": {
