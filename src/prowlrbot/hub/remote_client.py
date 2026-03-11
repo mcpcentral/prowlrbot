@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import urllib.request
 import urllib.error
 from typing import Any, Dict, List, Optional
@@ -20,20 +21,28 @@ class RemoteWarRoom:
 
     Drop-in replacement for direct engine calls when running on a remote machine.
     Uses only stdlib (urllib) — no external dependencies needed.
+    Sends Bearer auth token (PROWLR_HUB_SECRET) and X-Session-Token for
+    agent identity verification.
     """
 
     def __init__(self, base_url: str) -> None:
         self._base_url = base_url.rstrip("/")
         self._agent_id: Optional[str] = None
+        self._session_id: Optional[str] = None
+        self._auth_token: Optional[str] = os.environ.get("PROWLR_HUB_SECRET", "") or None
 
     def _request(self, method: str, path: str, data: Optional[Dict] = None) -> Dict:
         """Make an HTTP request to the bridge."""
         url = f"{self._base_url}{path}"
         body = json.dumps(data).encode() if data else None
-        req = urllib.request.Request(
-            url, data=body, method=method,
-            headers={"Content-Type": "application/json"} if body else {},
-        )
+        headers: Dict[str, str] = {}
+        if body:
+            headers["Content-Type"] = "application/json"
+        if self._auth_token:
+            headers["Authorization"] = f"Bearer {self._auth_token}"
+        if self._session_id:
+            headers["X-Session-Token"] = self._session_id
+        req = urllib.request.Request(url, data=body, method=method, headers=headers)
         try:
             with urllib.request.urlopen(req, timeout=10) as resp:
                 return json.loads(resp.read())
@@ -53,6 +62,8 @@ class RemoteWarRoom:
         result = self._post("/register", {"name": name, "capabilities": capabilities})
         if "agent_id" in result:
             self._agent_id = result["agent_id"]
+        if "session_id" in result:
+            self._session_id = result["session_id"]
         return result
 
     def heartbeat(self) -> None:

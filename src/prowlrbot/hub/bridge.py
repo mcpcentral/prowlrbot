@@ -26,7 +26,11 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 
 from .engine import WarRoomEngine
 from .status_page import STATUS_HTML
@@ -37,6 +41,12 @@ logger = logging.getLogger(__name__)
 # Max items returned by any list endpoint
 _MAX_LIMIT = 500
 _VALID_PRIORITIES = {"critical", "high", "normal", "low"}
+
+# Allowed origins for CSRF check on POST requests (open mode)
+_ALLOWED_ORIGINS = {"http://localhost:8088", "http://127.0.0.1:8088"}
+
+# Rate limiter — created lazily in create_bridge_app() so env vars are checked at runtime
+limiter: Limiter = None  # type: ignore[assignment]
 
 
 # --- Security middleware ---
@@ -49,6 +59,26 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
         return response
+
+
+class CSRFMiddleware(BaseHTTPMiddleware):
+    """Block cross-origin POST requests in open mode (no Bearer auth).
+
+    When PROWLR_HUB_SECRET is unset, there's no auth layer protecting
+    state-changing endpoints. This middleware validates the Origin header
+    on POST requests to prevent CSRF attacks from malicious sites.
+    """
+
+    async def dispatch(self, request, call_next):
+        if request.method == "POST" and not _get_hub_secret():
+            origin = request.headers.get("origin", "")
+            # Allow requests with no Origin (same-origin, curl, MCP clients)
+            if origin and origin not in _ALLOWED_ORIGINS:
+                return JSONResponse(
+                    status_code=403,
+                    content={"detail": "Cross-origin request blocked"},
+                )
+        return await call_next(request)
 
 
 # --- Authentication ---
@@ -128,6 +158,24 @@ class FindingRequest(BaseModel):
 # --- Path validation ---
 
 
+def _verify_session(engine: WarRoomEngine, agent_id: str, request: Request) -> None:
+    """Verify the X-Session-Token header matches the agent's session_id.
+
+    This prevents agent impersonation — knowing an agent_id alone is not
+    enough to act on its behalf. The session_id is only returned at registration.
+    """
+    token = request.headers.get("X-Session-Token", "")
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing session token")
+    row = engine._conn.execute(
+        "SELECT session_id FROM agents WHERE agent_id=?", (agent_id,)
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    if not hmac.compare_digest(token, row["session_id"]):
+        raise HTTPException(status_code=403, detail="Invalid session token")
+
+
 def _validate_lock_path(path: str) -> str:
     """Reject path traversal and absolute paths."""
     if "\x00" in path:
@@ -146,12 +194,28 @@ def _clamp_limit(limit: int) -> int:
 
 def create_bridge_app() -> FastAPI:
     """Create a FastAPI app that exposes the war room engine over HTTP."""
+    global limiter
+    limiter = Limiter(
+        key_func=get_remote_address,
+        enabled=not bool(os.environ.get("PROWLR_NO_RATE_LIMIT")),
+    )
+
     app = FastAPI(
         title="ProwlrHub Bridge",
         version="1.0.0",
         dependencies=[Depends(verify_auth)],
     )
+    app.state.limiter = limiter
+
+    @app.exception_handler(RateLimitExceeded)
+    async def _rate_limit_handler(request: Request, exc: RateLimitExceeded):
+        return JSONResponse(
+            status_code=429,
+            content={"detail": "Rate limit exceeded. Try again later."},
+        )
+
     app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(CSRFMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:8088", "http://127.0.0.1:8088"],
@@ -198,18 +262,22 @@ def create_bridge_app() -> FastAPI:
         }
 
     @app.post("/register")
-    def register(req: RegisterRequest):
+    @limiter.limit("10/minute")
+    def register(request: Request, req: RegisterRequest):
         room = engine.get_or_create_default_room()
         result = engine.register_agent(req.name, room["room_id"], req.capabilities)
         return result
 
     @app.post("/heartbeat/{agent_id}")
-    def heartbeat(agent_id: str):
+    @limiter.limit("30/minute")
+    def heartbeat(request: Request, agent_id: str):
+        _verify_session(engine, agent_id, request)
         engine.heartbeat(agent_id)
         return {"ok": True}
 
     @app.get("/board")
-    def mission_board(status: str = ""):
+    @limiter.limit("60/minute")
+    def mission_board(request: Request, status: str = ""):
         room = engine.get_or_create_default_room()
         tasks = engine.get_mission_board(room["room_id"])
         if status:
@@ -217,7 +285,9 @@ def create_bridge_app() -> FastAPI:
         return {"tasks": tasks}
 
     @app.post("/claim/{agent_id}")
-    def claim_task(agent_id: str, req: ClaimRequest):
+    @limiter.limit("20/minute")
+    def claim_task(request: Request, agent_id: str, req: ClaimRequest):
+        _verify_session(engine, agent_id, request)
         if req.priority not in _VALID_PRIORITIES:
             raise HTTPException(status_code=400, detail="Invalid priority")
         room = engine.get_or_create_default_room()
@@ -236,22 +306,30 @@ def create_bridge_app() -> FastAPI:
         return {"success": False, "reason": result.reason, "conflicts": result.conflicts}
 
     @app.post("/update/{agent_id}")
-    def update_task(agent_id: str, req: UpdateRequest):
+    @limiter.limit("30/minute")
+    def update_task(request: Request, agent_id: str, req: UpdateRequest):
+        _verify_session(engine, agent_id, request)
         engine.update_task(req.task_id, agent_id, req.progress_note)
         return {"ok": True}
 
     @app.post("/complete/{agent_id}")
-    def complete_task(agent_id: str, req: CompleteRequest):
+    @limiter.limit("20/minute")
+    def complete_task(request: Request, agent_id: str, req: CompleteRequest):
+        _verify_session(engine, agent_id, request)
         ok = engine.complete_task(req.task_id, agent_id, req.summary)
         return {"ok": ok}
 
     @app.post("/fail/{agent_id}")
-    def fail_task(agent_id: str, req: FailRequest):
+    @limiter.limit("20/minute")
+    def fail_task(request: Request, agent_id: str, req: FailRequest):
+        _verify_session(engine, agent_id, request)
         ok = engine.fail_task(req.task_id, agent_id, req.reason)
         return {"ok": ok}
 
     @app.post("/lock/{agent_id}")
-    def lock_file(agent_id: str, req: LockRequest):
+    @limiter.limit("30/minute")
+    def lock_file(request: Request, agent_id: str, req: LockRequest):
+        _verify_session(engine, agent_id, request)
         safe_path = _validate_lock_path(req.path)
         room = engine.get_or_create_default_room()
         result = engine.lock_file(safe_path, agent_id, room["room_id"])
@@ -260,54 +338,66 @@ def create_bridge_app() -> FastAPI:
         return {"success": False, "reason": result.reason, "owner": result.owner}
 
     @app.post("/unlock/{agent_id}")
-    def unlock_file(agent_id: str, req: LockRequest):
+    @limiter.limit("30/minute")
+    def unlock_file(request: Request, agent_id: str, req: LockRequest):
+        _verify_session(engine, agent_id, request)
         safe_path = _validate_lock_path(req.path)
         room = engine.get_or_create_default_room()
         ok = engine.unlock_file(safe_path, agent_id, room["room_id"])
         return {"ok": ok}
 
     @app.post("/conflicts")
-    def check_conflicts(req: ConflictRequest):
+    @limiter.limit("30/minute")
+    def check_conflicts(request: Request, req: ConflictRequest):
         room = engine.get_or_create_default_room()
         conflicts = engine.check_conflicts(req.paths, room["room_id"])
         return {"conflicts": conflicts}
 
     @app.get("/agents")
-    def get_agents():
+    @limiter.limit("60/minute")
+    def get_agents(request: Request):
         room = engine.get_or_create_default_room()
         return {"agents": engine.get_agents(room["room_id"])}
 
     @app.post("/broadcast/{agent_id}")
-    def broadcast(agent_id: str, req: BroadcastRequest):
+    @limiter.limit("20/minute")
+    def broadcast(request: Request, agent_id: str, req: BroadcastRequest):
+        _verify_session(engine, agent_id, request)
         room = engine.get_or_create_default_room()
         engine.broadcast_status(room["room_id"], agent_id, req.message)
         return {"ok": True}
 
     @app.post("/findings/{agent_id}")
-    def share_finding(agent_id: str, req: FindingRequest):
+    @limiter.limit("30/minute")
+    def share_finding(request: Request, agent_id: str, req: FindingRequest):
+        _verify_session(engine, agent_id, request)
         room = engine.get_or_create_default_room()
         engine.set_context(room["room_id"], agent_id, req.key, req.value)
         return {"ok": True}
 
     @app.get("/context")
-    def get_context(key: str = ""):
+    @limiter.limit("60/minute")
+    def get_context(request: Request, key: str = ""):
         room = engine.get_or_create_default_room()
         return {"context": engine.get_context(room["room_id"], key)}
 
     @app.get("/events")
-    def get_events(limit: int = 20, event_type: str = ""):
+    @limiter.limit("60/minute")
+    def get_events(request: Request, limit: int = 20, event_type: str = ""):
         room = engine.get_or_create_default_room()
         return {"events": engine.get_events(room["room_id"], _clamp_limit(limit), event_type)}
 
     # --- JSON API endpoints for dashboard consumption ---
 
     @app.get("/api/agents")
-    def api_agents():
+    @limiter.limit("60/minute")
+    def api_agents(request: Request):
         room = engine.get_or_create_default_room()
         return engine.get_agents(room["room_id"])
 
     @app.get("/api/board")
-    def api_board(status: str = ""):
+    @limiter.limit("60/minute")
+    def api_board(request: Request, status: str = ""):
         room = engine.get_or_create_default_room()
         tasks = engine.get_mission_board(room["room_id"])
         if status:
@@ -315,17 +405,20 @@ def create_bridge_app() -> FastAPI:
         return tasks
 
     @app.get("/api/events")
-    def api_events(limit: int = 50, event_type: str = ""):
+    @limiter.limit("60/minute")
+    def api_events(request: Request, limit: int = 50, event_type: str = ""):
         room = engine.get_or_create_default_room()
         return engine.get_events(room["room_id"], _clamp_limit(limit), event_type)
 
     @app.get("/api/context")
-    def api_context(key: str = ""):
+    @limiter.limit("60/minute")
+    def api_context(request: Request, key: str = ""):
         room = engine.get_or_create_default_room()
         return engine.get_context(room["room_id"], key)
 
     @app.get("/api/conflicts")
-    def api_conflicts():
+    @limiter.limit("60/minute")
+    def api_conflicts(request: Request):
         room = engine.get_or_create_default_room()
         room_id = room["room_id"]
         rows = engine._conn.execute(
