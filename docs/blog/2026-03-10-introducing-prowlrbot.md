@@ -55,9 +55,9 @@ Built with Python (FastAPI + AgentScope), React 18 (Vite + Ant Design), and SQLi
 
 ## Where We Came From
 
-ProwlrBot is a fork of CoPaw (agentscope-ai/CoPaw). We kept the solid agent framework and added everything else — provider detection, smart routing, monitoring engine, war room coordination, security hardening, the marketplace, and a complete rebrand.
+ProwlrBot started as a fork of an open-source agent framework built on [AgentScope](https://github.com/agentscope-ai/agentscope). We kept the solid agent core and added everything else — provider detection, smart routing, monitoring engine, war room coordination, security hardening, the marketplace, and a complete rebrand.
 
-Full credit to the CoPaw team for the foundation. We're building the skyscraper.
+Credit to the original authors for the foundation. We're building the skyscraper.
 
 ## Try It
 

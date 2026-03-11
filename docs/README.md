@@ -65,7 +65,7 @@ Deep technical documentation for contributors and power users.
 | **[Leapfrog Design](plans/2026-03-09-prowlrbot-leapfrog-design.md)** | 60+ feature specs, competitive analysis, 12-month roadmap, security audit |
 | **[Implementation Plan](plans/2026-03-09-prowlrbot-implementation-plan.md)** | Phased build strategy with priorities and dependencies |
 | **[Phase 1 Details](plans/2026-03-09-prowlrbot-phase1-implementation.md)** | First phase: provider detection, smart routing, monitoring engine |
-| **[Rebrand Spec](plans/2026-03-09-prowlrbot-rebrand-and-enhancement-design.md)** | CoPaw → ProwlrBot migration: every file, import, and config changed |
+| **[Rebrand Spec](plans/2026-03-09-prowlrbot-rebrand-and-enhancement-design.md)** | Legacy → ProwlrBot migration: every file, import, and config changed |
 
 ### Core Flow
 

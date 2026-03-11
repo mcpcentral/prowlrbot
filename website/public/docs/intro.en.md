@@ -17,10 +17,7 @@ ProwlrBot is an **autonomous AI agent platform** that runs in your own environme
 - **Web monitoring** — Detect website changes, monitor APIs, and get smart notifications automatically.
 - **All data stays local** — No third-party hosting. Your secrets, your servers.
 
-ProwlrBot is a fork of [CoPaw](https://github.com/agentscope-ai/CoPaw) (original fork), fully rebranded and enhanced, built on
-[AgentScope](https://github.com/agentscope-ai/agentscope),
-[AgentScope Runtime](https://github.com/agentscope-ai/agentscope-runtime), and
-[ReMe](https://github.com/agentscope-ai/ReMe).
+ProwlrBot is built on the [AgentScope](https://github.com/agentscope-ai/agentscope) framework, fully rebranded and enhanced with provider detection, smart routing, war room coordination, a skills marketplace, and security hardening.
 
 ---
 

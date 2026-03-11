@@ -10,7 +10,7 @@ summary: "We found 26 security vulnerabilities in the original codebase and fixe
 
 ## We Inherited Problems
 
-When we forked CoPaw, we ran a full security audit. What we found wasn't great:
+When we forked the original codebase, we ran a full security audit. What we found wasn't great:
 
 - API keys stored in plaintext config files
 - No authentication on the web console

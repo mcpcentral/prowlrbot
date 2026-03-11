@@ -52,7 +52,7 @@ agentverse
 | P1 | Privacy and Terms pages — create placeholder content for Footer links | todo |
 | P1 | Blog posts reference old 12-category marketplace — update to 6 categories | todo |
 | P2 | Website TechStack component — visual QA | todo |
-| P2 | `file_io.py` line 17-18 — `.copaw.secret` backward compat: add deprecation warning | todo |
+| P2 | `file_io.py` line 17-18 — legacy `.copaw.secret` backward compat: add deprecation warning | todo |
 | P2 | Add marketplace/credits/tiers documentation pages | todo |
 | P2 | Add agent install and team builder documentation pages | todo |
 
