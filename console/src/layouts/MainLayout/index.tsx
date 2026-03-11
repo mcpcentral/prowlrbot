@@ -26,6 +26,11 @@ import TemplatesPage from "../../pages/Settings/Templates";
 import AppearancePage from "../../pages/Settings/Appearance";
 import OnboardingPage from "../../pages/Settings/Onboarding";
 import WarRoomPage from "../../pages/WarRoom";
+import MonitoringPage from "../../pages/Monitoring";
+import MemoryPage from "../../pages/Memory";
+import SwarmPage from "../../pages/Swarm";
+import SoulEditorPage from "../../pages/Agent/SoulEditor";
+import TeamBuilderPage from "../../pages/Agent/TeamBuilder";
 
 const { Content } = Layout;
 
@@ -56,6 +61,11 @@ const pathToKey: Record<string, string> = {
   "/external-agents": "external-agents",
   "/onboarding": "onboarding",
   "/warroom": "warroom",
+  "/monitoring": "monitoring",
+  "/memory": "memory",
+  "/swarm": "swarm",
+  "/soul-editor": "soul-editor",
+  "/team-builder": "team-builder",
 };
 
 export default function MainLayout() {
@@ -101,6 +111,11 @@ export default function MainLayout() {
               <Route path="/templates" element={<TemplatesPage />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/warroom" element={<WarRoomPage />} />
+              <Route path="/monitoring" element={<MonitoringPage />} />
+              <Route path="/memory" element={<MemoryPage />} />
+              <Route path="/swarm" element={<SwarmPage />} />
+              <Route path="/soul-editor" element={<SoulEditorPage />} />
+              <Route path="/team-builder" element={<TeamBuilderPage />} />
               <Route path="/" element={<Dashboard />} />
             </Routes>
           </div>

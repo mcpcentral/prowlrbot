@@ -1,0 +1,66 @@
+# docker/docker-compose.yml
+# ProwlrBot Swarm — Bridge + Workers
+#
+# Usage:
+#   cd docker
+#   cp .env.example .env     # edit secrets
+#   docker compose up -d     # start bridge + workers
+#   docker compose up -d --scale worker=4   # scale workers
+#
+# Build context is the repo root (one level up from this file).
+
+services:
+  bridge:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.bridge
+    container_name: prowlr-bridge
+    ports:
+      - "${BRIDGE_PORT:-8099}:8099"
+    environment:
+      - PROWLR_HUB_DB=/data/warroom.db
+      - PROWLR_HUB_SECRET=${HUB_SECRET:-}
+      - PROWLR_BRIDGE_HOST=0.0.0.0
+    volumes:
+      - bridge-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8099/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.worker
+    environment:
+      - PROWLR_HUB_URL=http://bridge:8099
+      - PROWLR_HUB_SECRET=${HUB_SECRET:-}
+    depends_on:
+      bridge:
+        condition: service_healthy
+    deploy:
+      replicas: ${WORKER_COUNT:-2}
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  bridge-data:

@@ -1,0 +1,58 @@
+# docker/Dockerfile.worker
+# ProwlrBot Swarm Worker — connects to the bridge and executes tasks
+#
+# Each worker registers with the hub bridge and picks up delegated work.
+#
+# Build context must be the repo root:
+#   docker build -f docker/Dockerfile.worker -t prowlrbot-worker .
+
+# ---------------------------------------------------------------------------
+# Stage 1: Builder — install dependencies in a virtual-env
+# ---------------------------------------------------------------------------
+FROM python:3.12-slim AS builder
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+COPY pyproject.toml .
+COPY src/ src/
+
+RUN python -m venv /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    /opt/venv/bin/pip install --no-cache-dir -e .
+
+# ---------------------------------------------------------------------------
+# Stage 2: Runtime
+# ---------------------------------------------------------------------------
+FROM python:3.12-slim AS runtime
+
+# Security: run as non-root
+RUN groupadd --gid 1000 prowlr && \
+    useradd --uid 1000 --gid prowlr --shell /bin/bash --create-home prowlr
+
+COPY --from=builder /opt/venv /opt/venv
+
+WORKDIR /app
+COPY --from=builder /build/pyproject.toml .
+COPY --from=builder /build/src/ src/
+
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Worker connects to the bridge
+ENV PROWLR_HUB_URL=http://bridge:8099
+
+# Working directory for agent data
+RUN mkdir -p /home/prowlr/.prowlrbot && chown -R prowlr:prowlr /home/prowlr
+VOLUME ["/home/prowlr/.prowlrbot"]
+
+USER prowlr
+
+# The worker command registers with the bridge and polls for tasks.
+# If 'prowlr swarm worker' is not yet implemented, this will exit
+# with a helpful error — replace with the real entry point when ready.
+CMD ["prowlr", "swarm", "worker"]

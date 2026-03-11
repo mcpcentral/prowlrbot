@@ -61,6 +61,11 @@ const keyToPath: Record<string, string> = {
   "external-agents": "/external-agents",
   onboarding: "/onboarding",
   warroom: "/warroom",
+  monitoring: "/monitoring",
+  memory: "/memory",
+  swarm: "/swarm",
+  "soul-editor": "/soul-editor",
+  "team-builder": "/team-builder",
 };
 
 interface SidebarProps {
@@ -99,6 +104,11 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
       icon: <Radio size={16} />,
     },
     {
+      key: "swarm",
+      label: "Swarm",
+      icon: <Globe size={16} />,
+    },
+    {
       key: "chat-group",
       label: t("nav.chat"),
       icon: <MessageSquare size={16} />,
@@ -135,6 +145,11 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           label: t("nav.heartbeat"),
           icon: <Activity size={16} />,
         },
+        {
+          key: "monitoring",
+          label: "Monitoring",
+          icon: <Eye size={16} />,
+        },
       ],
     },
     {
@@ -161,6 +176,21 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           key: "agent-config",
           label: t("nav.agentConfig"),
           icon: <Settings size={16} />,
+        },
+        {
+          key: "memory",
+          label: "Memory",
+          icon: <Cpu size={16} />,
+        },
+        {
+          key: "soul-editor",
+          label: "Soul Editor",
+          icon: <Sparkles size={16} />,
+        },
+        {
+          key: "team-builder",
+          label: "Team Builder",
+          icon: <UsersRound size={16} />,
         },
       ],
     },
