@@ -229,3 +229,16 @@ async def unlock_content(user_id: str, content_key: str) -> CreditBalance:
 async def list_premium_content() -> dict:
     """List all available premium content and prices."""
     return PREMIUM_CONTENT_PRICES
+
+
+# ------------------------------------------------------------------
+# Ecosystem
+# ------------------------------------------------------------------
+
+
+@router.get("/repos", response_model=dict)
+async def list_ecosystem_repos() -> dict:
+    """List all ProwlrBot ecosystem repositories."""
+    from ...marketplace.registry import get_ecosystem_repos
+
+    return get_ecosystem_repos()

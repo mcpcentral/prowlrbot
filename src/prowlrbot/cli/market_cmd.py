@@ -251,11 +251,24 @@ def market_popular(limit: int):
 
 
 @market_group.command(name="update")
-def market_update():
-    """Update the marketplace registry index."""
-    click.echo("Updating marketplace registry...")
-    # TODO: Fetch from GitHub registry repo or ProwlrBot marketplace API
-    click.echo("Registry up to date.")
+@click.option("--token", envvar="GITHUB_TOKEN", default=None, help="GitHub token (or set GITHUB_TOKEN)")
+def market_update(token: str):
+    """Sync marketplace registry from ProwlrBot/prowlr-marketplace on GitHub."""
+    from ..marketplace.registry import sync_registry
+
+    click.echo("  Syncing from ProwlrBot/prowlr-marketplace...")
+    store = _get_store()
+    try:
+        added, updated, total = sync_registry(store, token=token)
+        click.echo(f"\n  Registry synced: {total} listings")
+        click.echo(f"    New:     {added}")
+        click.echo(f"    Updated: {updated}")
+        click.echo()
+    except Exception as exc:
+        click.echo(f"  Sync failed: {exc}")
+        click.echo("  Tip: Set GITHUB_TOKEN for higher rate limits.")
+    finally:
+        store.close()
 
 
 # ── Tip ──────────────────────────────────────────────────────────────────────
@@ -341,6 +354,25 @@ def market_categories():
     click.echo("\n  Marketplace Categories:")
     for cat in MarketplaceCategory:
         click.echo(f"    {cat.value}")
+    click.echo()
+
+
+# ── Ecosystem repos ─────────────────────────────────────────────────────────
+
+
+@market_group.command(name="repos")
+def market_repos():
+    """Show all ProwlrBot ecosystem repositories."""
+    from ..marketplace.registry import get_ecosystem_repos
+
+    repos = get_ecosystem_repos()
+    click.echo()
+    click.echo(f"  {'Repo':<22} {'Description'}")
+    click.echo(f"  {'─'*22} {'─'*50}")
+    for name, info in repos.items():
+        click.echo(f"  {name:<22} {info['description'][:50]}")
+    click.echo()
+    click.echo("  Browse: https://github.com/ProwlrBot")
     click.echo()
 
 

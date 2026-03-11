@@ -12,20 +12,14 @@ from pydantic import BaseModel, Field
 
 
 class MarketplaceCategory(StrEnum):
-    """The 12 marketplace listing categories."""
+    """The 6 marketplace listing categories (aligned with mcpcentral/prowlr-marketplace)."""
 
     skills = "skills"
     agents = "agents"
     prompts = "prompts"
-    workflows = "workflows"
-    integrations = "integrations"
-    templates = "templates"
-    datasets = "datasets"
-    models = "models"
-    plugins = "plugins"
+    mcp_servers = "mcp-servers"
     themes = "themes"
-    channels = "channels"
-    tools = "tools"
+    workflows = "workflows"
 
 
 class ListingStatus(StrEnum):

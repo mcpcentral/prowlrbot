@@ -8,6 +8,7 @@ import { UseCases } from "../components/UseCases";
 import { CommunitySection } from "../components/CommunitySection";
 import { RoadmapVisual } from "../components/RoadmapVisual";
 import { QuickStart } from "../components/QuickStart";
+import { TechStack } from "../components/TechStack";
 import { BrandStory } from "../components/BrandStory";
 import { Footer } from "../components/Footer";
 import { WaitlistCTA } from "../components/WaitlistCTA";
@@ -47,6 +48,7 @@ export function Home({ config, lang, theme, onThemeToggle }: HomeProps) {
         <CommunitySection lang={lang} />
         <RoadmapVisual lang={lang} />
         <QuickStart config={config} lang={lang} />
+        <TechStack lang={lang} />
         <BrandStory lang={lang} />
         <WaitlistCTA />
       </main>

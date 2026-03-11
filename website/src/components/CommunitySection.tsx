@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Bug, GitPullRequest, Puzzle, MessageCircle, BookOpen } from "lucide-react";
 import { t, type Lang } from "../i18n";
 import { SectionWrapper } from "./SectionWrapper";
@@ -20,8 +21,9 @@ const paths = [
     icon: GitPullRequest,
     titleKey: "community.path.prs.title",
     descKey: "community.path.prs.desc",
-    href: "https://github.com/prowlrbot/prowlrbot/blob/main/CONTRIBUTING.md",
-    linkLabel: "Read CONTRIBUTING.md",
+    href: "/docs/contributing",
+    linkLabel: "Read Contributing Guide",
+    internal: true,
   },
   {
     key: "skills",
@@ -65,7 +67,7 @@ export function CommunitySection({ lang }: CommunitySectionProps) {
           gap: "var(--space-3)",
         }}
       >
-        {paths.map(({ key, icon: Icon, titleKey, descKey, href, linkLabel }) => (
+        {paths.map(({ key, icon: Icon, titleKey, descKey, href, linkLabel, internal }: any) => (
           <div
             key={key}
             className="community-card"
@@ -110,24 +112,43 @@ export function CommunitySection({ lang }: CommunitySectionProps) {
             >
               {t(lang, descKey)}
             </p>
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: "0.8125rem",
-                fontWeight: 600,
-                color: "var(--accent)",
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                marginTop: "var(--space-1)",
-              }}
-            >
-              {linkLabel}
-              <span aria-hidden style={{ fontSize: "0.75rem" }}>&#8594;</span>
-            </a>
+            {internal ? (
+              <Link
+                to={href}
+                style={{
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  marginTop: "var(--space-1)",
+                }}
+              >
+                {linkLabel}
+                <span aria-hidden style={{ fontSize: "0.75rem" }}>&#8594;</span>
+              </Link>
+            ) : (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  marginTop: "var(--space-1)",
+                }}
+              >
+                {linkLabel}
+                <span aria-hidden style={{ fontSize: "0.75rem" }}>&#8594;</span>
+              </a>
+            )}
           </div>
         ))}
       </div>
@@ -165,10 +186,8 @@ export function CommunitySection({ lang }: CommunitySectionProps) {
           <MessageCircle size={16} strokeWidth={2} aria-hidden />
           {t(lang, "community.discussions")}
         </a>
-        <a
-          href="https://github.com/prowlrbot/prowlrbot/blob/main/CONTRIBUTING.md"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          to="/docs/contributing"
           className="community-link"
           style={{
             display: "inline-flex",
@@ -187,7 +206,7 @@ export function CommunitySection({ lang }: CommunitySectionProps) {
         >
           <BookOpen size={16} strokeWidth={2} aria-hidden />
           {t(lang, "community.contributing")}
-        </a>
+        </Link>
       </div>
 
       <style>{`

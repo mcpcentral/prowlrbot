@@ -141,15 +141,13 @@ export function Footer({ lang: _lang }: { lang: Lang }) {
               >
                 X / Twitter
               </a>
-              <a
-                href="https://github.com/prowlrbot/prowlrbot/blob/main/CONTRIBUTING.md"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/docs/contributing"
                 style={linkStyle}
                 className="footer-link"
               >
                 Contributing
-              </a>
+              </Link>
             </div>
           </div>
         </div>
