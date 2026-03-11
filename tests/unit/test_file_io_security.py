@@ -29,9 +29,10 @@ def test_blocks_secret_dir():
 
 def test_blocks_path_traversal(tmp_path):
     with patch("prowlrbot.agents.tools.file_io.WORKING_DIR", tmp_path):
-        assert (
-            validate_file_path(str(tmp_path / ".." / ".." / "etc" / "passwd")) is False
-        )
+        # Use enough ".." to escape tmp_path and reach /etc/passwd
+        depth = len(tmp_path.parts) - 1  # number of ".." needed to reach /
+        traversal = tmp_path / Path(*[".."] * depth) / "etc" / "passwd"
+        assert validate_file_path(str(traversal)) is False
 
 
 def test_allows_tmp_path():
