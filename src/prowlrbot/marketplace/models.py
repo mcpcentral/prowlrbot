@@ -94,7 +94,7 @@ class MarketplaceListing(BaseModel):
     hero_animation: str = ""
 
     # ── v3 fields: trust-tiered marketplace ──────────────────────────────
-    trust_tier: str = "verified"
+    trust_tier: TrustTier = TrustTier.verified
     author_name: str = ""
     author_url: str = ""
     author_avatar_url: str = ""

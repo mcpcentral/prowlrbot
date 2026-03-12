@@ -1,5 +1,5 @@
 """Tests for marketplace model enums and new fields."""
-from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing
+from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing, TrustTier
 
 
 def test_specs_category_exists():
@@ -38,6 +38,6 @@ def test_listing_has_v3_fields():
         changelog="## 1.0.0\nInitial release",
         compatibility=">=1.0.0",
     )
-    assert listing.trust_tier == "official"
+    assert listing.trust_tier == TrustTier.official
     assert listing.author_name == "ProwlrBot"
     assert listing.license == "MIT"
