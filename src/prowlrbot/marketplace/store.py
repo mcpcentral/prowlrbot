@@ -128,6 +128,29 @@ class MarketplaceStore:
             """)
         self._conn.commit()
         self._migrate_v2()
+        self._migrate_v3()
+
+    def _migrate_v3(self) -> None:
+        """Add v3 trust-tier columns (safe to run multiple times)."""
+        cur = self._conn.cursor()
+        existing = {
+            row["name"]
+            for row in cur.execute("PRAGMA table_info(listings)").fetchall()
+        }
+        v3_columns = {
+            "trust_tier": "TEXT NOT NULL DEFAULT 'verified'",
+            "author_name": "TEXT NOT NULL DEFAULT ''",
+            "author_url": "TEXT NOT NULL DEFAULT ''",
+            "author_avatar_url": "TEXT NOT NULL DEFAULT ''",
+            "source_repo": "TEXT NOT NULL DEFAULT ''",
+            "license": "TEXT NOT NULL DEFAULT 'MIT'",
+            "changelog": "TEXT NOT NULL DEFAULT ''",
+            "compatibility": "TEXT NOT NULL DEFAULT ''",
+        }
+        for col, typedef in v3_columns.items():
+            if col not in existing:
+                cur.execute(f"ALTER TABLE listings ADD COLUMN {col} {typedef}")
+        self._conn.commit()
 
     def _migrate_v2(self) -> None:
         """Add v2 columns to existing databases (safe to run multiple times)."""
@@ -167,9 +190,12 @@ class MarketplaceStore:
                  ratings_count, tags, status, created_at, updated_at,
                  difficulty, setup_time_minutes, persona_tags, before_after,
                  skill_scan, works_with, demo_url, setup_steps,
-                 user_stories, hero_animation)
+                 user_stories, hero_animation,
+                 trust_tier, author_name, author_url, author_avatar_url,
+                 source_repo, license, changelog, compatibility)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 listing.id,
@@ -198,6 +224,14 @@ class MarketplaceStore:
                 json.dumps(listing.setup_steps),
                 json.dumps(listing.user_stories),
                 listing.hero_animation,
+                listing.trust_tier.value if hasattr(listing.trust_tier, "value") else listing.trust_tier,
+                listing.author_name,
+                listing.author_url,
+                listing.author_avatar_url,
+                listing.source_repo,
+                listing.license,
+                listing.changelog,
+                listing.compatibility,
             ),
         )
         self._conn.commit()
@@ -282,6 +316,14 @@ class MarketplaceStore:
             "setup_steps",
             "user_stories",
             "hero_animation",
+            "trust_tier",
+            "author_name",
+            "author_url",
+            "author_avatar_url",
+            "source_repo",
+            "license",
+            "changelog",
+            "compatibility",
         }
         filtered = {k: v for k, v in updates.items() if k in allowed}
         if not filtered:
@@ -320,6 +362,11 @@ class MarketplaceStore:
             val = filtered["status"]
             if hasattr(val, "value"):
                 filtered["status"] = val.value
+
+        if "trust_tier" in filtered:
+            val = filtered["trust_tier"]
+            if hasattr(val, "value"):
+                filtered["trust_tier"] = val.value
 
         filtered["updated_at"] = datetime.now(timezone.utc).isoformat()
 
