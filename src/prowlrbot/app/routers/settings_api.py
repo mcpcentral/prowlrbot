@@ -105,7 +105,8 @@ async def get_all_settings() -> Dict[str, Any]:
         "privacy": privacy,
         "autonomy_defaults": autonomy_defaults,
         "notification_preferences": notification_prefs,
-        "theme": general.get("theme", "system"),
+        # Default to light mode for a brighter, more neutral first impression.
+        "theme": general.get("theme", "light"),
         "color_theme": general.get("color_theme", "tech-innovation"),
     }
 

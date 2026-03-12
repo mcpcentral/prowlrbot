@@ -26,8 +26,82 @@ When you run 4 Claude Code terminals on the same codebase, they can't see each o
 
 ## Quick Start
 
-> **Shortest path:** Tell your Claude Code agent:
-> *"Connect me to the ProwlrBot war room using https://github.com/prowlrbot/prowlrbot/blob/main/INSTALL.md"*
+> **Shortest path (Claude does it for you):**  
+> Tell your Claude Code agent in this project:  
+> *"Connect this project to the ProwlrBot war room using  
+> https://github.com/prowlrbot/prowlrbot/blob/main/INSTALL.md.  
+> The prowlrbot repo lives at `~/dev/prowlrbot`."*
+>
+> The agent will clone/update the repo if needed, ask for an agent name + capabilities,
+> configure the MCP server, and verify the connection.
+
+### Common Setups
+
+#### Single machine (all terminals on same OS)
+
+If you prefer to wire it up yourself:
+
+1. Install once per machine:
+
+   ```bash
+   git clone https://github.com/prowlrbot/prowlrbot.git
+   cd prowlrbot
+   pip install -e .
+   ```
+
+2. In your **project** root, create or update `.mcp.json`:
+
+   ```jsonc
+   {
+     "mcpServers": {
+       "prowlr-hub": {
+         "command": "python3",
+         "args": ["-m", "prowlrbot.hub"],
+         "cwd": "/path/to/prowlrbot",
+         "env": {
+           "PYTHONPATH": "/path/to/prowlrbot/src",
+           "PROWLR_AGENT_NAME": "my-agent",
+           "PROWLR_CAPABILITIES": "code,review"
+         }
+       }
+     }
+   }
+   ```
+
+3. Fully restart Claude Code and ask your agent to call `check_mission_board`.
+   If you see the board (even if empty), this terminal is in the War Room.
+
+#### Mac + WSL (bridge mode)
+
+On the **host** machine that owns the database (for example, macOS):
+
+```bash
+cd prowlrbot
+PYTHONPATH=src python3 -m prowlrbot.hub.bridge
+# Bridge listens on http://<host-ip>:8099
+```
+
+On the **remote** terminal (for example, WSL), add `PROWLR_HUB_URL`:
+
+```jsonc
+{
+  "mcpServers": {
+    "prowlr-hub": {
+      "command": "python3",
+      "args": ["-m", "prowlrbot.hub"],
+      "cwd": "/path/to/prowlrbot",
+      "env": {
+        "PYTHONPATH": "/path/to/prowlrbot/src",
+        "PROWLR_AGENT_NAME": "wsl-agent",
+        "PROWLR_CAPABILITIES": "code,testing",
+        "PROWLR_HUB_URL": "http://<host-ip>:8099"
+      }
+    }
+  }
+}
+```
+
+Restart Claude on both sides and run `check_mission_board` — you should see a single shared mission board.
 
 ### Manual Setup
 

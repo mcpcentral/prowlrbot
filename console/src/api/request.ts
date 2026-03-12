@@ -1,5 +1,11 @@
 import { getApiUrl, getApiToken } from "./config";
 
+export function getCsrfToken(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 function buildHeaders(method?: string, extra?: HeadersInit): Headers {
   // Normalize extra to a Headers instance for consistent handling
   const headers = extra instanceof Headers ? extra : new Headers(extra);
@@ -16,6 +22,14 @@ function buildHeaders(method?: string, extra?: HeadersInit): Headers {
   const token = getApiToken();
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  // Attach CSRF token for state-changing requests when available.
+  if (!method || !["GET", "HEAD", "OPTIONS"].includes(method.toUpperCase())) {
+    const csrf = getCsrfToken();
+    if (csrf && !headers.has("x-csrf-token")) {
+      headers.set("x-csrf-token", csrf);
+    }
   }
 
   return headers;

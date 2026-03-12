@@ -11,9 +11,18 @@ from starlette.responses import Response
 
 # Default Content-Security-Policy directives suitable for the ProwlrBot console
 # (React + Vite dev + Ant Design).
+#
+# NOTE:
+# - We intentionally avoid ``'strict-dynamic'`` here because the console is
+#   served as a static HTML shell with a compiled JS bundle (no nonces or
+#   hashes).  With ``'strict-dynamic'`` and no trusted script via nonce/hash,
+#   Chrome will ignore host-based allow‑listing and block the main bundle,
+#   resulting in a blank screen.
 DEFAULT_CSP_DIRECTIVES: dict[str, str] = {
     "default-src": "'self'",
-    "script-src": "'self' 'strict-dynamic'",
+    # Allow same‑origin scripts (including bundled assets) but keep inline
+    # scripts disabled by default.
+    "script-src": "'self'",
     "style-src": "'self' 'unsafe-inline'",  # CSS inline is low risk
     "img-src": "'self' data: blob:",
     "font-src": "'self' data:",

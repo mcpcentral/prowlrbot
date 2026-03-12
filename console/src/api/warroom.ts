@@ -67,7 +67,10 @@ export function connectWarRoomWS(
 ): () => void {
   // Connect to same origin — no CORS issues
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  const wsUrl = `${protocol}//${window.location.host}/ws/warroom`;
+  const token = import.meta.env.VITE_WARROOM_TOKEN as string | undefined;
+  const wsUrl = `${protocol}//${window.location.host}/ws/warroom${
+    token ? `?token=${encodeURIComponent(token)}` : ""
+  }`;
   let ws: WebSocket | null = null;
   let pingTimer: ReturnType<typeof setInterval> | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;

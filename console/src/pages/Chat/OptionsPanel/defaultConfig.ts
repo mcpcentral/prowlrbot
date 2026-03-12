@@ -31,7 +31,7 @@ const defaultConfig = {
     baseURL: "",
     token: "",
   },
-} as const;
+};
 
 export default defaultConfig;
 

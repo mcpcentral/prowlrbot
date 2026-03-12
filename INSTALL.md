@@ -8,6 +8,27 @@
 
 ---
 
+## One-Command Wizard (optional)
+
+If you prefer to run a guided wizard yourself instead of having Claude handle it,
+use the bundled script from inside the `prowlrbot` repo:
+
+```bash
+cd prowlrbot
+./scripts/setup-warroom.sh
+```
+
+The wizard will:
+
+- check Python and the `prowlrbot` install
+- initialize `~/.prowlrbot/warroom.db`
+- ask for an **agent name** and **capabilities**
+- print the exact `.mcp.json` snippet you can paste into your project
+
+You can then restart Claude Code and verify with `check_mission_board`.
+
+---
+
 ## For the Agent
 
 You are setting up ProwlrHub — a shared war room that connects multiple Claude Code terminals so they can coordinate instead of stepping on each other's work.

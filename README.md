@@ -189,6 +189,90 @@ The killer feature: multiple AI agents coordinate in real‑time without steppin
 # It handles everything.
 ```
 
+#### War Room – Quick Recipes
+
+You can either let Claude handle setup, or do it manually.
+
+- **Ask Claude (single machine, all terminals on same OS)**
+
+  In each project where you want coordination, say:
+
+  > "Connect this project to the ProwlrBot War Room using  
+  > https://github.com/prowlrbot/prowlrbot/blob/main/INSTALL.md.  
+  > The prowlrbot repo is already cloned at `~/dev/prowlrbot`."
+
+  Claude will:
+
+  - verify `prowlrbot` is installed
+  - register the `prowlr-hub` MCP server
+  - ask for an **agent name** and **capabilities**
+  - restart so War Room tools appear (`check_mission_board`, `claim_task`, …)
+
+- **Manual single‑machine setup (power users)**
+
+  1. Install once per machine:
+
+     ```bash
+     git clone https://github.com/ProwlrBot/prowlrbot.git
+     cd prowlrbot
+     pip install -e .
+     ```
+
+  2. In your project root, create/update `.mcp.json`:
+
+     ```jsonc
+     {
+       "mcpServers": {
+         "prowlr-hub": {
+           "command": "python3",
+           "args": ["-m", "prowlrbot.hub"],
+           "cwd": "/home/you/dev/prowlrbot",
+           "env": {
+             "PYTHONPATH": "/home/you/dev/prowlrbot/src",
+             "PROWLR_AGENT_NAME": "frontend",
+             "PROWLR_CAPABILITIES": "react,typescript,css"
+           }
+         }
+       }
+     }
+     ```
+
+  3. Fully restart Claude Code, then say:
+
+     > "Call `check_mission_board` and `get_agents` so I can see the War Room."
+
+- **Mac + WSL (cross‑machine)**
+
+  - On the **host** (e.g. Mac) that owns the DB:
+
+    ```bash
+    cd ~/dev/prowlrbot
+    PYTHONPATH=src python3 -m prowlrbot.hub.bridge
+    # Bridge listens on http://<HOST-IP>:8099
+    ```
+
+  - On the **remote** (e.g. WSL) project `.mcp.json`:
+
+    ```jsonc
+    {
+      "mcpServers": {
+        "prowlr-hub": {
+          "command": "python3",
+          "args": ["-m", "prowlrbot.hub"],
+          "cwd": "/home/you/dev/prowlrbot",
+          "env": {
+            "PYTHONPATH": "/home/you/dev/prowlrbot/src",
+            "PROWLR_AGENT_NAME": "wsl-dev",
+            "PROWLR_CAPABILITIES": "python,testing",
+            "PROWLR_HUB_URL": "http://<HOST-IP>:8099"
+          }
+        }
+      }
+    }
+    ```
+
+  Restart Claude on both sides and run `check_mission_board` — if you see a single shared board, your terminals are in the same War Room.
+
 **Mission Board (live dashboard):**
 
 ```

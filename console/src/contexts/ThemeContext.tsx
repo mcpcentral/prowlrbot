@@ -34,11 +34,12 @@ function resolveIsDark(mode: "light" | "dark" | "system"): boolean {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ThemeState>({
-    mode: (localStorage.getItem("prowlrbot-theme-mode") as ThemeState["mode"]) || "system",
+    // Default to light for a more welcoming first-run experience.
+    mode: (localStorage.getItem("prowlrbot-theme-mode") as ThemeState["mode"]) || "light",
     colorThemeId: localStorage.getItem("prowlrbot-color-theme") || "tech-innovation",
     colors: null,
     isDark: resolveIsDark(
-      (localStorage.getItem("prowlrbot-theme-mode") as ThemeState["mode"]) || "system",
+      (localStorage.getItem("prowlrbot-theme-mode") as ThemeState["mode"]) || "light",
     ),
   });
 
