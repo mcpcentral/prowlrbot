@@ -497,6 +497,22 @@ def market_categories():
     click.echo()
 
 
+# ── Seed ────────────────────────────────────────────────────────────────────
+
+
+@market_group.command(name="seed")
+def market_seed():
+    """Seed marketplace with launch bundles and official listings."""
+    from ..marketplace.seed import seed_bundles
+
+    store = _get_store()
+    bundles_created = seed_bundles(store)
+    click.echo(f"\n  Seeded {bundles_created} bundles")
+    click.echo("  Run 'prowlr market bundles' to see them.")
+    click.echo()
+    store.close()
+
+
 # ── Ecosystem repos ─────────────────────────────────────────────────────────
 
 
