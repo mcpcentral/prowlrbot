@@ -47,18 +47,22 @@ async def publish_listing(listing: MarketplaceListing) -> MarketplaceListing:
 @router.get("/listings", response_model=list[MarketplaceListing])
 async def search_listings(
     query: str = "",
+    q: str = "",
     category: Optional[str] = None,
     persona: Optional[str] = None,
     difficulty: Optional[str] = None,
+    sort: str = "popular",
     limit: int = 50,
 ) -> list[MarketplaceListing]:
-    """Search marketplace listings by query, category, persona, and/or difficulty."""
+    """Search marketplace listings."""
+    search_query = q or query  # accept both q and query
     limit = max(1, min(limit, 200))
     return _get_store().search_listings(
-        query=query,
+        query=search_query,
         category=category,
         persona=persona,
         difficulty=difficulty,
+        sort=sort,
         limit=limit,
     )
 

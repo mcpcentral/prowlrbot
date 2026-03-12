@@ -265,6 +265,7 @@ class MarketplaceStore:
         tags: Optional[list[str]] = None,
         persona: Optional[str] = None,
         difficulty: Optional[str] = None,
+        sort: str = "popular",
         limit: int = 50,
     ) -> list[MarketplaceListing]:
         """Search listings by text, category, tags, persona, and/or difficulty."""
@@ -294,7 +295,14 @@ class MarketplaceStore:
             params.append(difficulty)
 
         where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-        sql = f"SELECT * FROM listings {where} ORDER BY downloads DESC LIMIT ?"
+        sort_map = {
+            "popular": "downloads DESC",
+            "top_rated": "rating DESC",
+            "newest": "created_at DESC",
+            "alpha": "title ASC",
+        }
+        order = sort_map.get(sort, "downloads DESC")
+        sql = f"SELECT * FROM listings {where} ORDER BY {order} LIMIT ?"
         params.append(limit)
 
         rows = self._conn.execute(sql, params).fetchall()
