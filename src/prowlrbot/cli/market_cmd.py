@@ -379,6 +379,112 @@ def market_review(listing_id: str, rating: int, comment: str):
     store.close()
 
 
+# ── Bundles ─────────────────────────────────────────────────────────────────
+
+
+@market_group.command(name="bundles")
+def market_bundles():
+    """List curated skill bundles."""
+    store = _get_store()
+    bundles = store.list_bundles()
+    if not bundles:
+        click.echo("No bundles available.")
+        store.close()
+        return
+
+    click.echo("\n  Curated Bundles:")
+    click.echo(f"  {'ID':<22} {'Name':<20} {'Items':<6} {'Installs'}")
+    click.echo(f"  {'─'*22} {'─'*20} {'─'*6} {'─'*10}")
+    for b in bundles:
+        click.echo(
+            f"  {b.id:<22} {b.name:<20} {len(b.listing_ids):<6} {b.install_count}"
+        )
+    click.echo()
+    store.close()
+
+
+@market_group.command(name="install-bundle")
+@click.argument("bundle_id")
+def market_install_bundle(bundle_id: str):
+    """Install all skills in a curated bundle."""
+    store = _get_store()
+    bundle = store.get_bundle(bundle_id)
+    if not bundle:
+        click.echo(
+            f"Bundle '{bundle_id}' not found. Run 'prowlr market bundles' to see available."
+        )
+        store.close()
+        return
+
+    click.echo(f"\n  Installing bundle: {bundle.name}")
+    click.echo(f"  {len(bundle.listing_ids)} items\n")
+
+    installed = 0
+    for lid in bundle.listing_ids:
+        listing = store.get_listing(lid)
+        if listing is None:
+            click.echo(f"    SKIP  {lid} (not found)")
+            continue
+        record = InstallRecord(
+            listing_id=lid, user_id="local", version=listing.version
+        )
+        store.record_install(record)
+        click.echo(f"    OK    {listing.title}")
+        installed += 1
+
+    store.increment_bundle_installs(bundle_id)
+    click.echo(f"\n  Installed {installed}/{len(bundle.listing_ids)} items")
+    store.close()
+
+
+# ── Detail ──────────────────────────────────────────────────────────────────
+
+
+@market_group.command(name="detail")
+@click.argument("listing_id")
+def market_detail(listing_id: str):
+    """Show full details for a marketplace listing."""
+    store = _get_store()
+    listing = store.get_listing(listing_id)
+    if not listing:
+        click.echo(f"Package '{listing_id}' not found.")
+        store.close()
+        return
+
+    badge = (
+        "OFFICIAL"
+        if getattr(listing, "trust_tier", "") == "official"
+        else "VERIFIED"
+    )
+    click.echo(f"\n  {listing.title} [{badge}]")
+    click.echo(f"  {'─' * 50}")
+    click.echo(
+        f"  Author:      {getattr(listing, 'author_name', listing.author_id)}"
+    )
+    click.echo(f"  Version:     {listing.version}")
+    click.echo(f"  Category:    {listing.category}")
+    click.echo(f"  License:     {getattr(listing, 'license', 'MIT')}")
+    click.echo(f"  Downloads:   {listing.downloads}")
+    click.echo(
+        f"  Rating:      {'%.1f' % listing.rating}/5 ({listing.ratings_count} reviews)"
+    )
+    click.echo(f"  Install:     prowlr market install {listing.id}")
+    if listing.description:
+        click.echo(f"\n  {listing.description}")
+
+    reviews = store.get_reviews(listing_id, limit=5)
+    if reviews:
+        click.echo(f"\n  Recent Reviews:")
+        for r in reviews:
+            stars = "*" * r.rating + "." * (5 - r.rating)
+            click.echo(
+                f"    {stars}  {r.comment[:60] if r.comment else '(no comment)'}"
+            )
+
+    click.echo()
+    store.close()
+
+
 # ── Categories ───────────────────────────────────────────────────────────────
 
 
