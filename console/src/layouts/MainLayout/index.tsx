@@ -31,6 +31,9 @@ import MemoryPage from "../../pages/Memory";
 import SwarmPage from "../../pages/Swarm";
 import SoulEditorPage from "../../pages/Agent/SoulEditor";
 import TeamBuilderPage from "../../pages/Agent/TeamBuilder";
+import ResearchPage from "../../pages/Research";
+import ReplayPage from "../../pages/Replay";
+import ExternalAgentsPage from "../../pages/ExternalAgents";
 
 const { Content } = Layout;
 
@@ -116,6 +119,9 @@ export default function MainLayout() {
               <Route path="/swarm" element={<SwarmPage />} />
               <Route path="/soul-editor" element={<SoulEditorPage />} />
               <Route path="/team-builder" element={<TeamBuilderPage />} />
+              <Route path="/research" element={<ResearchPage />} />
+              <Route path="/replay" element={<ReplayPage />} />
+              <Route path="/external-agents" element={<ExternalAgentsPage />} />
               <Route path="/" element={<Dashboard />} />
             </Routes>
           </div>

@@ -38,7 +38,7 @@ TIER_CONFIGS: Dict[str, RateLimitConfig] = {
         requests_per_minute=200, requests_per_hour=8000, burst_size=30
     ),
     "anonymous": RateLimitConfig(
-        requests_per_minute=30, requests_per_hour=500, burst_size=5
+        requests_per_minute=200, requests_per_hour=5000, burst_size=30
     ),
 }
 

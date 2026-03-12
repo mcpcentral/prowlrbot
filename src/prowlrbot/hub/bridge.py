@@ -219,7 +219,12 @@ def create_bridge_app() -> FastAPI:
     app.add_middleware(CSRFMiddleware)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:8088", "http://127.0.0.1:8088"],
+        allow_origins=[
+            "http://localhost:8088",
+            "http://127.0.0.1:8088",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ],
         allow_methods=["GET", "POST"],
         allow_headers=["Content-Type", "Authorization"],
         allow_credentials=False,

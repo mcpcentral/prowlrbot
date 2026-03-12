@@ -237,7 +237,7 @@ def get_version():
 from fastapi import Depends
 
 # --- Rate Limiting ---
-app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
+app.add_middleware(RateLimitMiddleware, max_requests=500, window_seconds=60)
 
 # --- API Authentication ---
 auth_config = AuthConfig(
