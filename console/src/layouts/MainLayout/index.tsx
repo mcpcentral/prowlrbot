@@ -16,6 +16,7 @@ import MCPPage from "../../pages/Agent/MCP";
 import ModelsPage from "../../pages/Settings/Models";
 import EnvironmentsPage from "../../pages/Settings/Environments";
 import MarketplacePage from "../../pages/Marketplace";
+import ListingDetailPage from "../../pages/Marketplace/ListingDetail";
 import AgentVersePage from "../../pages/AgentVerse";
 import SecurityPage from "../../pages/Settings/Security";
 import PrivacyPage from "../../pages/Settings/Privacy";
@@ -85,6 +86,7 @@ export default function MainLayout() {
               <Route path="/environments" element={<EnvironmentsPage />} />
               <Route path="/agent-config" element={<AgentConfigPage />} />
               <Route path="/marketplace" element={<MarketplacePage />} />
+              <Route path="/marketplace/:id" element={<ListingDetailPage />} />
               <Route path="/agentverse" element={<AgentVersePage />} />
               <Route path="/security" element={<SecurityPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />

@@ -3,6 +3,7 @@ import { ConfigProvider, bailianTheme } from "@agentscope-ai/design";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import MainLayout from "./layouts/MainLayout";
+import "./styles/theme.css";
 import "./styles/layout.css";
 import "./styles/form-override.css";
 

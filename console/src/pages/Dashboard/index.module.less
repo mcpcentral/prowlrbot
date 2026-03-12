@@ -17,10 +17,10 @@
 }
 
 .statCard {
-  background: #fff;
+  background: var(--pb-bg-card);
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--pb-border);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -28,7 +28,7 @@
   cursor: default;
 
   &:hover {
-    border-color: #d9d9d9;
+    border-color: var(--pb-border-strong);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 }
@@ -52,13 +52,13 @@
   font-size: 28px;
   font-weight: 700;
   line-height: 1.1;
-  color: #1a1a2e;
+  color: var(--pb-text-primary);
   letter-spacing: -0.5px;
 }
 
 .statLabel {
   font-size: 13px;
-  color: #8c8c8c;
+  color: var(--pb-text-tertiary);
   margin-top: 2px;
 }
 
@@ -73,9 +73,9 @@
 
 /* ── Panel shared ── */
 .panel {
-  background: #fff;
+  background: var(--pb-bg-card);
   border-radius: 12px;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--pb-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -86,14 +86,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--pb-bg-sunken);
   flex-shrink: 0;
 }
 
 .panelTitle {
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--pb-text-primary);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -114,10 +114,10 @@
 }
 
 .agentCard {
-  background: #fafafa;
+  background: var(--pb-bg-sunken);
   border-radius: 10px;
   padding: 16px;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--pb-border);
   display: flex;
   gap: 14px;
   align-items: flex-start;
@@ -126,7 +126,7 @@
 
   &:hover {
     border-color: #6B5CE7;
-    background: #f8f7ff;
+    background: var(--pb-bg-hover);
     box-shadow: 0 2px 8px rgba(107, 92, 231, 0.1);
   }
 }
@@ -152,7 +152,7 @@
 .agentName {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--pb-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -160,7 +160,7 @@
 
 .agentMeta {
   font-size: 12px;
-  color: #8c8c8c;
+  color: var(--pb-text-tertiary);
   margin-top: 2px;
   display: flex;
   align-items: center;
@@ -185,7 +185,7 @@
 }
 
 .agentStatusOffline {
-  background: #d9d9d9;
+  background: var(--pb-border-strong);
 }
 
 .agentTags {
@@ -199,7 +199,7 @@
   font-size: 11px;
   padding: 1px 8px;
   border-radius: 4px;
-  background: #f0f0ff;
+  background: var(--pb-tint-purple);
   color: #6B5CE7;
   border: none;
   font-weight: 500;
@@ -210,7 +210,7 @@
   display: flex;
   gap: 12px;
   padding: 10px 0;
-  border-bottom: 1px solid #fafafa;
+  border-bottom: 1px solid var(--pb-bg-sunken);
   align-items: flex-start;
 
   &:last-child {
@@ -236,13 +236,13 @@
 
 .activityText {
   font-size: 13px;
-  color: #1a1a2e;
+  color: var(--pb-text-primary);
   line-height: 1.4;
 }
 
 .activityTime {
   font-size: 11px;
-  color: #bfbfbf;
+  color: var(--pb-text-disabled);
   margin-top: 2px;
 }
 
@@ -260,14 +260,14 @@
   gap: 10px;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid #f0f0f0;
-  background: #fafafa;
+  border: 1px solid var(--pb-border);
+  background: var(--pb-bg-sunken);
   cursor: pointer;
   transition: all 0.15s ease;
 
   &:hover {
     border-color: #6B5CE7;
-    background: #f8f7ff;
+    background: var(--pb-bg-hover);
   }
 }
 
@@ -284,7 +284,7 @@
 .quickActionLabel {
   font-size: 13px;
   font-weight: 500;
-  color: #1a1a2e;
+  color: var(--pb-text-primary);
 }
 
 /* ── Empty State ── */
@@ -294,7 +294,7 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  color: #bfbfbf;
+  color: var(--pb-text-disabled);
   gap: 12px;
 }
 
@@ -305,7 +305,7 @@
 
 .emptyText {
   font-size: 14px;
-  color: #8c8c8c;
+  color: var(--pb-text-tertiary);
 }
 
 /* ── Health Dot ── */

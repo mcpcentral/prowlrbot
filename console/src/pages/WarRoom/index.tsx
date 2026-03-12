@@ -24,13 +24,13 @@ function TaskDetailDrawer({
       onClose={onClose}
       width={420}
       styles={{
-        header: { background: "#12121a", borderBottom: "1px solid #1e1e2e", color: "#e0e0e0" },
-        body: { background: "#0a0a0f", color: "#e0e0e0" },
+        header: { background: "var(--pb-wr-bg-panel)", borderBottom: "1px solid var(--pb-wr-border)", color: "var(--pb-wr-text)" },
+        body: { background: "var(--pb-wr-bg-deep)", color: "var(--pb-wr-text)" },
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <div>
-          <div style={{ color: "#888", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
+          <div style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
             Status
           </div>
           <span
@@ -80,10 +80,10 @@ function TaskDetailDrawer({
 
         {task.description && (
           <div>
-            <div style={{ color: "#888", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
               Description
             </div>
-            <div style={{ fontSize: 13, color: "#ccc", lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: "var(--pb-wr-text)", lineHeight: 1.5 }}>
               {task.description}
             </div>
           </div>
@@ -91,7 +91,7 @@ function TaskDetailDrawer({
 
         {task.owner_name && (
           <div>
-            <div style={{ color: "#888", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
               Owner
             </div>
             <div style={{ fontSize: 13, color: "#14b8a6" }}>
@@ -102,7 +102,7 @@ function TaskDetailDrawer({
 
         {task.file_scopes.length > 0 && (
           <div>
-            <div style={{ color: "#888", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
               File Scopes
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -112,7 +112,7 @@ function TaskDetailDrawer({
                   style={{
                     fontSize: 11,
                     color: "#8b5cf6",
-                    background: "#1e1e2e",
+                    background: "var(--pb-wr-border)",
                     padding: "2px 6px",
                     borderRadius: 3,
                   }}
@@ -141,14 +141,14 @@ function TaskDetailDrawer({
 
         {task.progress_note && (
           <div>
-            <div style={{ color: "#888", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
               Progress Note
             </div>
             <div
               style={{
                 fontSize: 12,
-                color: "#aaa",
-                background: "#1a1a2e",
+                color: "var(--pb-wr-text-secondary)",
+                background: "var(--pb-wr-bg-card)",
                 padding: 8,
                 borderRadius: 4,
                 whiteSpace: "pre-wrap",
@@ -159,7 +159,7 @@ function TaskDetailDrawer({
           </div>
         )}
 
-        <div style={{ display: "flex", gap: 16, fontSize: 11, color: "#555", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 16, fontSize: 11, color: "var(--pb-wr-text-tertiary)", flexWrap: "wrap" }}>
           {task.created_at && (
             <span>Created: {new Date(task.created_at).toLocaleString()}</span>
           )}
@@ -234,7 +234,7 @@ export default function WarRoomPage() {
   }, []);
 
   return (
-    <div style={{ padding: 24, background: "#0a0a0f", minHeight: "100%" }}>
+    <div style={{ padding: 24, background: "var(--pb-wr-bg-deep)", minHeight: "100%" }}>
       {/* Header */}
       <div
         style={{
@@ -247,7 +247,7 @@ export default function WarRoomPage() {
         <div>
           <h1
             style={{
-              color: "#e0e0e0",
+              color: "var(--pb-wr-text)",
               fontSize: 22,
               fontWeight: 700,
               margin: 0,
@@ -256,7 +256,7 @@ export default function WarRoomPage() {
           >
             War Room
           </h1>
-          <div style={{ color: "#555", fontSize: 12, marginTop: 2 }}>
+          <div style={{ color: "var(--pb-wr-text-tertiary)", fontSize: 12, marginTop: 2 }}>
             Multi-agent coordination dashboard
           </div>
         </div>
@@ -284,7 +284,7 @@ export default function WarRoomPage() {
             />
             {connected ? "Live" : "Polling"}
           </span>
-          <span style={{ color: "#888", fontSize: 11 }}>
+          <span style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11 }}>
             {agents.filter((a) => a.status !== "disconnected").length} agents |{" "}
             {tasks.length} tasks
           </span>

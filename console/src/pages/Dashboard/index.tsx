@@ -61,14 +61,14 @@ function timeAgo(iso: string): string {
 }
 
 const EVENT_ICON_MAP: Record<string, { icon: string; bg: string }> = {
-  tool_call: { icon: "\u{1F527}", bg: "#e6f4ff" },
-  reasoning: { icon: "\u{1F9E0}", bg: "#fff7e6" },
-  task_update: { icon: "\u{2705}", bg: "#f6ffed" },
-  monitor_alert: { icon: "\u{1F6A8}", bg: "#fff2f0" },
-  mcp_request: { icon: "\u{1F50C}", bg: "#f0f5ff" },
-  stream_token: { icon: "\u{1F4AC}", bg: "#f5f0ff" },
-  agent_status: { icon: "\u{1F916}", bg: "#f0f0f0" },
-  error: { icon: "\u{274C}", bg: "#fff2f0" },
+  tool_call: { icon: "\u{1F527}", bg: "var(--pb-tint-blue)" },
+  reasoning: { icon: "\u{1F9E0}", bg: "var(--pb-tint-orange)" },
+  task_update: { icon: "\u{2705}", bg: "var(--pb-tint-green)" },
+  monitor_alert: { icon: "\u{1F6A8}", bg: "var(--pb-tint-red)" },
+  mcp_request: { icon: "\u{1F50C}", bg: "var(--pb-tint-blue)" },
+  stream_token: { icon: "\u{1F4AC}", bg: "var(--pb-tint-purple)" },
+  agent_status: { icon: "\u{1F916}", bg: "var(--pb-bg-sunken)" },
+  error: { icon: "\u{274C}", bg: "var(--pb-tint-red)" },
 };
 
 // ── Default demo agents when no agents are configured ──
@@ -159,7 +159,7 @@ export default function Dashboard() {
 
             const meta = EVENT_ICON_MAP[data.type] || {
               icon: "\u{1F4E1}",
-              bg: "#f0f0f0",
+              bg: "var(--pb-bg-sunken)",
             };
             const event: ActivityEvent = {
               id: Date.now() + Math.random(),
@@ -209,29 +209,29 @@ export default function Dashboard() {
   const statCards = [
     {
       icon: <Bot size={22} />,
-      bg: "#f0f5ff",
-      iconColor: "#2f54eb",
+      bg: "var(--pb-tint-blue)",
+      iconColor: "var(--pb-icon-blue)",
       value: stats.agents,
       label: "Active Agents",
     },
     {
       icon: <Wifi size={22} />,
-      bg: "#f6ffed",
-      iconColor: "#52c41a",
+      bg: "var(--pb-tint-green)",
+      iconColor: "var(--pb-icon-green)",
       value: stats.channels,
       label: "Channels",
     },
     {
       icon: <Sparkles size={22} />,
-      bg: "#fff7e6",
-      iconColor: "#fa8c16",
+      bg: "var(--pb-tint-orange)",
+      iconColor: "var(--pb-icon-orange)",
       value: stats.skills,
       label: "Skills",
     },
     {
       icon: <Shield size={22} />,
-      bg: "#f0f0ff",
-      iconColor: "#6B5CE7",
+      bg: "var(--pb-tint-purple)",
+      iconColor: "var(--pb-icon-purple)",
       value: stats.uptime,
       label: "Version",
     },
@@ -241,25 +241,25 @@ export default function Dashboard() {
   const quickActions = [
     {
       icon: <Plus size={16} />,
-      bg: "#f0f5ff",
+      bg: "var(--pb-tint-blue)",
       label: "New Agent",
       onClick: () => navigate("/agent-config"),
     },
     {
       icon: <MessageSquare size={16} />,
-      bg: "#f6ffed",
+      bg: "var(--pb-tint-green)",
       label: "Open Chat",
       onClick: () => navigate("/chat"),
     },
     {
       icon: <Layers size={16} />,
-      bg: "#fff7e6",
+      bg: "var(--pb-tint-orange)",
       label: "Manage Skills",
       onClick: () => navigate("/skills"),
     },
     {
       icon: <Globe size={16} />,
-      bg: "#f0f0ff",
+      bg: "var(--pb-tint-purple)",
       label: "Channels",
       onClick: () => navigate("/channels"),
     },
@@ -370,8 +370,8 @@ export default function Dashboard() {
                   gap: 8,
                 }}
               >
-                <Plus size={24} color="#bfbfbf" />
-                <span style={{ fontSize: 13, color: "#8c8c8c" }}>
+                <Plus size={24} color="var(--pb-text-disabled)" />
+                <span style={{ fontSize: 13, color: "var(--pb-text-tertiary)" }}>
                   Add Agent
                 </span>
               </div>
@@ -421,7 +421,7 @@ export default function Dashboard() {
                   />
                 )}
               </span>
-              <span style={{ fontSize: 11, color: "#bfbfbf" }}>
+              <span style={{ fontSize: 11, color: "var(--pb-text-disabled)" }}>
                 {wsConnected ? "Live" : "Connecting..."}
               </span>
             </div>

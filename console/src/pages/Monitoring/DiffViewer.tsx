@@ -50,7 +50,7 @@ export default function DiffViewer({ monitorId, onClose }: Props) {
                     style={{
                       marginTop: 8,
                       padding: 8,
-                      background: "#f5f5f5",
+                      background: "var(--pb-bg-sunken)",
                       borderRadius: 4,
                       fontSize: 12,
                       maxHeight: 200,

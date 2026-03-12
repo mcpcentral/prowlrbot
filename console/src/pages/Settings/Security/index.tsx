@@ -390,7 +390,7 @@ function SecurityPage() {
           {/* ---- Rate Limiting ---- */}
           <div className={styles.cardSection}>
             <div className={styles.cardSectionTitle}>Rate Limiting</div>
-            <p style={{ color: "#666", fontSize: 13, marginBottom: 16 }}>
+            <p style={{ color: "var(--pb-text-secondary)", fontSize: 13, marginBottom: 16 }}>
               Current rate limit configurations per tier. These limits apply to
               API requests and agent interactions.
             </p>
@@ -408,7 +408,7 @@ function SecurityPage() {
             <div className={styles.cardSectionTitle}>
               Skill Sandbox Trust Levels
             </div>
-            <p style={{ color: "#666", fontSize: 13, marginBottom: 16 }}>
+            <p style={{ color: "var(--pb-text-secondary)", fontSize: 13, marginBottom: 16 }}>
               Skills are assigned trust levels that determine their access to
               system resources. Higher trust levels allow more capabilities.
             </p>

@@ -222,8 +222,8 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
     <Sider
       width={260}
       style={{
-        background: "#fff",
-        borderRight: "1px solid #f0f0f0",
+        background: "var(--pb-bg-elevated)",
+        borderRight: "1px solid var(--pb-border)",
       }}
     >
       <div
@@ -245,7 +245,7 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           <span
             style={{
               fontSize: 11,
-              color: "#bbb",
+              color: "var(--pb-text-tertiary)",
               fontWeight: 400,
               lineHeight: 1,
             }}

@@ -43,11 +43,11 @@ export default function Header({ selectedKey }: HeaderProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        background: "#fff",
-        borderBottom: "1px solid #f0f0f0",
+        background: "var(--pb-bg-elevated)",
+        borderBottom: "1px solid var(--pb-border)",
       }}
     >
-      <span style={{ fontSize: 18, fontWeight: 500 }}>
+      <span style={{ fontSize: 18, fontWeight: 500, color: "var(--pb-text-primary)" }}>
         {(() => {
           const label = keyToLabel[selectedKey];
           if (!label) return t("nav.dashboard");

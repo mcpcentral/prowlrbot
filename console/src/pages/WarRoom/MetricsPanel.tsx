@@ -79,8 +79,8 @@ function StatCard({
   return (
     <div
       style={{
-        background: "#1a1a2e",
-        border: "1px solid #2e2e3e",
+        background: "var(--pb-wr-bg-card)",
+        border: "1px solid var(--pb-wr-border-strong)",
         borderRadius: 8,
         padding: "12px 16px",
         flex: 1,
@@ -89,7 +89,7 @@ function StatCard({
     >
       <div
         style={{
-          color: "#666",
+          color: "var(--pb-wr-text-dim)",
           fontSize: 10,
           textTransform: "uppercase",
           letterSpacing: 1,
@@ -101,7 +101,7 @@ function StatCard({
       <div style={{ color, fontSize: 24, fontWeight: 700, lineHeight: 1.2 }}>
         {value}
         {suffix && (
-          <span style={{ fontSize: 12, fontWeight: 400, color: "#888", marginLeft: 4 }}>
+          <span style={{ fontSize: 12, fontWeight: 400, color: "var(--pb-wr-text-secondary)", marginLeft: 4 }}>
             {suffix}
           </span>
         )}
@@ -157,8 +157,8 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
   const lockContention = useMemo(() => buildHourlyBuckets(events, "lock.acquired", 12), [events]);
 
   const chartTooltipStyle = {
-    background: "#1a1a2e",
-    border: "1px solid #2e2e3e",
+    background: "var(--pb-wr-bg-card)",
+    border: "1px solid var(--pb-wr-border-strong)",
     borderRadius: 4,
     fontSize: 11,
   };
@@ -168,8 +168,8 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
       <div
         onClick={() => setCollapsed(false)}
         style={{
-          background: "#12121a",
-          border: "1px solid #1e1e2e",
+          background: "var(--pb-wr-bg-panel)",
+          border: "1px solid var(--pb-wr-border)",
           borderRadius: 8,
           padding: "10px 16px",
           cursor: "pointer",
@@ -190,17 +190,17 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
           Metrics
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <span style={{ color: "#888", fontSize: 11 }}>
+          <span style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11 }}>
             {stats.activeAgents} agents | {stats.activeTasks} tasks | {stats.activeLocks} locks
           </span>
-          <span style={{ color: "#555", fontSize: 11 }}>Click to expand</span>
+          <span style={{ color: "var(--pb-wr-text-tertiary)", fontSize: 11 }}>Click to expand</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#12121a", border: "1px solid #1e1e2e", borderRadius: 8, padding: 16 }}>
+    <div style={{ background: "var(--pb-wr-bg-panel)", border: "1px solid var(--pb-wr-border)", borderRadius: 8, padding: 16 }}>
       {/* Header */}
       <div
         onClick={() => setCollapsed(true)}
@@ -223,7 +223,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         >
           Metrics
         </span>
-        <span style={{ color: "#555", fontSize: 11 }}>Click to collapse</span>
+        <span style={{ color: "var(--pb-wr-text-tertiary)", fontSize: 11 }}>Click to collapse</span>
       </div>
 
       {/* Summary Stats Row */}
@@ -267,7 +267,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         <div>
           <div
             style={{
-              color: "#888",
+              color: "var(--pb-wr-text-secondary)",
               fontSize: 11,
               marginBottom: 8,
               textTransform: "uppercase",
@@ -292,7 +292,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                 tickLine={false}
               />
               <YAxis hide allowDecimals={false} />
-              <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "#888" }} />
+              <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "var(--pb-wr-text-secondary)" }} />
               <Area
                 type="monotone"
                 dataKey="count"
@@ -309,7 +309,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         <div>
           <div
             style={{
-              color: "#888",
+              color: "var(--pb-wr-text-secondary)",
               fontSize: 11,
               marginBottom: 8,
               textTransform: "uppercase",
@@ -349,7 +349,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                     alignItems: "center",
                     gap: 6,
                     fontSize: 11,
-                    color: "#aaa",
+                    color: "var(--pb-wr-text-secondary)",
                   }}
                 >
                   <span
@@ -372,7 +372,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         <div>
           <div
             style={{
-              color: "#888",
+              color: "var(--pb-wr-text-secondary)",
               fontSize: 11,
               marginBottom: 8,
               textTransform: "uppercase",
@@ -391,7 +391,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                 tickLine={false}
               />
               <YAxis hide allowDecimals={false} />
-              <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "#888" }} />
+              <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "var(--pb-wr-text-secondary)" }} />
               <Bar dataKey="count" name="Locks" fill="#f97316" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

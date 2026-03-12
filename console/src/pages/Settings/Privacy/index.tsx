@@ -249,7 +249,7 @@ function PrivacyPage() {
           {/* ---- Data Retention ---- */}
           <div className={styles.cardSection}>
             <div className={styles.cardSectionTitle}>Data Retention</div>
-            <p style={{ color: "#666", fontSize: 13, marginBottom: 16 }}>
+            <p style={{ color: "var(--pb-text-secondary)", fontSize: 13, marginBottom: 16 }}>
               Set how long ProwlrBot retains chat logs, session recordings, and
               audit data. Older data is automatically purged.
             </p>
@@ -299,7 +299,7 @@ function PrivacyPage() {
           {/* ---- Data Export & Deletion ---- */}
           <div className={styles.cardSection}>
             <div className={styles.cardSectionTitle}>Data Management</div>
-            <p style={{ color: "#666", fontSize: 13, marginBottom: 16 }}>
+            <p style={{ color: "var(--pb-text-secondary)", fontSize: 13, marginBottom: 16 }}>
               Export or delete your data. Exported data includes chat history,
               session recordings, configuration, and audit logs.
             </p>

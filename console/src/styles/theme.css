@@ -1,0 +1,98 @@
+/* ──────────────────────────────────────────────
+   ProwlrBot Theme System — CSS Custom Properties
+   Consumed by layout, pages, and inline styles.
+   The ThemeContext sets data-theme on <html>.
+   ────────────────────────────────────────────── */
+
+:root,
+html[data-theme="light"] {
+  /* Surfaces */
+  --pb-bg-page: #ffffff;
+  --pb-bg-elevated: #ffffff;
+  --pb-bg-sunken: #fafafa;
+  --pb-bg-hover: #f5f5f5;
+  --pb-bg-card: #ffffff;
+
+  /* Borders */
+  --pb-border: #f0f0f0;
+  --pb-border-strong: #d9d9d9;
+
+  /* Text */
+  --pb-text-primary: rgba(0, 0, 0, 0.88);
+  --pb-text-secondary: rgba(0, 0, 0, 0.65);
+  --pb-text-tertiary: rgba(0, 0, 0, 0.45);
+  --pb-text-disabled: rgba(0, 0, 0, 0.25);
+
+  /* Stat card tints (light pastels) */
+  --pb-tint-blue: #f0f5ff;
+  --pb-tint-green: #f6ffed;
+  --pb-tint-orange: #fff7e6;
+  --pb-tint-purple: #f0f0ff;
+  --pb-tint-red: #fff2f0;
+  --pb-tint-cyan: #e6fffb;
+
+  /* Semantic icon colors */
+  --pb-icon-blue: #2f54eb;
+  --pb-icon-green: #52c41a;
+  --pb-icon-orange: #fa8c16;
+  --pb-icon-purple: #6B5CE7;
+
+  /* War Room panel surfaces (dark even in light mode for mission-control feel) */
+  --pb-wr-bg-deep: #0a0a0f;
+  --pb-wr-bg-panel: #12121a;
+  --pb-wr-bg-card: #1a1a2e;
+  --pb-wr-border: #1e1e2e;
+  --pb-wr-border-strong: #2e2e3e;
+  --pb-wr-text: #e0e0e0;
+  --pb-wr-text-secondary: #888;
+  --pb-wr-text-tertiary: #555;
+  --pb-wr-text-dim: #666;
+  --pb-wr-text-faint: #444;
+  --pb-wr-accent: #14b8a6;
+}
+
+html[data-theme="dark"] {
+  /* Surfaces */
+  --pb-bg-page: #141414;
+  --pb-bg-elevated: #1f1f1f;
+  --pb-bg-sunken: #0a0a0a;
+  --pb-bg-hover: #262626;
+  --pb-bg-card: #1f1f1f;
+
+  /* Borders */
+  --pb-border: #303030;
+  --pb-border-strong: #434343;
+
+  /* Text */
+  --pb-text-primary: rgba(255, 255, 255, 0.88);
+  --pb-text-secondary: rgba(255, 255, 255, 0.65);
+  --pb-text-tertiary: rgba(255, 255, 255, 0.45);
+  --pb-text-disabled: rgba(255, 255, 255, 0.25);
+
+  /* Stat card tints (dark tints) */
+  --pb-tint-blue: rgba(47, 84, 235, 0.12);
+  --pb-tint-green: rgba(82, 196, 26, 0.12);
+  --pb-tint-orange: rgba(250, 140, 22, 0.12);
+  --pb-tint-purple: rgba(107, 92, 231, 0.12);
+  --pb-tint-red: rgba(255, 77, 79, 0.12);
+  --pb-tint-cyan: rgba(20, 184, 166, 0.12);
+
+  /* Semantic icon colors (same in dark — they pop against dark bg) */
+  --pb-icon-blue: #5b8def;
+  --pb-icon-green: #73d13d;
+  --pb-icon-orange: #ffa940;
+  --pb-icon-purple: #8b7cf7;
+
+  /* War Room panel surfaces (same in dark — already dark) */
+  --pb-wr-bg-deep: #0a0a0f;
+  --pb-wr-bg-panel: #12121a;
+  --pb-wr-bg-card: #1a1a2e;
+  --pb-wr-border: #1e1e2e;
+  --pb-wr-border-strong: #2e2e3e;
+  --pb-wr-text: #e0e0e0;
+  --pb-wr-text-secondary: #888;
+  --pb-wr-text-tertiary: #555;
+  --pb-wr-text-dim: #666;
+  --pb-wr-text-faint: #444;
+  --pb-wr-accent: #14b8a6;
+}
