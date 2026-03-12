@@ -228,7 +228,7 @@ be presented as exact. All UI output uses "~" prefix and rounds to nearest 500 t
 
 ## Analyzers
 
-### 1. `config_loader.py`
+### 1. `paths.py` + `scanner.py`
 
 Reads `~/.claude/settings.json`. Handles:
 - `enabledPlugins` map (True/False values)
@@ -243,7 +243,7 @@ Also scans:
 - `~/.claude/projects/*/memory/*.md` files
 - `~/.claude/plugins/cache/` for installed plugin dirs
 
-### 2. `plugin_inventory.py`
+### 2. `auditors/plugins.py`
 
 For each enabled plugin:
 - Read plugin manifest (`plugin.json` or equivalent)
@@ -264,7 +264,7 @@ For each registered hook:
 - Detect: duplicate hook logic (same pattern, two files)
 - Classify each hook: essential / redundant / broken / high-overhead
 
-### 4. `agent_analyzer.py`
+### 4. `auditors/agents.py`
 
 - Count total agents across all enabled plugins
 - Group by bundle (plugin source)
@@ -284,7 +284,7 @@ For each MCP server in `EnvironmentSnapshot.mcp_servers`:
   stdio MCP servers requires process lifecycle management beyond this phase.
   Tool count estimation is deferred to Sub-project 2.
 
-### 6. `security_analyzer.py`
+### 6. `auditors/security.py`
 
 Catches what generic plugin linters miss:
 
@@ -299,7 +299,7 @@ Detection is via **static AST analysis** of hook files -- no execution, no subpr
 | SessionStart hooks injecting >2000 tokens | Token count the injected content | Large injections on every session start inflate cost |
 | MCP server binary missing or not executable | os.access path check | Silent failures; server listed but never responds |
 
-### 7. `tokens.py`
+### 7. `tokens.py` (token counting + budget)
 
 Produces the `TokenBudget` from measured values:
 
@@ -327,7 +327,7 @@ Wasted (duplicates): ~133,533 t  (example-skills registry)
 Savings potential:   ~133,533 t  → ~$0.40/session at Sonnet pricing
 ```
 
-### 8. `recommender.py`
+### 8. `recommender.py` (profile engine)
 
 Profile-aware recommendation engine. Takes all findings + profile name → `Recommendations`.
 
@@ -349,7 +349,7 @@ Output lists:
 - **`keep`** — do not touch
 - **`condense`** — manual file edit recommended; no `FixAction` (cannot be auto-applied)
 
-### 9. `patch_planner.py`
+### 9. `patch_planner.py` (fix plan generation)
 
 Takes the `Recommendations` list and produces:
 - A `PatchPlan` with exact `settings.json` changes
@@ -462,7 +462,8 @@ Full-screen Textual app modelled on `htop`/`lazygit` aesthetics:
   "recommendations": {
     "disable": ["example-skills@anthropic-agent-skills"],
     "review": ["voltagent-biz@voltagent-subagents"],
-    "keep": ["hookify@claude-plugins-official"]
+    "keep": ["hookify@claude-plugins-official"],
+    "condense": ["~/.claude/CLAUDE.md"]
   }
 }
 ```
@@ -541,9 +542,9 @@ Aggregated and displayed on community dashboard (Sub-project 4):
 
 ## Build Order
 
-1. **Sub-project 1 (this spec):** `config_loader` + `plugin_inventory` + `hook_analyzer` + `token_estimator` + `recommender` + `reporter` (Rich) + CLI
+1. **Sub-project 1 (this spec):** `paths.py` + `scanner.py` + `auditors/` (plugins, hooks, agents, mcp, claude_md, memory, security) + `tokens.py` + `recommender.py` + `reporter.py` + CLI
 2. **Sub-project 2:** Textual TUI (`tui/app.py`)
-3. **Sub-project 3:** `security_analyzer` + telemetry client
+3. **Sub-project 3:** `auditors/security.py` deeper profiles + telemetry client
 4. **Sub-project 4:** Community dashboard (web app + collection endpoint)
 
 Each sub-project ships independently. Sub-project 1 is a complete useful tool on its own.
