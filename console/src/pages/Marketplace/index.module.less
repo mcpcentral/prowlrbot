@@ -22,8 +22,8 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
-  color: #fff;
+  background: linear-gradient(135deg, var(--pb-market-accent) 0%, var(--pb-market-accent-hover) 100%);
+  color: var(--pb-text-on-brand);
 }
 
 .headerText {
@@ -35,12 +35,12 @@
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--pb-text-heading);
 }
 
 .subtitle {
   margin: 0;
-  color: #999;
+  color: var(--pb-text-caption);
   font-size: 14px;
 }
 
@@ -57,11 +57,11 @@
   }
 
   :global(.ant-tabs-ink-bar) {
-    background: #00e5ff;
+    background: var(--pb-market-accent);
   }
 
   :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
-    color: #00b8d4;
+    color: var(--pb-market-accent-hover);
   }
 }
 
@@ -82,13 +82,13 @@
 .card {
   border-radius: 14px;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  background: #fff;
+  background: var(--pb-bg-card);
   padding: 20px;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 
   &:hover {
-    border-color: #00e5ff;
+    border-color: var(--pb-market-accent);
     box-shadow: 0 8px 24px rgba(0, 229, 255, 0.12);
     transform: translateY(-2px);
   }
@@ -98,13 +98,13 @@
   width: 100%;
   height: 140px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #f0fdff 0%, #e6f7ff 100%);
+  background: linear-gradient(135deg, var(--pb-status-info-bg) 0%, var(--pb-status-info-bg) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 14px;
   overflow: hidden;
-  color: #00b8d4;
+  color: var(--pb-market-accent-hover);
 
   img {
     width: 100%;
@@ -122,7 +122,7 @@
 .cardTitle {
   font-size: 16px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--pb-text-heading);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -131,13 +131,13 @@
 
 .cardAuthor {
   font-size: 12px;
-  color: #999;
+  color: var(--pb-text-caption);
   margin: 0;
 }
 
 .cardDescription {
   font-size: 13px;
-  color: #666;
+  color: var(--pb-market-text-desc);
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -158,7 +158,7 @@
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: #666;
+  color: var(--pb-market-text-desc);
 
   :global(.ant-rate) {
     font-size: 12px;
@@ -171,7 +171,7 @@
 
 .ratingCount {
   font-size: 11px;
-  color: #bfbfbf;
+  color: var(--pb-text-disabled);
 }
 
 .downloads {
@@ -179,17 +179,17 @@
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: #666;
+  color: var(--pb-market-text-desc);
 }
 
 .price {
   margin-left: auto;
   font-size: 13px;
   font-weight: 600;
-  color: #00b8d4;
+  color: var(--pb-market-accent-hover);
 
   &.priceFree {
-    color: #52c41a;
+    color: var(--pb-status-success);
   }
 }
 
@@ -199,7 +199,7 @@
   align-items: center;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--pb-border);
 }
 
 .tags {
@@ -216,8 +216,8 @@
   height: 20px;
   line-height: 20px;
   border-radius: 4px;
-  background: #f5f5f5;
-  color: #666;
+  background: var(--pb-bg-hover);
+  color: var(--pb-market-text-desc);
   border: none;
   white-space: nowrap;
 }
@@ -228,26 +228,26 @@
   height: 30px;
 
   &.installed {
-    background: #f6ffed;
-    border-color: #b7eb8f;
-    color: #52c41a;
+    background: var(--pb-status-success-bg);
+    border-color: var(--pb-status-success-border);
+    color: var(--pb-status-success);
   }
 }
 
 .emptyState {
   text-align: center;
   padding: 80px 20px;
-  color: #999;
+  color: var(--pb-text-caption);
 }
 
 .emptyIcon {
   margin-bottom: 16px;
-  color: #d9d9d9;
+  color: var(--pb-status-neutral);
 }
 
 .emptyText {
   font-size: 14px;
-  color: #999;
+  color: var(--pb-text-caption);
   margin-top: 8px;
 }
 

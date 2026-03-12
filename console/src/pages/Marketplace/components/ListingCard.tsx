@@ -48,7 +48,7 @@ export default function ListingCard({ listing, onInstall, onClick }: ListingCard
             <Download size={12} />
             {formatDownloads(listing.downloads)}
           </span>
-          <span style={{ fontSize: 11, color: "#666" }}>
+          <span style={{ fontSize: 11, color: "var(--pb-market-text-meta)" }}>
             {listing.license}
           </span>
         </div>
@@ -69,7 +69,7 @@ export default function ListingCard({ listing, onInstall, onClick }: ListingCard
             if (!listing.installed) onInstall(listing);
           }}
           disabled={listing.installed}
-          style={!listing.installed ? { background: "#00e5ff", borderColor: "#00e5ff" } : undefined}
+          style={!listing.installed ? { background: "var(--pb-market-accent)", borderColor: "var(--pb-market-accent)" } : undefined}
         >
           {listing.installed ? "Installed" : isTheme ? "Apply" : "Install"}
         </Button>

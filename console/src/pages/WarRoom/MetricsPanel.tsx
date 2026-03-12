@@ -23,9 +23,9 @@ interface MetricsPanelProps {
 }
 
 const PIE_COLORS: Record<string, string> = {
-  idle: "#22c55e",
-  working: "#3b82f6",
-  disconnected: "#555",
+  idle: "var(--pb-chart-pie-idle)",
+  working: "var(--pb-chart-pie-working)",
+  disconnected: "var(--pb-chart-pie-disconnected)",
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -180,7 +180,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
       >
         <span
           style={{
-            color: "#14b8a6",
+            color: "var(--pb-wr-accent)",
             fontSize: 13,
             fontWeight: 600,
             textTransform: "uppercase",
@@ -214,7 +214,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
       >
         <span
           style={{
-            color: "#14b8a6",
+            color: "var(--pb-wr-accent)",
             fontSize: 13,
             fontWeight: 600,
             textTransform: "uppercase",
@@ -232,32 +232,32 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
           label="Active Agents"
           value={stats.activeAgents}
           suffix={`/ ${stats.totalAgents}`}
-          color="#22c55e"
+          color="var(--pb-wr-status-done)"
         />
         <StatCard
           label="Working"
           value={stats.workingAgents}
-          color="#3b82f6"
+          color="var(--pb-wr-status-progress)"
         />
         <StatCard
           label="Active Tasks"
           value={stats.activeTasks}
-          color="#f59e0b"
+          color="var(--pb-status-warning)"
         />
         <StatCard
           label="Completed"
           value={stats.completedTasks}
-          color="#14b8a6"
+          color="var(--pb-wr-accent)"
         />
         <StatCard
           label="Success Rate"
           value={stats.totalFinished > 0 ? `${stats.completionRate}%` : "--"}
-          color={stats.completionRate >= 80 ? "#22c55e" : stats.completionRate >= 50 ? "#f59e0b" : "#ef4444"}
+          color={stats.completionRate >= 80 ? "var(--pb-wr-status-done)" : stats.completionRate >= 50 ? "var(--pb-status-warning)" : "var(--pb-wr-status-failed)"}
         />
         <StatCard
           label="File Locks"
           value={stats.activeLocks}
-          color={stats.activeLocks > 0 ? "#f97316" : "#555"}
+          color={stats.activeLocks > 0 ? "var(--pb-wr-lock-active)" : "var(--pb-wr-text-tertiary)"}
         />
       </div>
 
@@ -280,14 +280,14 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
             <AreaChart data={velocity}>
               <defs>
                 <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--pb-wr-accent)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--pb-wr-accent)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e1e2e" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--pb-wr-border)" />
               <XAxis
                 dataKey="hour"
-                tick={{ fill: "#555", fontSize: 10 }}
+                tick={{ fill: "var(--pb-chart-tick)", fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -297,7 +297,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                 type="monotone"
                 dataKey="count"
                 name="Tasks"
-                stroke="#14b8a6"
+                stroke="var(--pb-wr-accent)"
                 fill="url(#tealGrad)"
                 strokeWidth={2}
               />
@@ -333,7 +333,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                   {utilization.map((entry) => (
                     <Cell
                       key={entry.name}
-                      fill={PIE_COLORS[entry.name] || "#555"}
+                      fill={PIE_COLORS[entry.name] || "var(--pb-chart-pie-disconnected)"}
                     />
                   ))}
                 </Pie>
@@ -357,7 +357,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                       width: 8,
                       height: 8,
                       borderRadius: "50%",
-                      background: PIE_COLORS[entry.name] || "#555",
+                      background: PIE_COLORS[entry.name] || "var(--pb-chart-pie-disconnected)",
                       flexShrink: 0,
                     }}
                   />
@@ -383,16 +383,16 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
           </div>
           <ResponsiveContainer width="100%" height={140}>
             <BarChart data={lockContention}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e1e2e" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--pb-wr-border)" />
               <XAxis
                 dataKey="hour"
-                tick={{ fill: "#555", fontSize: 10 }}
+                tick={{ fill: "var(--pb-chart-tick)", fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis hide allowDecimals={false} />
               <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "var(--pb-wr-text-secondary)" }} />
-              <Bar dataKey="count" name="Locks" fill="#f97316" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="count" name="Locks" fill="var(--pb-wr-lock-active)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

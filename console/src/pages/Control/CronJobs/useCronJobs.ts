@@ -8,16 +8,20 @@ type CronJob = CronJobSpecOutput;
 export function useCronJobs() {
   const [jobs, setJobs] = useState<CronJob[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchJobs = async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await api.listCronJobs();
       if (data) {
         setJobs(data as CronJob[]);
       }
-    } catch (error) {
-      console.error("Failed to load cron jobs", error);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load cron jobs";
+      console.error("Failed to load cron jobs", err);
+      setError(msg);
       message.error("Failed to load Cron Jobs");
     } finally {
       setLoading(false);
@@ -127,6 +131,8 @@ export function useCronJobs() {
   return {
     jobs,
     loading,
+    error,
+    fetchJobs,
     createJob,
     updateJob,
     deleteJob,

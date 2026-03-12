@@ -53,14 +53,14 @@ interface ReplaySession {
 
 function eventColor(type: EventType): string {
   const map: Record<EventType, string> = {
-    user_message: "#1677ff",
-    agent_response: "#52c41a",
-    tool_call: "#fa8c16",
-    tool_result: "#8c8c8c",
-    thought: "#722ed1",
-    error: "#ff4d4f",
+    user_message: "var(--pb-replay-user)",
+    agent_response: "var(--pb-replay-agent)",
+    tool_call: "var(--pb-replay-tool)",
+    tool_result: "var(--pb-replay-result)",
+    thought: "var(--pb-replay-thought)",
+    error: "var(--pb-replay-error)",
   };
-  return map[type] ?? "#8c8c8c";
+  return map[type] ?? "var(--pb-replay-result)";
 }
 
 function EventBubble({ event, offsetMs, highlighted }: { event: ReplayEvent; offsetMs: number; highlighted: boolean }) {
@@ -70,7 +70,7 @@ function EventBubble({ event, offsetMs, highlighted }: { event: ReplayEvent; off
   const style: React.CSSProperties = {
     marginBottom: 12,
     transition: "background 0.3s",
-    background: highlighted ? "rgba(22,119,255,0.08)" : undefined,
+    background: highlighted ? "var(--pb-replay-highlight-bg)" : undefined,
     borderRadius: 8,
     padding: "4px 0",
   };
@@ -79,7 +79,7 @@ function EventBubble({ event, offsetMs, highlighted }: { event: ReplayEvent; off
     return (
       <div style={style}>
         <Text type="secondary" style={{ fontSize: 11 }}>+{offsetSec}s</Text>
-        <Paragraph italic style={{ color: "#722ed1", marginBottom: 0 }}>
+        <Paragraph italic style={{ color: "var(--pb-replay-thought)", marginBottom: 0 }}>
           💭 {String(content).slice(0, 400)}
         </Paragraph>
       </div>
@@ -116,7 +116,7 @@ function EventBubble({ event, offsetMs, highlighted }: { event: ReplayEvent; off
     <div style={{ ...style, display: "flex", flexDirection: "column", alignItems: isUser ? "flex-start" : "flex-end" }}>
       <Text type="secondary" style={{ fontSize: 11 }}>+{offsetSec}s</Text>
       <div style={{
-        background: isUser ? "#e6f4ff" : "#f6ffed",
+        background: isUser ? "var(--pb-replay-user-bg)" : "var(--pb-replay-agent-bg)",
         border: `1px solid ${eventColor(event.event_type)}33`,
         borderRadius: 12,
         padding: "8px 14px",
@@ -218,7 +218,7 @@ export default function ReplayPage() {
                 hoverable
                 style={{
                   marginBottom: 8,
-                  borderColor: selectedSession?.id === s.id ? "#1677ff" : undefined,
+                  borderColor: selectedSession?.id === s.id ? "var(--pb-brand-primary)" : undefined,
                   cursor: "pointer",
                 }}
                 onClick={() => loadSession(s)}

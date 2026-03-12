@@ -40,20 +40,20 @@ function TaskDetailDrawer({
               fontSize: 12,
               background:
                 task.status === "done"
-                  ? "rgba(34,197,94,0.15)"
+                  ? "var(--pb-wr-status-done-bg)"
                   : task.status === "failed"
-                    ? "rgba(239,68,68,0.15)"
+                    ? "var(--pb-wr-status-failed-bg)"
                     : task.status === "in_progress"
-                      ? "rgba(59,130,246,0.15)"
-                      : "rgba(20,184,166,0.15)",
+                      ? "var(--pb-wr-status-progress-bg)"
+                      : "var(--pb-wr-status-pending-bg)",
               color:
                 task.status === "done"
-                  ? "#22c55e"
+                  ? "var(--pb-wr-status-done)"
                   : task.status === "failed"
-                    ? "#ef4444"
+                    ? "var(--pb-wr-status-failed)"
                     : task.status === "in_progress"
-                      ? "#3b82f6"
-                      : "#14b8a6",
+                      ? "var(--pb-wr-status-progress)"
+                      : "var(--pb-wr-accent)",
             }}
           >
             {task.status}
@@ -66,12 +66,12 @@ function TaskDetailDrawer({
               fontSize: 12,
               background:
                 task.priority === "high" || task.priority === "critical"
-                  ? "rgba(239,68,68,0.15)"
-                  : "#1e1e2e",
+                  ? "var(--pb-wr-priority-high-bg)"
+                  : "var(--pb-wr-border)",
               color:
                 task.priority === "high" || task.priority === "critical"
-                  ? "#ef4444"
-                  : "#888",
+                  ? "var(--pb-wr-priority-high)"
+                  : "var(--pb-wr-text-secondary)",
             }}
           >
             {task.priority}
@@ -94,7 +94,7 @@ function TaskDetailDrawer({
             <div style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
               Owner
             </div>
-            <div style={{ fontSize: 13, color: "#14b8a6" }}>
+            <div style={{ fontSize: 13, color: "var(--pb-wr-accent)" }}>
               {task.owner_name}
             </div>
           </div>
@@ -111,7 +111,7 @@ function TaskDetailDrawer({
                   key={f}
                   style={{
                     fontSize: 11,
-                    color: "#8b5cf6",
+                    color: "var(--pb-accent-purple)",
                     background: "var(--pb-wr-border)",
                     padding: "2px 6px",
                     borderRadius: 3,
@@ -126,12 +126,12 @@ function TaskDetailDrawer({
 
         {task.blocked_by.length > 0 && (
           <div>
-            <div style={{ color: "#ef4444", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ color: "var(--pb-wr-status-failed)", fontSize: 11, textTransform: "uppercase", marginBottom: 4 }}>
               Blocked By
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {task.blocked_by.map((b) => (
-                <span key={b} style={{ fontSize: 12, color: "#ef4444" }}>
+                <span key={b} style={{ fontSize: 12, color: "var(--pb-wr-status-failed)" }}>
                   {b}
                 </span>
               ))}
@@ -262,7 +262,7 @@ export default function WarRoomPage() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {error && (
-            <span style={{ color: "#ef4444", fontSize: 11 }}>{error}</span>
+            <span style={{ color: "var(--pb-wr-status-failed)", fontSize: 11 }}>{error}</span>
           )}
           <span
             style={{
@@ -270,7 +270,7 @@ export default function WarRoomPage() {
               alignItems: "center",
               gap: 6,
               fontSize: 11,
-              color: connected ? "#22c55e" : "#ef4444",
+              color: connected ? "var(--pb-wr-status-done)" : "var(--pb-wr-status-failed)",
             }}
           >
             <span
@@ -278,8 +278,8 @@ export default function WarRoomPage() {
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                background: connected ? "#22c55e" : "#ef4444",
-                boxShadow: connected ? "0 0 8px #22c55e" : "none",
+                background: connected ? "var(--pb-wr-status-done)" : "var(--pb-wr-status-failed)",
+                boxShadow: connected ? "0 0 8px var(--pb-wr-status-done)" : "none",
               }}
             />
             {connected ? "Live" : "Polling"}

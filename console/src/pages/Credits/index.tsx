@@ -58,7 +58,7 @@ const txColumns = [
     dataIndex: "amount",
     key: "amount",
     render: (v: number) => (
-      <Text style={{ color: v >= 0 ? "#52c41a" : "#ff4d4f" }}>
+      <Text style={{ color: v >= 0 ? "var(--pb-status-success)" : "var(--pb-status-error)" }}>
         {v >= 0 ? `+${v}` : v}
       </Text>
     ),
@@ -116,7 +116,7 @@ export default function CreditsPage() {
                   title="Available Credits"
                   value={balance ?? 0}
                   prefix="⚡"
-                  valueStyle={{ color: "#1677ff" }}
+                  valueStyle={{ color: "var(--pb-status-info)" }}
                 />
               </Card>
             </Col>
@@ -137,7 +137,7 @@ export default function CreditsPage() {
             {TIERS.map((t) => (
               <Col key={t.name} span={8}>
                 <Card
-                  style={{ height: "100%", borderColor: t.name === tier ? "#1677ff" : undefined }}
+                  style={{ height: "100%", borderColor: t.name === tier ? "var(--pb-brand-primary)" : undefined }}
                   title={
                     <Space>
                       {t.icon}
@@ -150,7 +150,7 @@ export default function CreditsPage() {
                   <ul style={{ paddingLeft: 16, marginBottom: 16 }}>
                     {t.features.map((f) => (
                       <li key={f} style={{ marginBottom: 4 }}>
-                        <CheckOutlined style={{ color: "#52c41a", marginRight: 6 }} />
+                        <CheckOutlined style={{ color: "var(--pb-status-success)", marginRight: 6 }} />
                         {f}
                       </li>
                     ))}

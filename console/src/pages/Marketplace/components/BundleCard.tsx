@@ -50,14 +50,14 @@ export default function BundleCard({ bundle, onInstalled }: BundleCardProps) {
       }}
     >
       <div style={{ fontSize: 24, marginBottom: 8 }}>{bundle.emoji}</div>
-      <div style={{ fontWeight: 600, fontSize: 14, color: "#fff", marginBottom: 4 }}>
+      <div style={{ fontWeight: 600, fontSize: 14, color: "var(--pb-market-text-name)", marginBottom: 4 }}>
         {bundle.name}
       </div>
-      <div style={{ fontSize: 12, color: "#888", marginBottom: 12 }}>
+      <div style={{ fontSize: 12, color: "var(--pb-market-text-desc)", marginBottom: 12 }}>
         {bundle.description}
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 11, color: "#666" }}>
+        <span style={{ fontSize: 11, color: "var(--pb-market-text-meta)" }}>
           {bundle.listing_ids.length} items
         </span>
         <Button
@@ -66,7 +66,7 @@ export default function BundleCard({ bundle, onInstalled }: BundleCardProps) {
           loading={installing}
           onClick={(e) => { e.stopPropagation(); handleInstall(); }}
           icon={<Download size={12} />}
-          style={{ background: "#00e5ff", borderColor: "#00e5ff", fontSize: 11 }}
+          style={{ background: "var(--pb-market-accent)", borderColor: "var(--pb-market-accent)", fontSize: 11 }}
         >
           Install All
         </Button>

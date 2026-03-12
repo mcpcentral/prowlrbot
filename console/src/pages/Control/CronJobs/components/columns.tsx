@@ -78,7 +78,7 @@ export const createColumns = (
               width: 6,
               height: 6,
               borderRadius: "50%",
-              backgroundColor: enabled ? "#52c41a" : "#d9d9d9",
+              backgroundColor: enabled ? "var(--pb-status-success)" : "var(--pb-status-neutral)",
             }}
           />
           {enabled
@@ -178,7 +178,7 @@ export const createColumns = (
                     position: "absolute",
                     top: 0,
                     right: 0,
-                    color: "#1890ff",
+                    color: "var(--pb-status-info)",
                     zIndex: 10,
                   }}
                 />

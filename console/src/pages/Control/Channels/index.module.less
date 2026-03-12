@@ -10,7 +10,7 @@
 
 .description {
   margin-bottom: 24px;
-  color: #999;
+  color: var(--pb-text-caption);
   font-size: 14px;
 }
 
@@ -20,7 +20,7 @@
 }
 
 .loadingText {
-  color: #999;
+  color: var(--pb-text-caption);
 }
 
 .channelsGrid {
@@ -37,12 +37,12 @@
   transition: all 0.2s ease-in-out;
 
   &.hover {
-    border: 2px solid #615ced;
+    border: 2px solid var(--pb-brand-primary);
     box-shadow: 0 12px 32px rgba(97, 92, 237, 0.3);
   }
 
   &.enabled {
-    border: 2px solid #615ced;
+    border: 2px solid var(--pb-brand-primary);
     box-shadow: 0 8px 24px rgba(97, 92, 237, 0.2);
     transform: scale(1.02);
   }
@@ -66,7 +66,7 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #999;
+  color: var(--pb-text-caption);
 }
 
 .statusDot {
@@ -75,19 +75,19 @@
   border-radius: 50%;
 
   &.enabled {
-    background-color: #52c41a;
+    background-color: var(--pb-status-success);
     box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);
   }
 
   &.disabled {
-    background-color: #d9d9d9;
+    background-color: var(--pb-status-neutral);
     box-shadow: none;
   }
 }
 
 .channelTag {
   font-size: 12px;
-  color: #b37feb;
+  color: var(--pb-accent-purple);
   padding: 2px 8px;
   border-radius: 999px;
   background: rgba(97, 92, 237, 0.08);
@@ -101,13 +101,13 @@
 
 .cardDescription {
   font-size: 12px;
-  color: #999;
+  color: var(--pb-text-caption);
   margin-bottom: 12px;
 }
 
 .cardHint {
   font-size: 12px;
-  color: #bbb;
+  color: var(--pb-text-disabled);
 }
 
 /* ---- Channel Drawer Styles ---- */

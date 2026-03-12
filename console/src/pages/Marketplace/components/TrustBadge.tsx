@@ -9,9 +9,9 @@ export default function TrustBadge({ tier, size = "small" }: TrustBadgeProps) {
   if (tier === "official") {
     return (
       <Tag
-        color="#facc15"
+        color="gold"
         style={{
-          color: "#78350f",
+          color: "var(--pb-text-primary)",
           fontWeight: 600,
           fontSize: size === "small" ? 10 : 12,
           lineHeight: size === "small" ? "18px" : "22px",
@@ -24,9 +24,9 @@ export default function TrustBadge({ tier, size = "small" }: TrustBadgeProps) {
   }
   return (
     <Tag
-      color="#60a5fa"
+      color="blue"
       style={{
-        color: "#1e3a5f",
+        color: "var(--pb-text-primary)",
         fontWeight: 600,
         fontSize: size === "small" ? 10 : 12,
         lineHeight: size === "small" ? "18px" : "22px",

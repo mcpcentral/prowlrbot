@@ -46,7 +46,7 @@ const DEFAULT_ZONES: ZoneInfo[] = [
     description: "The central hub where agents gather, chat, and share news.",
     icon: "town_square",
     agents_online: 0,
-    color: "#2f54eb",
+    color: "var(--pb-accent-blue)",
   },
   {
     id: "trading_post",
@@ -54,7 +54,7 @@ const DEFAULT_ZONES: ZoneInfo[] = [
     description: "Exchange skills, data, and resources with other agents.",
     icon: "trading_post",
     agents_online: 0,
-    color: "#52c41a",
+    color: "var(--pb-accent-green)",
   },
   {
     id: "workshop",
@@ -62,7 +62,7 @@ const DEFAULT_ZONES: ZoneInfo[] = [
     description: "Build and refine tools, skills, and automations.",
     icon: "workshop",
     agents_online: 0,
-    color: "#fa8c16",
+    color: "var(--pb-accent-orange)",
   },
   {
     id: "arena",
@@ -70,7 +70,7 @@ const DEFAULT_ZONES: ZoneInfo[] = [
     description: "Challenge other agents to skill-based competitions.",
     icon: "arena",
     agents_online: 0,
-    color: "#f5222d",
+    color: "var(--pb-accent-red)",
   },
   {
     id: "academy",
@@ -78,7 +78,7 @@ const DEFAULT_ZONES: ZoneInfo[] = [
     description: "Learn new skills and earn certifications.",
     icon: "academy",
     agents_online: 0,
-    color: "#722ed1",
+    color: "var(--pb-accent-purple)",
   },
   {
     id: "mission_board",
@@ -86,7 +86,7 @@ const DEFAULT_ZONES: ZoneInfo[] = [
     description: "Pick up tasks and collaborative missions.",
     icon: "mission_board",
     agents_online: 0,
-    color: "#13c2c2",
+    color: "var(--pb-accent-cyan)",
   },
   {
     id: "home",
@@ -94,7 +94,7 @@ const DEFAULT_ZONES: ZoneInfo[] = [
     description: "Your agent's private quarters for rest and reflection.",
     icon: "home",
     agents_online: 0,
-    color: "#eb2f96",
+    color: "var(--pb-accent-pink)",
   },
   {
     id: "marketplace_mall",
@@ -103,7 +103,7 @@ const DEFAULT_ZONES: ZoneInfo[] = [
     icon: "marketplace_mall",
     agents_online: 0,
     premium: true,
-    color: "#faad14",
+    color: "var(--pb-accent-gold)",
   },
 ];
 
@@ -345,7 +345,18 @@ export default function AgentVerse() {
   ];
 
   return (
-    <div className={styles.agentverse}>
+    <div className={styles.agentverse} style={{ position: "relative" }}>
+      {/* ── Coming Soon Overlay ── */}
+      <div className={styles.comingSoonOverlay}>
+        <div className={styles.comingSoonBadge}>
+          <div style={{ fontSize: 40, marginBottom: 8 }}>🌍</div>
+          <div style={{ fontSize: 22, fontWeight: 700 }}>Coming Soon</div>
+          <div style={{ fontSize: 13, color: "var(--pb-text-muted)", maxWidth: 360, lineHeight: 1.6, marginTop: 8 }}>
+            AgentVerse is a virtual world where your AI agents can socialize, trade skills, form guilds, and compete in the arena. Stay tuned!
+          </div>
+        </div>
+      </div>
+
       {/* ── Header ── */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
@@ -359,7 +370,7 @@ export default function AgentVerse() {
         </div>
         <Badge
           count={totalOnline}
-          style={{ backgroundColor: "#52c41a" }}
+          style={{ backgroundColor: "var(--pb-status-success)" }}
           overflowCount={99}
           showZero
         >

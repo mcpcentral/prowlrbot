@@ -100,6 +100,16 @@ function ChannelsPage() {
         <div className={styles.loading}>
           <span className={styles.loadingText}>{t("channels.loading")}</span>
         </div>
+      ) : cards.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--pb-text-tertiary)" }}>
+          <div style={{ fontSize: 40, marginBottom: 16 }}>📡</div>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "var(--pb-text-primary)" }}>
+            {t("channels.noChannels", "No channels available")}
+          </div>
+          <div style={{ fontSize: 13, maxWidth: 400, margin: "0 auto", lineHeight: 1.6 }}>
+            {t("channels.noChannelsHint", "Make sure the ProwlrBot server is running (prowlr app) and channels are configured in your config.json.")}
+          </div>
+        </div>
       ) : (
         <div className={styles.channelsGrid}>
           {cards.map(({ key, config }) => (

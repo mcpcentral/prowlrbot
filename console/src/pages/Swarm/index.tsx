@@ -152,7 +152,7 @@ export default function SwarmPage() {
                 <Statistic
                   title="Active"
                   value={activeCount}
-                  valueStyle={{ color: "#52c41a" }}
+                  valueStyle={{ color: "var(--pb-status-success)" }}
                 />
               </Card>
             </Col>
@@ -161,7 +161,7 @@ export default function SwarmPage() {
                 <Statistic
                   title="Working"
                   value={workingCount}
-                  valueStyle={{ color: "#1890ff" }}
+                  valueStyle={{ color: "var(--pb-status-info)" }}
                 />
               </Card>
             </Col>
@@ -170,7 +170,7 @@ export default function SwarmPage() {
                 <Statistic
                   title="Offline"
                   value={workers.length - activeCount}
-                  valueStyle={{ color: "#ff4d4f" }}
+                  valueStyle={{ color: "var(--pb-status-error)" }}
                 />
               </Card>
             </Col>

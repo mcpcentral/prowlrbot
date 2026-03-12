@@ -17,6 +17,8 @@ function CronJobsPage() {
   const {
     jobs,
     loading,
+    error,
+    fetchJobs,
     createJob,
     updateJob,
     deleteJob,
@@ -134,20 +136,39 @@ function CronJobsPage() {
         </Button>
       </div>
 
-      <Card className={styles.tableCard} bodyStyle={{ padding: 0 }}>
-        <Table
-          columns={columns}
-          dataSource={jobs}
-          loading={loading}
-          rowKey="id"
-          scroll={{ x: 2840 }}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: false,
-            showTotal: (total) => t("cronJobs.totalItems", { count: total }),
-          }}
-        />
-      </Card>
+      {error ? (
+        <div style={{ textAlign: "center", padding: "60px 20px" }}>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>⏰</div>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "var(--pb-text-primary)" }}>
+            {t("cronJobs.connectionFailed", "Could not load cron jobs")}
+          </div>
+          <div style={{ fontSize: 13, color: "var(--pb-text-tertiary)", maxWidth: 400, margin: "0 auto", lineHeight: 1.6 }}>
+            {t("cronJobs.connectionHint", "Make sure the ProwlrBot server is running with 'prowlr app'. The cron scheduler initializes at startup.")}
+          </div>
+          <details style={{ marginTop: 8, fontSize: 11, color: "var(--pb-text-disabled)" }}>
+            <summary style={{ cursor: "pointer" }}>Technical details</summary>
+            <code style={{ display: "block", marginTop: 4, padding: 8, background: "var(--pb-bg-code)", borderRadius: 4 }}>{error}</code>
+          </details>
+          <Button size="small" onClick={fetchJobs} style={{ marginTop: 12 }}>
+            Retry
+          </Button>
+        </div>
+      ) : (
+        <Card className={styles.tableCard} bodyStyle={{ padding: 0 }}>
+          <Table
+            columns={columns}
+            dataSource={jobs}
+            loading={loading}
+            rowKey="id"
+            scroll={{ x: 2840 }}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: false,
+              showTotal: (total) => t("cronJobs.totalItems", { count: total }),
+            }}
+          />
+        </Card>
+      )}
 
       <JobDrawer
         open={drawerOpen}

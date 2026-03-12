@@ -30,26 +30,26 @@ export default function ListingListItem({ listing, onInstall, onClick }: Listing
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontWeight: 600, color: "#fff", fontSize: 14 }}>{listing.name}</span>
+          <span style={{ fontWeight: 600, color: "var(--pb-market-text-name)", fontSize: 14 }}>{listing.name}</span>
           <TrustBadge tier={listing.trustTier} size="small" />
-          <span style={{ fontSize: 11, color: "#666" }}>v{listing.version}</span>
+          <span style={{ fontSize: 11, color: "var(--pb-market-text-meta)" }}>v{listing.version}</span>
         </div>
-        <div style={{ fontSize: 12, color: "#888", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ fontSize: 12, color: "var(--pb-market-text-desc)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {listing.description}
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
-        <span style={{ fontSize: 12, color: "#888" }}>
+        <span style={{ fontSize: 12, color: "var(--pb-market-text-desc)" }}>
           <Download size={11} /> {formatDownloads(listing.downloads)}
         </span>
         <Rate disabled defaultValue={listing.rating} allowHalf style={{ fontSize: 10 }} />
-        <span style={{ fontSize: 11, color: "#666" }}>{listing.license}</span>
+        <span style={{ fontSize: 11, color: "var(--pb-market-text-meta)" }}>{listing.license}</span>
         <Button
           size="small"
           type={listing.installed ? "default" : "primary"}
           onClick={(e) => { e.stopPropagation(); if (!listing.installed) onInstall(listing); }}
           disabled={listing.installed}
-          style={!listing.installed ? { background: "#00e5ff", borderColor: "#00e5ff" } : undefined}
+          style={!listing.installed ? { background: "var(--pb-market-accent)", borderColor: "var(--pb-market-accent)" } : undefined}
         >
           {listing.installed ? "Installed" : isTheme ? "Apply" : "Install"}
         </Button>

@@ -129,7 +129,7 @@ function MarketplacePage() {
             <p className={styles.subtitle}>
               Skills, agents, and tools — verified and ready
             </p>
-            <p style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
+            <p style={{ fontSize: 12, color: "var(--pb-market-text-meta)", marginTop: 4 }}>
               {totalCount} listings &middot; All reviewed &middot; Official + Verified only
             </p>
           </div>
@@ -142,7 +142,7 @@ function MarketplacePage() {
           placeholder="Search by name, tag, or what you need to do..."
           allowClear
           size="large"
-          prefix={<Search size={16} color="#bfbfbf" />}
+          prefix={<Search size={16} style={{ color: "var(--pb-text-disabled)" }} />}
           value={searchQuery}
           onChange={(e) => handleSearch(e.target.value)}
           onSearch={(value) => {
@@ -164,7 +164,7 @@ function MarketplacePage() {
       {/* Bundles */}
       {bundles.length > 0 && !searchQuery && (
         <div style={{ marginBottom: 24 }}>
-          <h3 style={{ color: "#fff", fontSize: 15, fontWeight: 600, marginBottom: 12 }}>
+          <h3 style={{ color: "var(--pb-market-text-name)", fontSize: 15, fontWeight: 600, marginBottom: 12 }}>
             Curated Bundles
           </h3>
           <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8 }}>
@@ -177,7 +177,7 @@ function MarketplacePage() {
 
       {/* Sort + View Toggle */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <h3 style={{ color: "#fff", fontSize: 15, fontWeight: 600, margin: 0 }}>
+        <h3 style={{ color: "var(--pb-market-text-name)", fontSize: 15, fontWeight: 600, margin: 0 }}>
           All Listings
         </h3>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -193,15 +193,15 @@ function MarketplacePage() {
               { label: "A-Z", value: "alpha" },
             ]}
           />
-          <div style={{ display: "flex", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6 }}>
+          <div style={{ display: "flex", border: "1px solid var(--pb-market-accent-border)", borderRadius: 6 }}>
             <button
               onClick={() => handleViewToggle("grid")}
               style={{
                 padding: "4px 8px",
-                background: viewMode === "grid" ? "rgba(0,229,255,0.1)" : "transparent",
+                background: viewMode === "grid" ? "var(--pb-market-accent-bg)" : "transparent",
                 border: "none",
                 cursor: "pointer",
-                color: viewMode === "grid" ? "#00e5ff" : "#666",
+                color: viewMode === "grid" ? "var(--pb-market-accent)" : "var(--pb-market-text-meta)",
                 borderRadius: "5px 0 0 5px",
               }}
             >
@@ -211,10 +211,10 @@ function MarketplacePage() {
               onClick={() => handleViewToggle("list")}
               style={{
                 padding: "4px 8px",
-                background: viewMode === "list" ? "rgba(0,229,255,0.1)" : "transparent",
+                background: viewMode === "list" ? "var(--pb-market-accent-bg)" : "transparent",
                 border: "none",
                 cursor: "pointer",
-                color: viewMode === "list" ? "#00e5ff" : "#666",
+                color: viewMode === "list" ? "var(--pb-market-accent)" : "var(--pb-market-text-meta)",
                 borderRadius: "0 5px 5px 0",
               }}
             >

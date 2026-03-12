@@ -125,7 +125,7 @@
   cursor: pointer;
 
   &:hover {
-    border-color: #6B5CE7;
+    border-color: var(--pb-brand-primary);
     background: var(--pb-bg-hover);
     box-shadow: 0 2px 8px rgba(107, 92, 231, 0.1);
   }
@@ -140,7 +140,7 @@
   justify-content: center;
   font-size: 22px;
   flex-shrink: 0;
-  color: #fff;
+  color: var(--pb-text-on-brand);
   font-weight: 700;
 }
 
@@ -176,12 +176,12 @@
 }
 
 .agentStatusOnline {
-  background: #52c41a;
+  background: var(--pb-status-success);
   box-shadow: 0 0 6px rgba(82, 196, 26, 0.5);
 }
 
 .agentStatusIdle {
-  background: #faad14;
+  background: var(--pb-status-warning);
 }
 
 .agentStatusOffline {
@@ -200,7 +200,7 @@
   padding: 1px 8px;
   border-radius: 4px;
   background: var(--pb-tint-purple);
-  color: #6B5CE7;
+  color: var(--pb-brand-primary);
   border: none;
   font-weight: 500;
 }
@@ -266,7 +266,7 @@
   transition: all 0.15s ease;
 
   &:hover {
-    border-color: #6B5CE7;
+    border-color: var(--pb-brand-primary);
     background: var(--pb-bg-hover);
   }
 }
@@ -317,17 +317,17 @@
 }
 
 .healthGreen {
-  background: #52c41a;
+  background: var(--pb-status-success);
   box-shadow: 0 0 6px rgba(82, 196, 26, 0.4);
 }
 
 .healthYellow {
-  background: #faad14;
+  background: var(--pb-status-warning);
   box-shadow: 0 0 6px rgba(250, 173, 20, 0.4);
 }
 
 .healthRed {
-  background: #ff4d4f;
+  background: var(--pb-status-error);
   box-shadow: 0 0 6px rgba(255, 77, 79, 0.4);
 }
 

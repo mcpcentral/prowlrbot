@@ -171,7 +171,7 @@ function MCPPage() {
           <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 4 }}>
             {t("mcp.title")}
           </h1>
-          <p style={{ margin: 0, color: "#999", fontSize: 14 }}>
+          <p style={{ margin: 0, color: "var(--pb-text-caption)", fontSize: 14 }}>
             {t("mcp.description")}
           </p>
         </div>
@@ -182,7 +182,7 @@ function MCPPage() {
 
       {loading ? (
         <div style={{ textAlign: "center", padding: 60 }}>
-          <p style={{ color: "#999" }}>{t("common.loading")}</p>
+          <p style={{ color: "var(--pb-text-caption)" }}>{t("common.loading")}</p>
         </div>
       ) : clients.length === 0 ? (
         <Empty description={t("mcp.emptyState")} />
@@ -229,7 +229,7 @@ function MCPPage() {
         width={800}
       >
         <div style={{ marginBottom: 12 }}>
-          <p style={{ margin: 0, fontSize: 13, color: "#666" }}>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--pb-text-secondary)" }}>
             {t("mcp.formatSupport")}:
           </p>
           <ul
@@ -237,7 +237,7 @@ function MCPPage() {
               margin: "8px 0",
               padding: "0 0 0 20px",
               fontSize: 12,
-              color: "#999",
+              color: "var(--pb-text-caption)",
             }}
           >
             <li>

@@ -259,16 +259,16 @@ export function OllamaModelManageModal({
           style={{
             padding: "12px 16px",
             marginBottom: 8,
-            background: "#f6f8fa",
+            background: "var(--pb-bg-code)",
             borderRadius: 8,
-            border: "1px solid #e8e8e8",
+            border: "1px solid var(--pb-border-input)",
             display: "flex",
             alignItems: "center",
             gap: 10,
           }}
         >
-          <LoadingOutlined spin style={{ fontSize: 16, color: "#615CED" }} />
-          <span style={{ color: "#333", fontSize: 13, flex: 1 }}>
+          <LoadingOutlined spin style={{ fontSize: 16, color: "var(--pb-brand-primary)" }} />
+          <span style={{ color: "var(--pb-text-primary)", fontSize: 13, flex: 1 }}>
             {task.status === "pending"
               ? t("models.localDownloadPending")
               : t("models.localDownloading", { repo: task.name })}

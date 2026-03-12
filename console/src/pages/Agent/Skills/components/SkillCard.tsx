@@ -31,31 +31,31 @@ const getFileIcon = (filePath: string) => {
     case "txt":
     case "md":
     case "markdown":
-      return <FileTextFilled style={{ color: "#1890ff" }} />;
+      return <FileTextFilled style={{ color: "var(--pb-file-doc)" }} />;
     case "zip":
     case "rar":
     case "7z":
     case "tar":
     case "gz":
-      return <FileZipFilled style={{ color: "#fa8c16" }} />;
+      return <FileZipFilled style={{ color: "var(--pb-file-archive)" }} />;
     case "pdf":
-      return <FilePdfFilled style={{ color: "#f5222d" }} />;
+      return <FilePdfFilled style={{ color: "var(--pb-file-pdf)" }} />;
     case "doc":
     case "docx":
-      return <FileWordFilled style={{ color: "#2b579a" }} />;
+      return <FileWordFilled style={{ color: "var(--pb-file-word)" }} />;
     case "xls":
     case "xlsx":
-      return <FileExcelFilled style={{ color: "#217346" }} />;
+      return <FileExcelFilled style={{ color: "var(--pb-file-excel)" }} />;
     case "ppt":
     case "pptx":
-      return <FilePptFilled style={{ color: "#d24726" }} />;
+      return <FilePptFilled style={{ color: "var(--pb-file-ppt)" }} />;
     case "jpg":
     case "jpeg":
     case "png":
     case "gif":
     case "svg":
     case "webp":
-      return <FileImageFilled style={{ color: "#eb2f96" }} />;
+      return <FileImageFilled style={{ color: "var(--pb-file-image)" }} />;
     case "py":
     case "js":
     case "ts":
@@ -68,9 +68,9 @@ const getFileIcon = (filePath: string) => {
     case "rs":
     case "rb":
     case "php":
-      return <CodeFilled style={{ color: "#52c41a" }} />;
+      return <CodeFilled style={{ color: "var(--pb-file-code)" }} />;
     default:
-      return <FileTextFilled style={{ color: "#1890ff" }} />;
+      return <FileTextFilled style={{ color: "var(--pb-file-doc)" }} />;
   }
 };
 

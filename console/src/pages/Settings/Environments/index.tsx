@@ -238,7 +238,17 @@ function EnvironmentsPage() {
         </div>
       ) : error ? (
         <div className={styles.centerState}>
-          <span className={styles.stateTextError}>{error}</span>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>⚠️</div>
+          <span className={styles.stateTextError}>
+            {t("environments.connectionFailed", "Could not connect to the ProwlrBot server")}
+          </span>
+          <span className={styles.stateText} style={{ marginTop: 4, maxWidth: 400, textAlign: "center", lineHeight: 1.5 }}>
+            {t("environments.connectionHint", "Make sure the server is running with 'prowlr app' and the console can reach it.")}
+          </span>
+          <details style={{ marginTop: 8, fontSize: 11, color: "var(--pb-text-disabled)" }}>
+            <summary style={{ cursor: "pointer" }}>Technical details</summary>
+            <code style={{ display: "block", marginTop: 4, padding: 8, background: "var(--pb-bg-code)", borderRadius: 4 }}>{error}</code>
+          </details>
           <Button size="small" onClick={fetchAll} style={{ marginTop: 12 }}>
             {t("environments.retry")}
           </Button>

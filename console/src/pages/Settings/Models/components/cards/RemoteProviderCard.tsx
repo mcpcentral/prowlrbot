@@ -111,7 +111,7 @@ export function RemoteProviderCard({
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                backgroundColor: statusReady ? "#52c41a" : "#d9d9d9",
+                backgroundColor: statusReady ? "var(--pb-status-success)" : "var(--pb-status-neutral)",
                 boxShadow: statusReady
                   ? "0 0 0 2px rgba(82, 196, 26, 0.2)"
                   : "none",

@@ -197,13 +197,13 @@ export function SkillDrawer({
             <div
               style={{
                 padding: 12,
-                backgroundColor: "#fffbe6",
-                border: "1px solid #ffe58f",
+                backgroundColor: "var(--pb-status-warning-bg)",
+                border: "1px solid var(--pb-status-warning-border)",
                 borderRadius: 4,
                 marginTop: 16,
               }}
             >
-              <p style={{ margin: 0, fontSize: 12, color: "#8c8c8c" }}>
+              <p style={{ margin: 0, fontSize: 12, color: "var(--pb-text-muted)" }}>
                 {t("skills.editNote")}
               </p>
             </div>
