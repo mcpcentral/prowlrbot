@@ -38,8 +38,8 @@ class ShellPolicy:
             "git", "gh", "make", "cmake", "cargo", "go", "rustc",
             "pytest", "black", "ruff", "mypy", "flake8", "isort",
             "pre-commit", "tox",
-            # Network (read-only)
-            "curl", "wget", "ping", "dig", "nslookup", "host",
+            # Network (read-only diagnostics — curl/wget excluded for security)
+            "ping", "dig", "nslookup", "host",
             # File manipulation (safe)
             "cp", "mv", "mkdir", "touch", "ln", "tar", "zip", "unzip",
             "gzip", "gunzip", "xz",
@@ -48,8 +48,6 @@ class ShellPolicy:
             "ps", "uptime", "id", "groups",
             # Text processing
             "jq", "yq", "cut", "tr", "tee", "xargs", "less", "more",
-            # Docker (read-mostly)
-            "docker", "docker-compose",
             # ProwlrBot
             "prowlr",
         ]
@@ -94,6 +92,10 @@ class ShellPolicy:
 
         Returns (allowed, reason).
         """
+        # Layer 0: Reject newlines — prevents multi-line injection bypasses
+        if "\n" in command or "\r" in command:
+            return False, "Command blocked: newlines are not allowed"
+
         # Layer 1: Reject injection metacharacters
         for pattern in self._INJECTION_PATTERNS:
             if re.search(pattern, command):

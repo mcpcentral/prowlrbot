@@ -169,10 +169,9 @@ def _extract_client_key(request: Request) -> str:
         except Exception:
             pass
 
-    forwarded = request.headers.get("x-forwarded-for", "")
-    if forwarded:
-        return f"ip:{forwarded.split(',')[0].strip()}"
-
+    # Use the real client IP from ASGI scope — never trust X-Forwarded-For
+    # as it can be spoofed. If behind a trusted reverse proxy, configure
+    # uvicorn's --proxy-headers or use ProxyHeadersMiddleware instead.
     client = request.client
     if client:
         return f"ip:{client.host}"
@@ -181,31 +180,15 @@ def _extract_client_key(request: Request) -> str:
 
 
 def _extract_role(request: Request) -> str:
-    """Try to extract the user role from the request state or JWT."""
-    # If auth middleware already ran, the role may be on request.state
+    """Extract the user role from request state (set by auth middleware).
+
+    Only trusts the role if the auth middleware has already verified the JWT
+    and placed the role on request.state. Never decodes the JWT inline —
+    an attacker could forge claims to get a higher rate limit tier.
+    """
     role = getattr(getattr(request, "state", None), "role", None)
     if role and role in TIER_CONFIGS:
         return role
-
-    # Fallback: try JWT payload
-    auth_header = request.headers.get("authorization", "")
-    if auth_header.lower().startswith("bearer "):
-        token = auth_header[7:]
-        try:
-            import base64
-            import json
-
-            payload_b64 = token.split(".")[1]
-            padding = 4 - len(payload_b64) % 4
-            if padding != 4:
-                payload_b64 += "=" * padding
-            payload = json.loads(base64.urlsafe_b64decode(payload_b64))
-            role = payload.get("role", "anonymous")
-            if role in TIER_CONFIGS:
-                return role
-        except Exception:
-            pass
-
     return "anonymous"
 
 

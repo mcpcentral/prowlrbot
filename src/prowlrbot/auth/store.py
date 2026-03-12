@@ -18,7 +18,10 @@ from ..constant import WORKING_DIR
 
 logger = logging.getLogger(__name__)
 
-_DB_PATH = WORKING_DIR / "auth.db"
+# Store auth DB in the secret directory (mode 0o700) since it contains
+# password hashes. Falls back to WORKING_DIR if the secret dir doesn't exist.
+_SECRET_DIR = Path.home() / ".prowlrbot.secret"
+_DB_PATH = _SECRET_DIR / "auth.db" if _SECRET_DIR.exists() else WORKING_DIR / "auth.db"
 
 _SCHEMA = """\
 CREATE TABLE IF NOT EXISTS users (

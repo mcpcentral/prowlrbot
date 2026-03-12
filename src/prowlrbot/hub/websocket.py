@@ -36,13 +36,26 @@ async def broadcast_ws(event: dict):
 
 async def warroom_ws(ws: WebSocket):
     """Real-time war room event stream with auth and connection limits."""
-    # Verify auth token if PROWLR_HUB_SECRET is set
+    # Verify auth token — required when PROWLR_HUB_SECRET or
+    # PROWLRBOT_TOKEN_HASH is set (i.e. auth is enabled).
     secret = os.environ.get("PROWLR_HUB_SECRET", "")
-    if secret:
+    token_hash = os.environ.get("PROWLRBOT_TOKEN_HASH", "")
+    if secret or token_hash:
         token = ws.query_params.get("token", "")
-        if not hmac.compare_digest(token, secret):
+        if not token:
+            await ws.close(code=4001, reason="Authentication required")
+            return
+        # Check against hub secret first, then token hash
+        if secret and not hmac.compare_digest(token, secret):
             await ws.close(code=4001, reason="Unauthorized")
             return
+        if not secret and token_hash:
+            import hashlib
+            if not hmac.compare_digest(
+                hashlib.sha256(token.encode()).hexdigest(), token_hash
+            ):
+                await ws.close(code=4001, reason="Unauthorized")
+                return
 
     # Enforce connection limit
     if len(_ws_clients) >= MAX_WS_CLIENTS:
