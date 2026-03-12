@@ -25,7 +25,7 @@ interface ChannelDrawerProps {
 }
 
 // DingTalk doc URL
-const dingtalkDocUrl = "https://prowlrbot.github.io/docs/channels";
+const dingtalkDocUrl = "https://prowlrbot.com/docs/channels";
 
 export function ChannelDrawer({
   open,
