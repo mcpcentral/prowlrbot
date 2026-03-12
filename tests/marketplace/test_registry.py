@@ -8,6 +8,6 @@ def test_specs_in_category_dir_map():
     assert CATEGORY_DIR_MAP["specs"] == "specs"
 
 
-def test_all_seven_categories_mapped():
-    expected = {"skills", "agents", "prompts", "mcp-servers", "themes", "workflows", "specs"}
+def test_all_categories_mapped():
+    expected = {"skills", "agents", "prompts", "mcp-servers", "themes", "workflows", "specs", "consumer"}
     assert set(CATEGORY_DIR_MAP.keys()) == expected
