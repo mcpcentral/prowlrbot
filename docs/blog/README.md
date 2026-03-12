@@ -48,3 +48,5 @@ summary: "One-sentence hook that makes people want to read."
 3. [Setting Up Your First Agent Swarm](2026-03-10-setting-up-your-first-swarm.md) — Step-by-step guide
 4. [Security First, Always](2026-03-10-security-first.md) — How we think about security
 5. [What's Coming Next](2026-03-10-whats-coming-next.md) — Roadmap and vision
+6. [How pip install Nuked My WSL](2026-03-11-pip-install-broke-my-wsl.md) — A pip install destroyed WSL2 and the fix
+7. [How a Background Task Ate 656GB](2026-03-11-656gb-feedback-loop.md) — A feedback loop, a full disk, and the safety rails we built
