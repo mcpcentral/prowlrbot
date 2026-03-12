@@ -69,8 +69,25 @@ export default function SwarmPage() {
 
   if (loading && !status) {
     return (
-      <div style={{ padding: 24 }}>
-        <Spin size="large" style={{ display: "block", marginTop: 48 }} />
+      <div style={{ padding: 24, textAlign: "center", paddingTop: 80 }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (!status) {
+    return (
+      <div style={{ padding: 24, textAlign: "center", paddingTop: 60 }}>
+        <div style={{ fontSize: 36, marginBottom: 12 }}>🐝</div>
+        <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "var(--pb-text-primary)" }}>
+          Could not connect to the swarm service
+        </div>
+        <div style={{ fontSize: 13, color: "var(--pb-text-tertiary)", maxWidth: 400, margin: "0 auto", lineHeight: 1.6 }}>
+          Make sure the ProwlrBot server is running with &apos;prowlr app&apos;. The swarm API initializes at startup.
+        </div>
+        <Button size="small" onClick={fetchStatus} style={{ marginTop: 12 }}>
+          Retry
+        </Button>
       </div>
     );
   }
@@ -114,7 +131,7 @@ export default function SwarmPage() {
                   title: "Docker",
                   description: status.docker
                     ? "Docker is running"
-                    : "Install Docker Desktop or run: brew install docker",
+                    : "Install Docker Desktop from docker.com or your package manager",
                   status: status.docker ? "finish" : "wait",
                   icon: status.docker ? <CheckCircleOutlined /> : <CloseCircleOutlined />,
                 },
@@ -122,7 +139,7 @@ export default function SwarmPage() {
                   title: "Redis",
                   description: status.redis
                     ? "Redis is running"
-                    : "Run: brew install redis && brew services start redis",
+                    : "Install Redis from redis.io and start the server",
                   status: status.redis ? "finish" : "wait",
                   icon: status.redis ? <CheckCircleOutlined /> : <CloseCircleOutlined />,
                 },

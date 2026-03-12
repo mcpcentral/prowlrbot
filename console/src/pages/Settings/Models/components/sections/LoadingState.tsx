@@ -21,7 +21,7 @@ export function LoadingState({
     <div className={`${styles.loading} ${className || ""}`}>
       <span
         className={styles.loadingText}
-        style={{ color: error ? "#ff4d4f" : undefined }}
+        style={{ color: error ? "var(--pb-status-error)" : undefined }}
       >
         {message}
       </span>

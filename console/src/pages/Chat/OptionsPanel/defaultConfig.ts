@@ -5,25 +5,35 @@ const defaultConfig = {
     prefix: "prowlrbot",
     leftHeader: {
       logo: "",
-      title: "Work with ProwlrBot",
+      title: "ProwlrBot",
     },
   },
   sender: {
     attachments: false,
     maxLength: 10000,
-    disclaimer: "Works for you, grows with you",
+    disclaimer: "Always watching. Always ready.",
   },
   welcome: {
-    greeting: "Hello, how can I help you today?",
+    greeting: "Hey there! What can I help you with?",
     description:
-      "I am a helpful assistant that can help you with your questions.",
+      "Your autonomous AI agent — monitoring, automation, and multi-channel communication.",
     avatar: `${import.meta.env.BASE_URL}prowlrbot-symbol.svg`,
     prompts: [
       {
-        value: "Let's get started — what can you help me with?",
+        label: "Get Started",
+        value: "What can you help me with?",
       },
       {
-        value: "What skills do you have?",
+        label: "My Skills",
+        value: "What skills and tools do you have available?",
+      },
+      {
+        label: "Run a Task",
+        value: "Help me set up a monitoring task",
+      },
+      {
+        label: "Check Status",
+        value: "Show me the current system status",
       },
     ],
   },
