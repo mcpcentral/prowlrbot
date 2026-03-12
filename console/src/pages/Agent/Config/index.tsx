@@ -82,9 +82,10 @@ function AgentConfigPage() {
   };
 
   const autonomyDescriptions: Record<string, string> = {
-    observe: "Watches and reports only. Never takes action.",
-    guide: "Suggests actions and waits for your approval.",
-    act: "Fully autonomous. Acts without asking.",
+    watch: "Suggests only. Human approves every action.",
+    guide: "Acts on routine tasks, asks before novel ones.",
+    delegate: "Handles most tasks, escalates edge cases.",
+    autonomous: "Full autonomy. Reports results only.",
   };
 
   return (
@@ -181,9 +182,10 @@ function AgentConfigPage() {
           </Typography.Paragraph>
           <Segmented
             options={[
-              { label: "Observe", value: "observe" },
+              { label: "Watch", value: "watch" },
               { label: "Guide", value: "guide" },
-              { label: "Act", value: "act" },
+              { label: "Delegate", value: "delegate" },
+              { label: "Autonomous", value: "autonomous" },
             ]}
             value={autonomyLevel}
             onChange={(v) => setAutonomyLevel(v as string)}
