@@ -17,6 +17,24 @@ const keyToLabel: Record<string, string> = {
   workspace: "nav.workspace",
   models: "nav.models",
   environments: "nav.environments",
+  marketplace: "Marketplace",
+  agentverse: "AgentVerse",
+  gamification: "Achievements",
+  leaderboard: "Leaderboard",
+  security: "Security",
+  privacy: "Privacy",
+  appearance: "Appearance",
+  templates: "Templates",
+  onboarding: "Onboarding",
+  warroom: "War Room",
+  monitoring: "Monitoring",
+  memory: "Memory",
+  swarm: "Swarm",
+  "soul-editor": "Soul Editor",
+  "team-builder": "Team Builder",
+  research: "Research",
+  replay: "Replay",
+  "external-agents": "External Agents",
 };
 
 interface HeaderProps {
@@ -39,7 +57,12 @@ export default function Header({ selectedKey }: HeaderProps) {
       }}
     >
       <span style={{ fontSize: 18, fontWeight: 500 }}>
-        {t(keyToLabel[selectedKey] || "nav.chat")}
+        {(() => {
+          const label = keyToLabel[selectedKey];
+          if (!label) return t("nav.dashboard");
+          // i18n keys start with "nav.", raw strings don't
+          return label.startsWith("nav.") ? t(label) : label;
+        })()}
       </span>
       <LanguageSwitcher />
     </AntHeader>
