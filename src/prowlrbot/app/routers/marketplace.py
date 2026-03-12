@@ -8,6 +8,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 
 from ...marketplace.models import (
+    Bundle,
     CreditBalance,
     CreditTransactionType,
     InstallRecord,
@@ -65,6 +66,64 @@ async def search_listings(
         sort=sort,
         limit=limit,
     )
+
+
+# ------------------------------------------------------------------
+# Bundles
+# ------------------------------------------------------------------
+
+
+@router.get("/bundles")
+async def list_bundles() -> list[dict]:
+    """List all curated bundles."""
+    bundles = _get_store().list_bundles()
+    return [b.model_dump() for b in bundles]
+
+
+@router.get("/bundles/{bundle_id}")
+async def get_bundle(bundle_id: str) -> dict:
+    """Get bundle detail with full listing objects."""
+    store = _get_store()
+    bundle = store.get_bundle(bundle_id)
+    if bundle is None:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    listings = [
+        store.get_listing(lid)
+        for lid in bundle.listing_ids
+    ]
+    listings = [l for l in listings if l is not None]
+    return {
+        "bundle": bundle.model_dump(),
+        "listings": [l.model_dump() for l in listings],
+    }
+
+
+@router.post("/bundles/{bundle_id}/install")
+async def install_bundle(bundle_id: str) -> dict:
+    """Install all listings in a bundle. Continues on failure."""
+    store = _get_store()
+    bundle = store.get_bundle(bundle_id)
+    if bundle is None:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+
+    installed = []
+    failed = []
+    for lid in bundle.listing_ids:
+        listing = store.get_listing(lid)
+        if listing is None:
+            failed.append({"slug": lid, "error": "Listing not found"})
+            continue
+        try:
+            record = InstallRecord(
+                listing_id=lid, user_id="local", version=listing.version,
+            )
+            store.record_install(record)
+            installed.append(lid)
+        except Exception as e:
+            failed.append({"slug": lid, "error": str(e)})
+
+    store.increment_bundle_installs(bundle_id)
+    return {"installed": installed, "failed": failed, "total": len(bundle.listing_ids)}
 
 
 @router.get("/listings/{listing_id}", response_model=MarketplaceListing)
