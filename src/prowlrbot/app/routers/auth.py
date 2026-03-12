@@ -54,6 +54,11 @@ async def register(
     password: str = Body(...),
     email: str = Body(""),
 ) -> AuthResponse:
+    if len(password) < 12:
+        raise HTTPException(
+            status_code=400,
+            detail="Password must be at least 12 characters",
+        )
     store = _get_store()
     try:
         user = store.create_user(

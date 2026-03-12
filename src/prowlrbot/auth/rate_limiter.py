@@ -133,6 +133,19 @@ class RateLimiter:
         cutoff = time.time() - 3600.0
         self._windows[client_key] = [ts for ts in timestamps if ts >= cutoff]
 
+        # Periodic global sweep: every 1000 checks, purge stale client keys
+        # to prevent unbounded memory growth in long-running processes.
+        if not hasattr(self, "_check_count"):
+            self._check_count = 0
+        self._check_count += 1
+        if self._check_count % 1000 == 0:
+            stale_keys = [
+                k for k, v in self._windows.items()
+                if not v or max(v) < cutoff
+            ]
+            for k in stale_keys:
+                del self._windows[k]
+
 
 # ---------------------------------------------------------------------------
 # FastAPI / Starlette middleware
@@ -188,6 +201,14 @@ def _extract_role(request: Request) -> str:
 # Paths that bypass rate limiting
 _EXEMPT_PATHS = {"/health", "/healthz", "/api/health"}
 
+# Auth endpoints get stricter limits to prevent brute-force/credential-stuffing
+_AUTH_RATE_CONFIG = RateLimitConfig(
+    requests_per_minute=10,
+    requests_per_hour=50,
+    burst_size=3,
+)
+_AUTH_PATHS = {"/api/auth/login", "/api/auth/register"}
+
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """ASGI middleware that enforces per-client rate limits.
@@ -209,6 +230,22 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         client_key = _extract_client_key(request)
+
+        # Auth endpoints get stricter per-IP limits
+        if request.url.path in _AUTH_PATHS:
+            client = request.client
+            auth_key = f"auth:{client.host}" if client else "auth:unknown"
+            config = _AUTH_RATE_CONFIG
+            if not self.limiter.check(auth_key, config):
+                info = self.limiter.get_remaining(auth_key, config)
+                retry_after = int(info["reset"] - time.time())  # type: ignore[operator]
+                retry_after = max(1, retry_after)
+                return JSONResponse(
+                    status_code=429,
+                    content={"detail": "Too many authentication attempts. Please try again later."},
+                    headers={"Retry-After": str(retry_after)},
+                )
+
         role = _extract_role(request)
         config = TIER_CONFIGS.get(role, TIER_CONFIGS["anonymous"])
 
