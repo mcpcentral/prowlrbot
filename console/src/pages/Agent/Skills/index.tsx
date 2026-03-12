@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Form, Modal } from "@agentscope-ai/design";
+import { Button, Form, Modal } from "antd";
 import { DownloadOutlined, PlusOutlined } from "@ant-design/icons";
 import type { SkillSpec } from "../../../api/types";
 import { SkillCard, SkillDrawer } from "./components";

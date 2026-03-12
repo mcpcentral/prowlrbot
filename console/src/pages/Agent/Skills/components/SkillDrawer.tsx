@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Drawer, Form, Input, Button, message } from "@agentscope-ai/design";
+import { Drawer, Form, Input, Button, message } from "antd";
 import { useTranslation } from "react-i18next";
 import type { FormInstance } from "antd";
 import type { SkillSpec } from "../../../../api/types";

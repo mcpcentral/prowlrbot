@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card } from "@agentscope-ai/design";
+import { Button, Card } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import type { MarkdownFile, DailyMemoryFile } from "../../../../api/types";
 import { FileItem } from "./FileItem";

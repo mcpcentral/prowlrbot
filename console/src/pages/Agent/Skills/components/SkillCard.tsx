@@ -1,4 +1,4 @@
-import { Card, Button } from "@agentscope-ai/design";
+import { Card, Button } from "antd";
 import {
   DeleteOutlined,
   FileTextFilled,

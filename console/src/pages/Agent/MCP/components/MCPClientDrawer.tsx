@@ -1,4 +1,4 @@
-import { Drawer, Form, Input, Switch, Button } from "@agentscope-ai/design";
+import { Drawer, Form, Input, Switch, Button } from "antd";
 import type { MCPClientInfo } from "../../../../api/types";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";

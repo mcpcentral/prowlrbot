@@ -5,7 +5,7 @@ import {
   Button,
   Card,
   message,
-} from "@agentscope-ai/design";
+} from "antd";
 import { useTranslation } from "react-i18next";
 import api from "../../../api";
 import styles from "./index.module.less";

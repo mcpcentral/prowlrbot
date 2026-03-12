@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button } from "@agentscope-ai/design";
+import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useProviders } from "./useProviders";
 import {

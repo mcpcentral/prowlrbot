@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { message } from "@agentscope-ai/design";
+import { message } from "antd";
 import api from "../../../api";
 import type { Session } from "./components/constants";
 

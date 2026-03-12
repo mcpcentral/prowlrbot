@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@agentscope-ai/chat": "^1.1.51",
-    "@agentscope-ai/design": "^1.0.14",
     "@agentscope-ai/icons": "^1.0.46",
     "@ant-design/x-markdown": "^2.2.2",
     "@hello-pangea/dnd": "^18.0.1",

@@ -1,4 +1,4 @@
-import { Button, Tag } from "@agentscope-ai/design";
+import { Button, Tag } from "antd";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import type { ColumnsType } from "antd/es/table";

@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { Button, Modal, message } from "@agentscope-ai/design";
+import { Button, Modal, message } from "antd";
 import { useTranslation } from "react-i18next";
 
 import api from "../../../api";

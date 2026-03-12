@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Card, Form, Modal, Table } from "@agentscope-ai/design";
+import { Button, Card, Form, Modal, Table } from "antd";
 import type { CronJobSpecOutput } from "../../../api/types";
 import { useTranslation } from "react-i18next";
 import {

@@ -1,5 +1,5 @@
 import { SparkSettingLine } from "@agentscope-ai/icons";
-import { IconButton, Drawer } from "@agentscope-ai/design";
+import { Button, Drawer } from "antd";
 import { useState } from "react";
 import OptionsEditor from "./OptionsEditor";
 
@@ -13,10 +13,10 @@ export default function OptionsPanel(props: OptionsPanelProps) {
 
   return (
     <>
-      <IconButton
+      <Button
+        type="text"
         onClick={() => setOpen(true)}
         icon={<SparkSettingLine />}
-        bordered={false}
       />
       <Drawer
         destroyOnHidden

@@ -6,7 +6,7 @@ import {
   Modal,
   Tag,
   message,
-} from "@agentscope-ai/design";
+} from "antd";
 import { DeleteOutlined, PlusOutlined, ApiOutlined } from "@ant-design/icons";
 import type { ProviderInfo } from "../../../../../api/types";
 import api from "../../../../../api";

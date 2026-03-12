@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Button, message, Switch, Input } from "@agentscope-ai/design";
+import { Button, message, Switch, Input } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { XMarkdown } from "@ant-design/x-markdown";
 import { useTranslation } from "react-i18next";
@@ -18,8 +18,6 @@ interface MarkdownCopyProps {
       | "default"
       | "primary"
       | "dashed"
-      | "primaryLess"
-      | "textCompact"
       | undefined;
     size?: "small" | "middle" | "large" | undefined;
     style?: CSSProperties;

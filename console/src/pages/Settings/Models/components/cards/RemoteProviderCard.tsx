@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Button, Tag, Modal, message } from "@agentscope-ai/design";
+import { Card, Button, Tag, Modal, message } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,

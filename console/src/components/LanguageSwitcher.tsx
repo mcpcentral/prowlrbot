@@ -1,4 +1,4 @@
-import { Dropdown, Button } from "@agentscope-ai/design";
+import { Dropdown, Button } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import type { MenuProps } from "antd";

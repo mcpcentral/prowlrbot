@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { message, Modal } from "@agentscope-ai/design";
+import { message, Modal } from "antd";
 import api from "../../../api";
 import type { SkillSpec } from "../../../api/types";
 

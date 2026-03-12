@@ -6,7 +6,7 @@ import {
   Select,
   Switch,
   Button,
-} from "@agentscope-ai/design";
+} from "antd";
 import { useTranslation } from "react-i18next";
 import type { FormInstance } from "antd";
 import type { CronJobSpecOutput } from "../../../../api/types";

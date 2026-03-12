@@ -1,7 +1,7 @@
 import { useAgentsData, FileListPanel, FileEditor } from "./components";
 import styles from "./index.module.less";
 import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
-import { Button, Tooltip, message } from "@agentscope-ai/design";
+import { Button, Tooltip, message } from "antd";
 import { workspaceApi } from "../../../api/modules/workspace";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";

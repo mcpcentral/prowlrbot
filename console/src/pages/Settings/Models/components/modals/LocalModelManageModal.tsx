@@ -7,7 +7,7 @@ import {
   Select,
   Tag,
   message,
-} from "@agentscope-ai/design";
+} from "antd";
 import {
   CloseOutlined,
   DeleteOutlined,

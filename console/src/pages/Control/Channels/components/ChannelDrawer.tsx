@@ -5,7 +5,7 @@ import {
   InputNumber,
   Switch,
   Button,
-} from "@agentscope-ai/design";
+} from "antd";
 import { LinkOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import type { FormInstance } from "antd";

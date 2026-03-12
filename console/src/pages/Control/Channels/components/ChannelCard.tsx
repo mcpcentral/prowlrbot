@@ -1,4 +1,4 @@
-import { Card } from "@agentscope-ai/design";
+import { Card } from "antd";
 import { useTranslation } from "react-i18next";
 import type { SingleChannelConfig } from "../../../../api/types";
 import { CHANNEL_LABELS, type ChannelKey } from "./constants";

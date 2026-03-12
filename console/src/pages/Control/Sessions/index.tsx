@@ -6,7 +6,7 @@ import {
   Table,
   message,
   Button,
-} from "@agentscope-ai/design";
+} from "antd";
 import { useTranslation } from "react-i18next";
 import {
   createColumns,

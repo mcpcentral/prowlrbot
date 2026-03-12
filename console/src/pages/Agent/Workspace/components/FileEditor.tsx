@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Button, Card, Input, Switch, message } from "@agentscope-ai/design";
+import { Button, Card, Input, Switch, message } from "antd";
 import { CopyOutlined, UndoOutlined, SaveOutlined } from "@ant-design/icons";
 import type { MarkdownFile } from "../../../../api/types";
 import { XMarkdown } from "@ant-design/x-markdown";

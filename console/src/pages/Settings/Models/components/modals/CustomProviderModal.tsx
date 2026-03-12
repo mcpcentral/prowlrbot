@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Form, Input, Modal, message } from "@agentscope-ai/design";
+import { Form, Input, Modal, message } from "antd";
 import api from "../../../../../api";
 import { useTranslation } from "react-i18next";
 

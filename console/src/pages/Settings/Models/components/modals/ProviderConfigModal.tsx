@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Form, Input, Modal, message, Button } from "@agentscope-ai/design";
+import { Form, Input, Modal, message, Button } from "antd";
 import { ApiOutlined } from "@ant-design/icons";
 import type { ProviderConfigRequest } from "../../../../../api/types";
 import api from "../../../../../api";

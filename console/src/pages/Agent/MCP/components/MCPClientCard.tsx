@@ -1,4 +1,4 @@
-import { Card, Button, Modal, Tooltip } from "@agentscope-ai/design";
+import { Card, Button, Modal, Tooltip } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Server } from "lucide-react";
 import type { MCPClientInfo } from "../../../../api/types";

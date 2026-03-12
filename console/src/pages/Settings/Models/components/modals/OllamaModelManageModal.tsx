@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Button, Form, Input, Modal, message } from "@agentscope-ai/design";
+import { Button, Form, Input, Modal, message } from "antd";
 import {
   CloseOutlined,
   DeleteOutlined,

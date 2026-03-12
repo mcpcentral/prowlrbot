@@ -1,4 +1,4 @@
-import { Checkbox, Input } from "@agentscope-ai/design";
+import { Checkbox, Input } from "antd";
 import { SparkDeleteLine, SparkPlusLine } from "@agentscope-ai/icons";
 import { useTranslation } from "react-i18next";
 import styles from "../index.module.less";

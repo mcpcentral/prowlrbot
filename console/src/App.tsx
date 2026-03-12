@@ -1,5 +1,5 @@
 import { createGlobalStyle } from "antd-style";
-import { ConfigProvider, bailianTheme } from "@agentscope-ai/design";
+import { ConfigProvider } from "antd";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import MainLayout from "./layouts/MainLayout";
@@ -19,16 +19,10 @@ function ThemedApp() {
 
   return (
     <ConfigProvider
-      {...bailianTheme}
-      prefix="prowlrbot"
       prefixCls="prowlrbot"
       theme={{
-        ...bailianTheme.theme,
         algorithm: antAlgorithm,
-        token: {
-          ...bailianTheme.theme?.token,
-          ...antTokenOverrides,
-        },
+        token: antTokenOverrides,
       }}
     >
       <MainLayout />

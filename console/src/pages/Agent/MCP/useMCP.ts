@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { message } from "@agentscope-ai/design";
+import { message } from "antd";
 import api from "../../../api";
 import type { MCPClientInfo } from "../../../api/types";
 import { useTranslation } from "react-i18next";

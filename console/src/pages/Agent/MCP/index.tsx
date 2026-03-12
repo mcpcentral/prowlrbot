@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Empty, Modal } from "@agentscope-ai/design";
+import { Button, Empty, Modal } from "antd";
 import type { MCPClientInfo } from "../../../api/types";
 import { MCPClientCard } from "./components";
 import { useMCP } from "./useMCP";
