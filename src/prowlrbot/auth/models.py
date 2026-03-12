@@ -66,6 +66,7 @@ class TokenPayload(BaseModel):
     role: Role
     exp: float
     iat: float
+    iss: str = "prowlrbot"
 
 
 class AuthResponse(BaseModel):

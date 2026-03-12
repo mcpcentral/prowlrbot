@@ -19,6 +19,10 @@ MAX_WS_CLIENTS = 50
 # Max inbound message size (bytes)
 MAX_MESSAGE_SIZE = 1024
 
+# Rate limit: max new connections per IP per minute
+_ws_connect_times: dict[str, list[float]] = {}
+_WS_CONNECTS_PER_MINUTE = 10
+
 
 async def broadcast_ws(event: dict):
     """Push event to all connected WebSocket clients."""
@@ -56,6 +60,19 @@ async def warroom_ws(ws: WebSocket):
             ):
                 await ws.close(code=4001, reason="Unauthorized")
                 return
+
+    # Rate limit new connections per IP
+    import time
+    client_ip = ws.client.host if ws.client else "unknown"
+    now = time.time()
+    cutoff = now - 60.0
+    times = _ws_connect_times.get(client_ip, [])
+    times = [t for t in times if t >= cutoff]
+    if len(times) >= _WS_CONNECTS_PER_MINUTE:
+        await ws.close(code=4003, reason="Connection rate limit exceeded")
+        return
+    times.append(now)
+    _ws_connect_times[client_ip] = times
 
     # Enforce connection limit
     if len(_ws_clients) >= MAX_WS_CLIENTS:

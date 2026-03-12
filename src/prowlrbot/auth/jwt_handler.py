@@ -62,6 +62,7 @@ class JWTHandler:
             role=user.role,
             iat=now,
             exp=now + self._expiry_minutes * 60,
+            iss="prowlrbot",
         )
         header_b64 = _b64url_encode(json.dumps(header, separators=(",", ":")).encode())
         payload_b64 = _b64url_encode(
@@ -99,6 +100,10 @@ class JWTHandler:
         # Check expiry
         if payload.exp < time.time():
             raise ValueError("JWT has expired")
+
+        # Validate issuer
+        if payload.iss != "prowlrbot":
+            raise ValueError("Invalid JWT issuer")
 
         return payload
 

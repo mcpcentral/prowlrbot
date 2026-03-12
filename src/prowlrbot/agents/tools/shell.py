@@ -33,8 +33,9 @@ class ShellPolicy:
             "ls", "pwd", "cat", "head", "tail", "wc", "file", "stat",
             "find", "grep", "rg", "awk", "sed", "sort", "uniq", "diff",
             "tree", "which", "whereis", "echo", "printf", "date", "env",
-            # Development
-            "python", "python3", "pip", "pip3", "node", "npm", "npx",
+            # Development (python/python3 excluded — use pip for installs,
+            # agent tools for code execution)
+            "pip", "pip3", "node", "npm", "npx",
             "git", "gh", "make", "cmake", "cargo", "go", "rustc",
             "pytest", "black", "ruff", "mypy", "flake8", "isort",
             "pre-commit", "tox",

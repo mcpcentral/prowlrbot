@@ -67,7 +67,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # --- Always-on headers ---
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
+        # X-XSS-Protection omitted — deprecated by modern browsers and can
+        # introduce vulnerabilities in IE. CSP provides better protection.
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = (
             "camera=(), microphone=(self), geolocation=()"

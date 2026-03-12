@@ -3,12 +3,15 @@
 
 import hashlib
 import hmac
+import logging
 import secrets
 from dataclasses import dataclass
 from typing import Optional
 
 from fastapi import HTTPException, Request, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -54,8 +57,13 @@ class AuthDependency:
         if not self.auth_config.enabled:
             return None
 
-        # No token configured — allow all (first run)
+        # No token configured — allow all (first run). Log a warning so
+        # the operator knows auth is effectively disabled.
         if not self.auth_config.token_hash:
+            logger.warning(
+                "API authentication is disabled — no PROWLRBOT_API_TOKEN_HASH set. "
+                "Generate one with: prowlr token"
+            )
             return None
 
         # Static assets and health check — no auth needed

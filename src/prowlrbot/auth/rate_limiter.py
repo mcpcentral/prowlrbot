@@ -149,25 +149,18 @@ def _extract_client_key(request: Request) -> str:
     2. ``X-Forwarded-For`` header (first address).
     3. Client IP from the ASGI scope.
     """
+    # If auth middleware already verified the user, use their ID
+    user_id = getattr(getattr(request, "state", None), "user_id", None)
+    if user_id:
+        return f"user:{user_id}"
+
+    # Fallback: use a hash of the bearer token as key (without decoding
+    # the JWT payload, which would trust unverified claims).
     auth_header = request.headers.get("authorization", "")
     if auth_header.lower().startswith("bearer "):
-        token = auth_header[7:]
-        try:
-            import base64
-            import json
-
-            # Decode the payload segment of the JWT (second part)
-            payload_b64 = token.split(".")[1]
-            # Add padding
-            padding = 4 - len(payload_b64) % 4
-            if padding != 4:
-                payload_b64 += "=" * padding
-            payload = json.loads(base64.urlsafe_b64decode(payload_b64))
-            user_id = payload.get("sub") or payload.get("user_id")
-            if user_id:
-                return f"user:{user_id}"
-        except Exception:
-            pass
+        import hashlib
+        token_hash = hashlib.sha256(auth_header[7:].encode()).hexdigest()[:16]
+        return f"token:{token_hash}"
 
     # Use the real client IP from ASGI scope — never trust X-Forwarded-For
     # as it can be spoofed. If behind a trusted reverse proxy, configure

@@ -129,7 +129,7 @@ async def transcribe_audio(
         raise HTTPException(status_code=502, detail=str(exc))
     except Exception as exc:
         logger.exception("Unexpected error during transcription")
-        raise HTTPException(status_code=500, detail=f"Transcription error: {exc}")
+        raise HTTPException(status_code=500, detail="Internal transcription error")
     finally:
         # Clean up temp file
         if audio_path.exists():
@@ -188,4 +188,4 @@ async def synthesize_speech(request: SynthesizeRequest):
         raise HTTPException(status_code=502, detail=str(exc))
     except Exception as exc:
         logger.exception("Unexpected error during synthesis")
-        raise HTTPException(status_code=500, detail=f"Synthesis error: {exc}")
+        raise HTTPException(status_code=500, detail="Internal synthesis error")
