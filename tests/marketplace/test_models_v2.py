@@ -32,7 +32,7 @@ from prowlrbot.marketplace.models import (
 
 class TestEnums:
     def test_marketplace_categories(self):
-        expected = {"skills", "agents", "prompts", "mcp-servers", "themes", "workflows"}
+        expected = {"skills", "agents", "prompts", "mcp-servers", "themes", "workflows", "specs"}
         assert {c.value for c in MarketplaceCategory} == expected
 
     def test_listing_status_values(self):

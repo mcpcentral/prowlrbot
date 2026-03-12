@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 
 class MarketplaceCategory(StrEnum):
-    """The 6 marketplace listing categories (aligned with ProwlrBot/prowlr-marketplace)."""
+    """The 7 marketplace listing categories (aligned with ProwlrBot/prowlr-marketplace)."""
 
     skills = "skills"
     agents = "agents"
@@ -20,6 +20,14 @@ class MarketplaceCategory(StrEnum):
     mcp_servers = "mcp-servers"
     themes = "themes"
     workflows = "workflows"
+    specs = "specs"
+
+
+class TrustTier(StrEnum):
+    """Trust level assigned to marketplace listings."""
+
+    official = "official"
+    verified = "verified"
 
 
 class ListingStatus(StrEnum):
@@ -84,6 +92,16 @@ class MarketplaceListing(BaseModel):
     setup_steps: list[dict] = Field(default_factory=list)
     user_stories: list[dict] = Field(default_factory=list)
     hero_animation: str = ""
+
+    # ── v3 fields: trust-tiered marketplace ──────────────────────────────
+    trust_tier: str = "verified"
+    author_name: str = ""
+    author_url: str = ""
+    author_avatar_url: str = ""
+    source_repo: str = ""
+    license: str = "MIT"
+    changelog: str = ""
+    compatibility: str = ""
 
 
 class ReviewEntry(BaseModel):
