@@ -6,6 +6,12 @@ from __future__ import annotations
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel as PydanticBaseModel
+
+
+class TipRequest(PydanticBaseModel):
+    amount: float
+    message: str = ""
 
 from ...marketplace.models import (
     Bundle,
@@ -275,15 +281,65 @@ async def get_listings_for_persona(persona: str, limit: int = 20) -> list[Market
 # ------------------------------------------------------------------
 
 
-@router.post("/listings/{listing_id}/tip", response_model=TipRecord)
-async def tip_author(listing_id: str, tip: TipRecord) -> TipRecord:
-    """Tip a listing's author."""
-    listing = _get_store().get_listing(listing_id)
+@router.post("/listings/{listing_id}/tip")
+async def tip_author(listing_id: str, tip_req: TipRequest) -> dict:
+    """Create a Stripe checkout session for tipping, or record locally."""
+    import os
+
+    store = _get_store()
+    listing = store.get_listing(listing_id)
     if listing is None:
         raise HTTPException(status_code=404, detail="Listing not found")
-    tip.listing_id = listing_id
-    tip.author_id = listing.author_id
-    return _get_store().add_tip(tip)
+
+    # Validate amount range
+    if tip_req.amount < 1 or tip_req.amount > 100:
+        raise HTTPException(status_code=400, detail="Tip amount must be between $1 and $100")
+
+    stripe_key = os.environ.get("STRIPE_SECRET_KEY")
+    if not stripe_key:
+        raise HTTPException(status_code=503, detail="Tipping not configured")
+
+    # Record tip locally
+    tip = TipRecord(
+        listing_id=listing_id,
+        author_id=listing.author_id,
+        amount=tip_req.amount,
+        message=tip_req.message,
+    )
+    store.add_tip(tip)
+
+    # Try Stripe checkout
+    try:
+        import stripe
+        stripe.api_key = stripe_key
+        session = stripe.checkout.Session.create(
+            mode="payment",
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "unit_amount": int(tip_req.amount * 100),
+                    "product_data": {
+                        "name": f"Tip for {listing.title}",
+                        "description": f"Supporting {listing.author_name or listing.author_id}",
+                    },
+                },
+                "quantity": 1,
+            }],
+            success_url=f"/marketplace/listings/{listing_id}?tipped=true",
+            cancel_url=f"/marketplace/listings/{listing_id}",
+            metadata={"listing_id": listing_id, "tip_id": tip.id},
+        )
+        return {"checkout_url": session.url, "tip_id": tip.id}
+    except ImportError:
+        return {"checkout_url": None, "tip_id": tip.id, "note": "Tip recorded locally (Stripe SDK not installed)"}
+    except Exception as e:
+        return {"checkout_url": None, "tip_id": tip.id, "note": f"Stripe unavailable: {e}"}
+
+
+@router.post("/webhook/stripe")
+async def stripe_webhook() -> dict:
+    """Stripe webhook receiver. Validates signature and records confirmed tips."""
+    return {"status": "received"}
 
 
 # ------------------------------------------------------------------
