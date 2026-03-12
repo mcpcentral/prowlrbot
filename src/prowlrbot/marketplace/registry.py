@@ -30,6 +30,7 @@ CATEGORY_DIR_MAP: dict[str, str] = {
     "mcp-servers": "mcp-servers",
     "themes": "themes",
     "workflows": "workflows",
+    "specs": "specs",
 }
 
 # ── Ecosystem repos ──────────────────────────────────────────────────────────
@@ -189,6 +190,11 @@ def sync_registry(
         pricing = raw.get("pricing_model", "free")
         price = float(raw.get("price", 0))
 
+        author_str = (
+            author if isinstance(author, str) else author.get("name", "unknown")
+        )
+        is_official = author_str.lower() in ("prowlrbot", "prowlr", "prowlrbot-team")
+
         try:
             cat = MarketplaceCategory(category_str)
         except ValueError:
@@ -204,6 +210,9 @@ def sync_registry(
                     "version": version,
                     "tags": tags,
                     "category": cat.value,
+                    "author_name": author_str,
+                    "source_repo": raw.get("source_repo", raw.get("repository", "")),
+                    "license": raw.get("license", "MIT"),
                 },
             )
             updated += 1
@@ -220,9 +229,7 @@ def sync_registry(
 
             listing = MarketplaceListing(
                 id=listing_id,
-                author_id=(
-                    author if isinstance(author, str) else author.get("name", "unknown")
-                ),
+                author_id=author_str,
                 title=title,
                 description=description,
                 category=cat,
@@ -231,6 +238,10 @@ def sync_registry(
                 price=price,
                 tags=tags if isinstance(tags, list) else [],
                 status=ListingStatus.approved,
+                trust_tier="official" if is_official else "verified",
+                author_name=author_str,
+                source_repo=raw.get("source_repo", raw.get("repository", "")),
+                license=raw.get("license", "MIT"),
             )
             store.publish_listing(listing)
             added += 1
