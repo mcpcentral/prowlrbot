@@ -2,12 +2,36 @@
 """WebSocket endpoint for real-time dashboard events."""
 
 import asyncio
+import hashlib
+import hmac
 import json
+import os
 from typing import Optional
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 from prowlrbot.dashboard.events import DashboardEvent, EventBus
+
+
+def _verify_ws_token(ws: WebSocket) -> bool:
+    """Verify WebSocket auth token from query params.
+
+    Returns True if auth passes (or no auth is configured).
+    """
+    token_hash = os.environ.get("PROWLRBOT_API_TOKEN_HASH", "")
+    hub_secret = os.environ.get("PROWLR_HUB_SECRET", "")
+    if not token_hash and not hub_secret:
+        return True  # No auth configured
+    token = ws.query_params.get("token", "")
+    if not token:
+        return False
+    if hub_secret and hmac.compare_digest(token, hub_secret):
+        return True
+    if token_hash:
+        return hmac.compare_digest(
+            hashlib.sha256(token.encode()).hexdigest(), token_hash
+        )
+    return False
 
 
 def create_websocket_router(event_bus: EventBus) -> APIRouter:
@@ -21,6 +45,10 @@ def create_websocket_router(event_bus: EventBus) -> APIRouter:
     ):
         if not session_id:
             await websocket.close(code=4000, reason="session_id required")
+            return
+
+        if not _verify_ws_token(websocket):
+            await websocket.close(code=4001, reason="Authentication required")
             return
 
         await websocket.accept()

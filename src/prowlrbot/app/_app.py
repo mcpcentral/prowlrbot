@@ -270,6 +270,7 @@ app.include_router(
     agent_app.router,
     prefix="/api/agent",
     tags=["agent"],
+    dependencies=[Depends(auth_dep)],
 )
 
 # --- A2A Protocol (agent-to-agent discovery + tasks) ---
@@ -294,7 +295,7 @@ roar_server = ROARServer(
     skills=["code", "monitor", "chat", "mcp", "a2a"],
     channels=["console", "discord", "telegram"],
 )
-app.include_router(create_roar_router(roar_server))
+app.include_router(create_roar_router(roar_server), dependencies=[Depends(auth_dep)])
 
 # Wire ROAR EventBus into A2A SSE streaming
 from ..protocols.a2a_server import set_event_bus as _a2a_set_event_bus

@@ -177,6 +177,8 @@ class TestMonitorEngine:
 class TestMonitorEngineAPI:
     @pytest.mark.asyncio
     async def test_api_monitor_run_once(self, storage):
+        from unittest.mock import patch
+
         engine = MonitorEngine(storage=storage)
         payload = json.dumps({"data": {"status": "up"}})
         transport = httpx.MockTransport(lambda req: httpx.Response(200, text=payload))
@@ -198,6 +200,10 @@ class TestMonitorEngineAPI:
 
         engine._make_detector = patched
 
-        result = await engine.run_once("api1")
+        with patch(
+            "prowlrbot.security.url_validator.validate_outbound_url",
+            return_value=(True, "OK"),
+        ):
+            result = await engine.run_once("api1")
         assert result.changed is True
         assert result.content == "up"

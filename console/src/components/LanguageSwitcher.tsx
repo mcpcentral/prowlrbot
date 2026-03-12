@@ -19,14 +19,9 @@ export default function LanguageSwitcher() {
       label: "English",
       onClick: () => changeLanguage("en"),
     },
-    {
-      key: "zh",
-      label: "简体中文",
-      onClick: () => changeLanguage("zh"),
-    },
   ];
 
-  const currentLabel = currentLanguage === "zh" ? "简体中文" : "English";
+  const currentLabel = "English";
 
   return (
     <Dropdown

@@ -2,16 +2,23 @@
 """Tests for prowlrbot.monitor.notifications.webhook."""
 
 import json
+from unittest.mock import patch
 
 import pytest
 import httpx
 
 from prowlrbot.monitor.notifications.webhook import WebhookNotifier
 
+_ALLOW_ALL = patch(
+    "prowlrbot.security.url_validator.validate_outbound_url",
+    return_value=(True, "OK"),
+)
+
 
 @pytest.mark.asyncio
 class TestWebhookNotifier:
-    async def test_notify_success(self):
+    @_ALLOW_ALL
+    async def test_notify_success(self, _mock):
         received = {}
 
         def handler(req):
@@ -32,7 +39,8 @@ class TestWebhookNotifier:
         assert "timestamp" in received["body"]
         await client.aclose()
 
-    async def test_notify_with_headers(self):
+    @_ALLOW_ALL
+    async def test_notify_with_headers(self, _mock):
         def handler(req):
             assert req.headers.get("X-Token") == "secret"
             return httpx.Response(200)

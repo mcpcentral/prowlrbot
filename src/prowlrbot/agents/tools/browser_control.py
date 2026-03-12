@@ -815,12 +815,30 @@ async def _action_stop() -> ToolResponse:
     )
 
 
+def _validate_browser_url(url: str) -> tuple[bool, str]:
+    """Validate a URL before browser navigation (SSRF protection)."""
+    try:
+        from prowlrbot.security.url_validator import validate_outbound_url
+        return validate_outbound_url(url)
+    except Exception:
+        return True, "OK"  # Don't block if validator unavailable
+
+
 async def _action_open(url: str, page_id: str) -> ToolResponse:
     url = (url or "").strip()
     if not url:
         return _tool_response(
             json.dumps(
                 {"ok": False, "error": "url required for open"},
+                ensure_ascii=False,
+                indent=2,
+            ),
+        )
+    allowed, reason = _validate_browser_url(url)
+    if not allowed:
+        return _tool_response(
+            json.dumps(
+                {"ok": False, "error": f"URL blocked: {reason}"},
                 ensure_ascii=False,
                 indent=2,
             ),
@@ -873,6 +891,15 @@ async def _action_navigate(url: str, page_id: str) -> ToolResponse:
         return _tool_response(
             json.dumps(
                 {"ok": False, "error": "url required for navigate"},
+                ensure_ascii=False,
+                indent=2,
+            ),
+        )
+    allowed, reason = _validate_browser_url(url)
+    if not allowed:
+        return _tool_response(
+            json.dumps(
+                {"ok": False, "error": f"URL blocked: {reason}"},
                 ensure_ascii=False,
                 indent=2,
             ),

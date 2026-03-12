@@ -11,11 +11,12 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from ...agents.memory.archive_db import ArchiveDB
 from ...agents.memory.tier_manager import MemoryTierManager
+from ...auth.middleware import get_current_user
 from ...constant import WORKING_DIR
 
 router = APIRouter(prefix="/memory", tags=["memory"])
@@ -94,7 +95,7 @@ class StoreRequest(BaseModel):
 
 
 @router.post("")
-async def store_memory(req: StoreRequest):
+async def store_memory(req: StoreRequest, _user=Depends(get_current_user)):
     """Store a new memory entry directly into the archive."""
     archive = _get_archive()
     entry_id = archive.store(
@@ -107,7 +108,7 @@ async def store_memory(req: StoreRequest):
 
 
 @router.post("/{entry_id}/promote")
-async def promote_memory(entry_id: str):
+async def promote_memory(entry_id: str, _user=Depends(get_current_user)):
     """Manually promote a memory entry (bumps importance)."""
     archive = _get_archive()
     entry = archive.get(entry_id)
@@ -119,7 +120,7 @@ async def promote_memory(entry_id: str):
 
 
 @router.delete("/{entry_id}")
-async def delete_memory(entry_id: str):
+async def delete_memory(entry_id: str, _user=Depends(get_current_user)):
     """Delete a memory entry."""
     archive = _get_archive()
     ok = archive.delete(entry_id)

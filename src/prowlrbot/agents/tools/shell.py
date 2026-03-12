@@ -35,7 +35,7 @@ class ShellPolicy:
             "tree", "which", "whereis", "echo", "printf", "date",
             # Development (python/python3 excluded — use pip for installs,
             # agent tools for code execution)
-            "pip", "pip3", "node", "npm", "npx",
+            "pip", "pip3",
             "git", "gh", "make", "cmake", "cargo", "go", "rustc",
             "pytest", "black", "ruff", "mypy", "flake8", "isort",
             "pre-commit", "tox",
@@ -69,6 +69,8 @@ class ShellPolicy:
             r":()\{.*\|.*&.*\};:",  # fork bomb
             r"\bnc\b.*-[lep]",  # netcat listeners/reverse shells
             r"\bpython[23]?\b.*-c\b",  # python -c (inline code execution)
+            r"\bnode\b.*-e\b",  # node -e (inline JS execution)
+            r"\bnpx\b",  # npx (downloads and runs arbitrary packages)
             r"\bperl\b.*-e\b",  # perl -e
             r"\bruby\b.*-e\b",  # ruby -e
             r"\beval\b",  # eval

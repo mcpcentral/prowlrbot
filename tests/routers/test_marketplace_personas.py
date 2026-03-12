@@ -161,6 +161,7 @@ class TestMarketplacePersonaEndpoints:
             pytest.skip("fastapi[test] not available")
 
         from prowlrbot.app.routers import marketplace as mp_module
+        from prowlrbot.auth.middleware import get_current_user
         from prowlrbot.marketplace.store import MarketplaceStore
 
         # Use a temp store
@@ -168,6 +169,8 @@ class TestMarketplacePersonaEndpoints:
         monkeypatch.setattr(mp_module, "_store", test_store)
 
         app = FastAPI()
+        # Override auth dependency so POST endpoints work without JWT
+        app.dependency_overrides[get_current_user] = lambda: {"sub": "test-user", "role": "admin"}
         app.include_router(mp_module.router)
 
         yield TestClient(app)

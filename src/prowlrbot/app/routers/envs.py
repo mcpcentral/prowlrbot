@@ -15,12 +15,17 @@ router = APIRouter(prefix="/envs", tags=["envs"])
 
 
 def mask_env_value(value: str) -> str:
-    """Mask a secret value, showing only first 2 chars."""
+    """Mask a secret value, showing only a short prefix.
+
+    - Empty string → empty string
+    - 1-4 chars → fully masked as ``***``
+    - 5+ chars → first 4 chars + ``***``
+    """
     if not value:
         return ""
-    if len(value) <= 2:
+    if len(value) <= 4:
         return "***"
-    return value[:2] + "***"
+    return value[:4] + "***"
 
 
 # ------------------------------------------------------------------

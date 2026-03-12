@@ -57,13 +57,25 @@ class AuthDependency:
         if not self.auth_config.enabled:
             return None
 
-        # No token configured — allow all (first run). Log a warning so
-        # the operator knows auth is effectively disabled.
+        # No token configured — block state-changing requests, allow reads.
+        # This prevents unauthenticated writes on fresh installs while still
+        # letting the console UI load and display data.
         if not self.auth_config.token_hash:
-            logger.warning(
-                "API authentication is disabled — no PROWLRBOT_API_TOKEN_HASH set. "
-                "Generate one with: prowlr token"
-            )
+            path = request.url.path
+            method = request.method
+            if method in ("POST", "PUT", "DELETE", "PATCH"):
+                logger.error(
+                    "Blocked %s %s — no PROWLRBOT_API_TOKEN_HASH set. "
+                    "Generate one with: prowlr token",
+                    method,
+                    path,
+                )
+                raise HTTPException(
+                    status_code=401,
+                    detail="API authentication not configured. "
+                    "Run 'prowlr token' to generate an API token.",
+                )
+            # Allow GET/HEAD/OPTIONS for read-only console access
             return None
 
         # Static assets and health check — no auth needed
