@@ -53,7 +53,6 @@ async def register(
     username: str = Body(...),
     password: str = Body(...),
     email: str = Body(""),
-    role: Role = Body(Role.viewer),
 ) -> AuthResponse:
     store = _get_store()
     try:
@@ -61,7 +60,7 @@ async def register(
             username=username,
             password=password,
             email=email,
-            role=role,
+            role=Role.viewer,
         )
     except sqlite3.IntegrityError as exc:
         raise HTTPException(status_code=409, detail="Username already exists") from exc

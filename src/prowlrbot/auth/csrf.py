@@ -128,11 +128,16 @@ class CSRFMiddleware(BaseHTTPMiddleware):
 
         # --- State-changing request on a protected path ---
 
-        # First request: no cookie yet — bootstrap.
+        # No CSRF cookie — reject. The client must first make a GET
+        # request to obtain the cookie before issuing state-changing
+        # requests.
         if CSRF_COOKIE_NAME not in request.cookies:
-            response = await call_next(request)
-            self._csrf.set_cookie(response, self._csrf.generate_token())
-            return response
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "detail": "CSRF cookie missing. Make a GET request first to obtain the CSRF token."
+                },
+            )
 
         # Cookie exists — validate.
         if not self._csrf.validate(request):

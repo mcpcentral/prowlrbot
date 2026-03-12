@@ -70,7 +70,7 @@ async def batch_save_envs(
             )
     cleaned = {k.strip(): v for k, v in body.items()}
     save_envs(cleaned)
-    return [EnvVar(key=k, value=v) for k, v in sorted(cleaned.items())]
+    return [EnvVar(key=k, value=mask_env_value(v)) for k, v in sorted(cleaned.items())]
 
 
 @router.delete(
@@ -87,4 +87,4 @@ async def delete_env(key: str) -> List[EnvVar]:
             detail=f"Env var '{key}' not found",
         )
     envs = delete_env_var(key)
-    return [EnvVar(key=k, value=v) for k, v in sorted(envs.items())]
+    return [EnvVar(key=k, value=mask_env_value(v)) for k, v in sorted(envs.items())]
