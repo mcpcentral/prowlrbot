@@ -30,8 +30,14 @@ CATEGORY_DIR_MAP: dict[str, str] = {
     "mcp-servers": "mcp-servers",
     "themes": "themes",
     "workflows": "workflows",
+    "consumer": "consumer",
     "specs": "specs",
 }
+
+# index.json URL — single request replaces N+1 GitHub API directory crawl
+INDEX_JSON_URL = (
+    f"{GITHUB_RAW}/ProwlrBot/prowlr-marketplace/main/index.json"
+)
 
 # ── Ecosystem repos ──────────────────────────────────────────────────────────
 
@@ -129,11 +135,54 @@ class RegistryClient:
         return listings
 
     def fetch_all_listings(self) -> list[dict]:
-        """Fetch every listing manifest across all categories."""
+        """Fetch every listing — prefers index.json (1 request) over directory crawl."""
+        index_listings = self._fetch_via_index()
+        if index_listings is not None:
+            logger.info("Loaded %d listings from index.json", len(index_listings))
+            return index_listings
+        logger.info("index.json unavailable, falling back to directory crawl")
         all_listings: list[dict] = []
         for category in self.fetch_categories():
             all_listings.extend(self.fetch_category_listings(category))
         return all_listings
+
+    def _fetch_via_index(self) -> list[dict] | None:
+        """Fetch the pre-built index.json (single request, CDN-cached).
+
+        Returns a normalised list of raw manifest dicts, or None if unavailable.
+        Each entry is augmented with ``_category`` and ``_dir_name`` keys so
+        ``sync_registry`` can process them identically to the crawl path.
+        """
+        try:
+            raw_client = httpx.Client(timeout=15.0)
+            resp = raw_client.get(INDEX_JSON_URL)
+            raw_client.close()
+        except httpx.RequestError as exc:
+            logger.warning("Could not reach index.json: %s", exc)
+            return None
+
+        if resp.status_code != 200:
+            logger.warning("index.json returned %s", resp.status_code)
+            return None
+
+        try:
+            index = resp.json()
+        except Exception as exc:
+            logger.warning("index.json parse error: %s", exc)
+            return None
+
+        listings = index.get("listings", [])
+        if not listings:
+            return None
+
+        # Normalise: add _category and _dir_name so sync_registry works unchanged
+        result = []
+        for entry in listings:
+            entry = dict(entry)
+            entry["_category"] = entry.get("category", "skills")
+            entry["_dir_name"] = entry.get("slug", entry.get("id", "unknown"))
+            result.append(entry)
+        return result
 
     # ── Private helpers ──────────────────────────────────────────────────
 
