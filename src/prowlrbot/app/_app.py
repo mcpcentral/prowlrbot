@@ -35,7 +35,6 @@ from .crons.manager import CronManager
 from .runner.manager import ChatManager
 from .routers import router as api_router
 from .auth import AuthConfig, AuthDependency
-from .rate_limit import RateLimitMiddleware
 from ..auth.security_headers import SecurityHeadersMiddleware
 from ..auth.rate_limiter import RateLimitMiddleware as AuthRateLimitMiddleware
 from ..auth.csrf import CSRFMiddleware
@@ -243,9 +242,6 @@ def get_version():
 
 from fastapi import Depends
 
-# --- Rate Limiting ---
-app.add_middleware(RateLimitMiddleware, max_requests=500, window_seconds=60)
-
 # --- API Authentication ---
 auth_config = AuthConfig(
     enabled=bool(PROWLRBOT_API_TOKEN_HASH),
@@ -258,6 +254,14 @@ app.include_router(api_router, prefix="/api", dependencies=[Depends(auth_dep)])
 # --- WebSocket (real-time dashboard events) ---
 event_bus = EventBus()
 app.include_router(create_websocket_router(event_bus))
+
+# --- War Room WebSocket (real-time war room events) ---
+from ..hub.websocket import warroom_ws
+
+
+@app.websocket("/ws/warroom")
+async def ws_warroom(ws):
+    await warroom_ws(ws)
 
 app.include_router(
     agent_app.router,

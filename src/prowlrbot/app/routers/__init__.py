@@ -40,6 +40,8 @@ from .privacy import router as privacy_router
 from .settings_api import router as settings_api_router
 from .studio import router as studio_router
 from .monitoring import router as monitoring_router
+from .swarm_api import router as swarm_router
+from .warroom_api import router as warroom_router
 
 router = APIRouter()
 
@@ -82,5 +84,7 @@ router.include_router(privacy_router)
 router.include_router(settings_api_router)
 router.include_router(studio_router)
 router.include_router(monitoring_router)
+router.include_router(swarm_router)
+router.include_router(warroom_router)
 
 __all__ = ["router"]

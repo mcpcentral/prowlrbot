@@ -1,5 +1,4 @@
-const BRIDGE_URL = import.meta.env.VITE_BRIDGE_URL || "http://localhost:8099";
-const BRIDGE_TOKEN = import.meta.env.VITE_BRIDGE_TOKEN || "";
+import { request } from "./request";
 
 export interface Agent {
   agent_id: string;
@@ -51,35 +50,28 @@ export interface FileLock {
   acquired_at: string;
 }
 
-async function bridgeFetch<T>(path: string): Promise<T> {
-  const headers: Record<string, string> = {};
-  if (BRIDGE_TOKEN) {
-    headers["Authorization"] = `Bearer ${BRIDGE_TOKEN}`;
-  }
-  const res = await fetch(`${BRIDGE_URL}${path}`, { headers });
-  if (!res.ok) throw new Error(`Bridge ${path}: ${res.status}`);
-  return res.json();
-}
-
 export const warroom = {
-  agents: () => bridgeFetch<Agent[]>("/api/agents"),
+  agents: () => request<Agent[]>("/warroom/agents"),
   board: (status?: string) =>
-    bridgeFetch<Task[]>(`/api/board${status ? `?status=${encodeURIComponent(status)}` : ""}`),
+    request<Task[]>(`/warroom/board${status ? `?status=${encodeURIComponent(status)}` : ""}`),
   events: (limit = 50) =>
-    bridgeFetch<WarRoomEvent[]>(`/api/events?limit=${limit}`),
-  context: () => bridgeFetch<Finding[]>("/api/context"),
-  conflicts: () => bridgeFetch<FileLock[]>("/api/conflicts"),
+    request<WarRoomEvent[]>(`/warroom/events?limit=${limit}`),
+  context: () => request<Finding[]>("/warroom/context"),
+  conflicts: () => request<FileLock[]>("/warroom/conflicts"),
+  health: () => request<{ status: string; agents: number; tasks: number }>("/warroom/health"),
 };
 
 export function connectWarRoomWS(
   onEvent: (event: WarRoomEvent) => void,
   onStatus: (connected: boolean) => void,
 ): () => void {
-  const tokenParam = BRIDGE_TOKEN ? `?token=${encodeURIComponent(BRIDGE_TOKEN)}` : "";
-  const wsUrl = BRIDGE_URL.replace(/^http/, "ws") + "/ws/warroom" + tokenParam;
+  // Connect to same origin — no CORS issues
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const wsUrl = `${protocol}//${window.location.host}/ws/warroom`;
   let ws: WebSocket | null = null;
   let pingTimer: ReturnType<typeof setInterval> | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  let reconnectDelay = 1000;
   let disposed = false;
 
   function connect() {
@@ -87,6 +79,7 @@ export function connectWarRoomWS(
     ws = new WebSocket(wsUrl);
     ws.onopen = () => {
       onStatus(true);
+      reconnectDelay = 1000; // Reset backoff on success
       pingTimer = setInterval(() => {
         if (ws?.readyState === WebSocket.OPEN) ws.send("ping");
       }, 25000);
@@ -94,7 +87,10 @@ export function connectWarRoomWS(
     ws.onclose = () => {
       onStatus(false);
       if (pingTimer) clearInterval(pingTimer);
-      if (!disposed) reconnectTimer = setTimeout(connect, 3000);
+      if (!disposed) {
+        reconnectTimer = setTimeout(connect, reconnectDelay);
+        reconnectDelay = Math.min(reconnectDelay * 2, 30000); // Exponential backoff
+      }
     };
     ws.onerror = () => {
       ws?.close();
