@@ -9,8 +9,10 @@ primary_region = "sjc"
   dockerfile = "deploy/Dockerfile.fly"
 
 [env]
+  HOME = "/data"
   PROWLRBOT_PORT = "8088"
-  PROWLRBOT_WORKING_DIR = "/data"
+  PROWLRBOT_WORKING_DIR = "/data/.prowlrbot"
+  PROWLRBOT_SECRET_DIR = "/data/.prowlrbot.secret"
   PROWLRBOT_RUNNING_IN_CONTAINER = "1"
   NODE_ENV = "production"
 

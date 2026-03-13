@@ -63,13 +63,17 @@ def _prepare_secret_parent(path: Path) -> None:
 
 def _migrate_legacy_envs_json(path: Path) -> None:
     """Copy old envs.json into secret dir once (best effort)."""
-    if path.is_file():
-        return
-    if path.exists() and not path.is_file():
-        logger.error(
-            "envs.json path exists but is not a regular file: %s",
-            path,
-        )
+    try:
+        if path.is_file():
+            return
+        if path.exists() and not path.is_file():
+            logger.error(
+                "envs.json path exists but is not a regular file: %s",
+                path,
+            )
+            return
+    except OSError:
+        # Permission denied or inaccessible path (e.g. container volumes)
         return
 
     for legacy in _LEGACY_ENVS_JSON_CANDIDATES:

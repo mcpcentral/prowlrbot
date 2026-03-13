@@ -18,7 +18,9 @@ FROM python:3.12-slim
 
 ENV NODE_ENV=production \
     PYTHONUNBUFFERED=1 \
-    PROWLRBOT_WORKING_DIR=/data \
+    HOME=/data \
+    PROWLRBOT_WORKING_DIR=/data/.prowlrbot \
+    PROWLRBOT_SECRET_DIR=/data/.prowlrbot.secret \
     PROWLRBOT_RUNNING_IN_CONTAINER=1 \
     PROWLRBOT_PORT=8088
 
@@ -42,19 +44,11 @@ COPY src ./src
 COPY --from=console-builder /app/console/dist/ ./src/prowlrbot/console/
 RUN pip install --no-cache-dir .
 
-# Create non-root user with home at /data (so ~/.prowlrbot resolves inside volume)
-RUN groupadd -r prowlr && useradd -r -g prowlr -d /data -s /bin/sh prowlr \
-  && mkdir -p /data/.prowlrbot /data/.prowlrbot.secret \
-  && chown -R prowlr:prowlr /data
-
-# Init default config into the volume path
-ENV HOME=/data
-RUN prowlr init --defaults --accept-security \
-  && chown -R prowlr:prowlr /data
-
-USER prowlr
+# Entrypoint handles first-run init on the persistent volume
+COPY --chmod=755 deploy/entrypoint-fly.sh /entrypoint.sh
 
 EXPOSE 8088
 
-# Fly.io expects a single foreground process
-CMD ["prowlr", "app", "--host", "0.0.0.0", "--port", "8088"]
+# Run as root so we can write to the Fly volume on first deploy.
+# The volume is mounted by Fly.io at runtime and may need initialization.
+CMD ["/entrypoint.sh"]
