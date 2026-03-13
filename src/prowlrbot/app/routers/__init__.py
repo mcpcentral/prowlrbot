@@ -43,11 +43,13 @@ from .memory import router as memory_router
 from .monitoring import router as monitoring_router
 from .swarm_api import router as swarm_router
 from .warroom_api import router as warroom_router
+from .oauth import router as oauth_router
 
 router = APIRouter()
 
 router.include_router(agentverse_router)
 router.include_router(auth_router)
+router.include_router(oauth_router)
 router.include_router(agent_router)
 router.include_router(agents_config_router)
 router.include_router(analytics_router)

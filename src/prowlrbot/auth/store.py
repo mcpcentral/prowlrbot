@@ -35,6 +35,16 @@ CREATE TABLE IF NOT EXISTS users (
     created_at      REAL NOT NULL DEFAULT 0,
     last_login      REAL NOT NULL DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS oauth_identities (
+    provider        TEXT NOT NULL,
+    provider_id     TEXT NOT NULL,
+    user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    email           TEXT NOT NULL DEFAULT '',
+    avatar_url      TEXT NOT NULL DEFAULT '',
+    created_at      REAL NOT NULL DEFAULT 0,
+    PRIMARY KEY (provider, provider_id)
+);
+CREATE INDEX IF NOT EXISTS idx_oauth_user ON oauth_identities(user_id);
 """
 
 
@@ -202,3 +212,83 @@ class UserStore:
             return None
         self.update_last_login(user.id)
         return self.get_user_by_id(user.id)
+
+    # ------------------------------------------------------------------
+    # OAuth identity linking
+    # ------------------------------------------------------------------
+
+    def find_user_by_oauth(self, provider: str, provider_id: str) -> Optional[User]:
+        """Find a user linked to an OAuth identity."""
+        row = self._conn.execute(
+            "SELECT user_id FROM oauth_identities WHERE provider = ? AND provider_id = ?",
+            (provider, provider_id),
+        ).fetchone()
+        if row is None:
+            return None
+        return self.get_user_by_id(row["user_id"])
+
+    def link_oauth(
+        self,
+        user_id: str,
+        provider: str,
+        provider_id: str,
+        email: str = "",
+        avatar_url: str = "",
+    ) -> None:
+        """Link an OAuth identity to an existing user."""
+        self._conn.execute(
+            "INSERT OR REPLACE INTO oauth_identities "
+            "(provider, provider_id, user_id, email, avatar_url, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (provider, provider_id, user_id, email, avatar_url, time.time()),
+        )
+        self._conn.commit()
+
+    def authenticate_oauth(
+        self,
+        provider: str,
+        provider_id: str,
+        email: str,
+        username: str,
+        avatar_url: str = "",
+    ) -> User:
+        """Find or create a user from an OAuth login.
+
+        If an OAuth identity exists, return the linked user.
+        If a user with matching email exists, link and return.
+        Otherwise, create a new user.
+        """
+        # 1. Check existing OAuth link
+        user = self.find_user_by_oauth(provider, provider_id)
+        if user is not None:
+            self.update_last_login(user.id)
+            return user
+
+        # 2. Check if a user with this email already exists
+        if email:
+            row = self._conn.execute(
+                "SELECT * FROM users WHERE email = ?", (email,)
+            ).fetchone()
+            if row:
+                user = self._row_to_user(row)
+                self.link_oauth(user.id, provider, provider_id, email, avatar_url)
+                self.update_last_login(user.id)
+                return user
+
+        # 3. Create a new user (no password — OAuth only)
+        # Ensure unique username by appending suffix if needed
+        base_username = username or email.split("@")[0] if email else provider_id
+        final_username = base_username
+        suffix = 1
+        while self.get_user_by_username(final_username) is not None:
+            final_username = f"{base_username}{suffix}"
+            suffix += 1
+
+        user = self.create_user(
+            username=final_username,
+            password=os.urandom(32).hex(),  # random password (OAuth users don't use it)
+            email=email,
+            role=Role.viewer,
+        )
+        self.link_oauth(user.id, provider, provider_id, email, avatar_url)
+        return user

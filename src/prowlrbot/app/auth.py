@@ -78,9 +78,11 @@ class AuthDependency:
             # Allow GET/HEAD/OPTIONS for read-only console access
             return None
 
-        # Static assets and health check — no auth needed
+        # Static assets, health check, and OAuth flow — no auth needed
         path = request.url.path
         if path in ("/", "/health", "/api/health") or not path.startswith("/api"):
+            return None
+        if path.startswith("/api/auth/oauth/"):
             return None
 
         if credentials is None:
