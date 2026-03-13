@@ -22,40 +22,22 @@ Below is how to get credentials and fill config for each channel.
 
 ### Create a DingTalk app
 
-Video tutorial:
-
-![Video tutorial](https://cloud.video.taobao.com/vod/Fs7JecGIcHdL-np4AS7cXaLoywTDNj7BpiO7_Hb2_cA.mp4)
-
 Step-by-step:
 
 1. Open the [DingTalk Developer Portal](https://open-dev.dingtalk.com/)
 
 2. Create an **internal enterprise app**
 
-   ![internal enterprise app](https://img.alicdn.com/imgextra/i1/O1CN01KLtwvu1rt9weVn8in_!!6000000005688-2-tps-2809-1585.png)
-
 3. Add the **「Robot」** capability
-
-   ![add robot](https://img.alicdn.com/imgextra/i2/O1CN01AboPsn1XGQ84utCG8_!!6000000002896-2-tps-2814-1581.png)
 
 4. Set message receiving mode to **Stream** then publish
 
-   ![robot](https://img.alicdn.com/imgextra/i3/O1CN01KwmNZ61GwhDhKxgSv_!!6000000000687-2-tps-2814-1581.png)
-
-   ![Stream](https://img.alicdn.com/imgextra/i2/O1CN01tk8QW11NqvXYqcoPH_!!6000000001622-2-tps-2809-1590.png)
-
 5. Create a new version to publish, fill in basic info and save
-
-   ![new version](https://img.alicdn.com/imgextra/i3/O1CN01lRCPuf1PQwIeFL4AL_!!6000000001836-2-tps-2818-1590.png)
-
-   ![save](https://img.alicdn.com/imgextra/i1/O1CN01vrzbIA1Qey2x8Jbua_!!6000000002002-2-tps-2809-1585.png)
 
 6. In the app details, copy:
 
    - **Client ID** (AppKey)
    - **Client Secret** (AppSecret)
-
-   ![client](https://img.alicdn.com/imgextra/i3/O1CN01JsRrwx1hJImLfM7O1_!!6000000004256-2-tps-2809-1585.png)
 
 7. (Optional) **Add your server's IP to the whitelist** — this is required for features that call the DingTalk Open API (e.g. downloading images and files sent by users). Go to **"Security & Compliance → IP Whitelist"** in your app settings and add the public IP of the machine running ProwlrBot. You can find your public IP by running `curl ifconfig.me` in a terminal. If the IP is not whitelisted, image and file downloads will fail with a `Forbidden.AccessDenied.IpNotInWhiteList` error.
 
@@ -66,8 +48,6 @@ You can configure it either in the Console frontend or by editing `~/.prowlr/con
 **Method 1**: Configure in the Console frontend
 
 Go to "Control→Channels", find **DingTalk**, click it, and enter the **Client ID** and **Client Secret** you just obtained.
-
-![console](https://img.alicdn.com/imgextra/i3/O1CN01i07tt61rzZUSMo5SI_!!6000000005702-2-tps-3643-1897.png)
 
 **Method 2**: Edit `~/.prowlr/config.json`
 
@@ -90,23 +70,13 @@ Save the file; if the app is already running, the channel will reload. Otherwise
 
 ### Find the created app
 
-Video tutorial:
-
-![Video tutorial](https://cloud.video.taobao.com/vod/Ppt7rLy5tvuMFXDLks8Y2hDYV9hAfoZ78Y8mC0wUn1g.mp4)
-
 Step-by-step:
 
 1. In DingTalk, tap the **search box** in the **[Messages]** tab
 
-![Search box](https://img.alicdn.com/imgextra/i4/O1CN01qVVqyx1Mh1MLdOq2X_!!6000000001465-2-tps-2809-2236.png)
-
 2. Search for the **bot name** you just created; find the bot under **[Functions]**
 
-![Bot](https://img.alicdn.com/imgextra/i3/O1CN01AzxSlR2AJPjY6xfOU_!!6000000008182-2-tps-2809-2236.png)
-
 3. Tap to open the chat
-
-![Chat](https://img.alicdn.com/imgextra/i4/O1CN01ut70CJ1pXyOO5sg7P_!!6000000005371-2-tps-2032-1614.png)
 
 > You can add the bot to a group chat via **Group Settings → Bots → Add a robot in DingTalk**. If you create a group chat from your one-on-one chat with the bot, the bot’s replies will not be triggered.
 
@@ -120,22 +90,13 @@ The Feishu channel receives messages via **WebSocket long connection** (no publi
 
 1. Open the [Feishu Open Platform](https://open.feishu.cn/app) and create an enterprise app
 
-![Feishu](https://img.alicdn.com/imgextra/i4/O1CN01pb7WtO1Zvl6rlQllk_!!6000000003257-2-tps-4082-2126.png)
-
-![Build](https://img.alicdn.com/imgextra/i4/O1CN018o4NsY1Q0fC22LtRv_!!6000000001914-2-tps-4082-2126.png)
-
 2. In **Credentials & Basic Info**, copy **App ID** and **App Secret**
-
-![ID & Secret](https://img.alicdn.com/imgextra/i2/O1CN01XISo4K2A9nPrMUT4f_!!6000000008161-2-tps-4082-2126.png)
 
 3. Fill **App ID** and **App Secret** in `config.json` (see "Fill config.json" below) and save
 
 4. Run **`prowlr app`** to start ProwlrBot
 
 5. Back in the Feishu console, enable **Bot** under **Add Features**
-
-![Bot](https://img.alicdn.com/imgextra/i3/O1CN01kqWyqE1mM7IAlSf8k_!!6000000004939-2-tps-4082-2126.png)
-
 6. Under **Permissions & Scopes**, select **Batch import/export scopes** and paste the following JSON:
 
 ```json
@@ -160,37 +121,14 @@ The Feishu channel receives messages via **WebSocket long connection** (no publi
 }
 ```
 
-![Import/Export](https://img.alicdn.com/imgextra/i1/O1CN01mrXvWI1tiHm1tm9BE_!!6000000005935-2-tps-4082-2126.png)
-
-![JSON](https://img.alicdn.com/imgextra/i4/O1CN01YJPgEg20OmDC1SfEa_!!6000000006840-2-tps-4082-2126.png)
-
-![Confirm](https://img.alicdn.com/imgextra/i3/O1CN01J37Aq41GH1B7NgLYi_!!6000000000596-2-tps-4082-2126.png)
-
-![Confirm](https://img.alicdn.com/imgextra/i1/O1CN01N0ZPMt1LM7fi35WAn_!!6000000001284-2-tps-4082-2126.png)
-
 7. Under **Events & Callbacks**, click **Event configuration**, and choose **Receive events through persistent connection** as the subscription mode (no public IP needed)
 
 > **Note:** Follow this order: Configure App ID/Secret → start `prowlr app` → then configure the long connection in the Feishu console. If errors persist, try stopping the prowlr service and restarting `prowlr app`.
 
-![WebSocket](https://img.alicdn.com/imgextra/i3/O1CN01XdU7hK1fVY8gIDhZK_!!6000000004012-2-tps-4082-2126.png)
 
 8. Select **Add Events**, search for **Message reveived**, and subscribe to **Message received v2.0**
-
-![Receive](https://img.alicdn.com/imgextra/i1/O1CN01EE4iZf1CnIdDDeli6_!!6000000000125-2-tps-4082-2126.png)
-
-![Click](https://img.alicdn.com/imgextra/i2/O1CN01PlzsFU1JhWx9EcuPc_!!6000000001060-2-tps-4082-2126.png)
-
-![Result](https://img.alicdn.com/imgextra/i2/O1CN01fiMjkp24mN51TyWcI_!!6000000007433-2-tps-4082-2126.png)
-
-9. Under **App Versions** → **Version Management & Release**, **Create a version**, fill in basic info, **Save** and **Publish**
-
-![Create](https://img.alicdn.com/imgextra/i3/O1CN01mzOHs11cdO4MnZMcX_!!6000000003623-2-tps-4082-2126.png)
-
-![Info](https://img.alicdn.com/imgextra/i1/O1CN01y1SkZP24hKiufZpb5_!!6000000007422-2-tps-4082-2126.png)
-
-![Save](https://img.alicdn.com/imgextra/i2/O1CN01o1Wq3n2AD0BkIVidL_!!6000000008168-2-tps-4082-2126.png)
-
-![pub](https://img.alicdn.com/imgextra/i1/O1CN01dcWI7F1PmSuniDLJx_!!6000000001883-2-tps-4082-2126.png)
+9. 
+10. Under **App Versions** → **Version Management & Release**, **Create a version**, fill in basic info, **Save** and **Publish**
 
 ### Fill config.json
 
@@ -208,7 +146,6 @@ Find `channels.feishu`（default as `~/.prowlr/config.json`） in `config.json`.
 Other fields (encrypt_key, verification_token, media_dir) are optional; with WebSocket mode you can omit them (defaults apply). Then `pip install lark-oapi` and run `prowlr app`. If your environment uses a SOCKS proxy, also install `python-socks` (for example, `pip install python-socks`), otherwise you may see: `python-socks is required to use a SOCKS proxy`.
 
 > **Note:** You can also fill in **App ID** and **App Secret** in the Console UI, but you must restart the prowlr service before continuing with the long-connection configuration.
-> ![console](https://img.alicdn.com/imgextra/i1/O1CN01JInbHT1ei5MdfkMGv_!!6000000003904-2-tps-4082-2126.png)
 
 ### Recommended bot permissions
 
@@ -235,17 +172,10 @@ The JSON in step 6 grants the following permissions (app identity) for messaging
 
 1. In the **Workplace**, tap add **Favorites**
 
-![Add favorite](https://img.alicdn.com/imgextra/i2/O1CN01G32zCo1gKqUyJH8H7_!!6000000004124-2-tps-2614-1488.png)
 
 2. Search for the bot name you created and tap **Add**
 
-![Add](https://img.alicdn.com/imgextra/i3/O1CN01paAwW31XhRUuRq7vi_!!6000000002955-2-tps-3781-2154.png)
-
 3. The bot will appear in your favorites; tap it to open the chat
-
-![Added](https://img.alicdn.com/imgextra/i4/O1CN012n7SOT1D07imvq7LY_!!6000000000153-2-tps-2614-1488.png)
-
-![Chat](https://img.alicdn.com/imgextra/i2/O1CN01upVEJw1zKMmYtP9PP_!!6000000006695-2-tps-2614-1488.png)
 
 ---
 
@@ -290,37 +220,18 @@ The app polls the local iMessage database for new messages and sends replies on 
 
 1. Open the [Discord Developer Portal](https://discord.com/developers/applications)
 
-![Discord Developer Portal](https://img.alicdn.com/imgextra/i2/O1CN01oV68yZ1sb7y3nGoQN_!!6000000005784-2-tps-4066-2118.png)
-
 2. Create a new application (or select an existing one)
-
-![Create application](https://img.alicdn.com/imgextra/i2/O1CN01eA9lA71kMukVCWR4y_!!6000000004670-2-tps-3726-1943.png)
 
 3. Go to **Bot** in the left sidebar, create a bot, and copy the **Token**
 
-![Token](https://img.alicdn.com/imgextra/i1/O1CN01iuPiUe1lJzqEiIu23_!!6000000004799-2-tps-2814-1462.png)
-
 4. Scroll down, enable **Message Content Intent** and **Send Messages** for the bot, then save
-
-![Permissions](https://img.alicdn.com/imgextra/i4/O1CN01EXH4w51FSdbxYKLG9_!!6000000000486-2-tps-4066-2118.png)
 
 5. In **OAuth2 → URL Generator**, enable `bot`, grant **Send Messages**, and generate the invite link
 
-![Bot](https://img.alicdn.com/imgextra/i2/O1CN01B2oXx71KVS7kjKSEm_!!6000000001169-2-tps-4066-2118.png)
-
-![Send Messages](https://img.alicdn.com/imgextra/i3/O1CN01DlU9oi1QYYVBPoUIA_!!6000000001988-2-tps-4066-2118.png)
-
-![Link](https://img.alicdn.com/imgextra/i2/O1CN01ljhh1j1OZLxb2mAkO_!!6000000001719-2-tps-4066-2118.png)
 
 6. Open the link in your browser; it will redirect to Discord. Add the bot to your server
 
-![Server](https://img.alicdn.com/imgextra/i2/O1CN01QlcQPI1KzgGTWtZnb_!!6000000001235-2-tps-2798-1822.png)
-
-![Server](https://img.alicdn.com/imgextra/i4/O1CN01ihF0dW1xC0Jw8uwm6_!!6000000006406-2-tps-2798-1822.png)
-
 7. You can see the bot is now in your server
-
-![Bot in server](https://img.alicdn.com/imgextra/i4/O1CN01IDPCke1S1EvIIqtX9_!!6000000002186-2-tps-2798-1822.png)
 
 ### Configure the Bot
 
@@ -329,8 +240,6 @@ You can configure via the Console UI or by editing `~/.prowlr/config.json`.
 **Method 1:** Configure in the Console
 
 Go to **Control → Channels**, click **Discord**, and enter the **Bot Token** you obtained.
-
-![Console](https://img.alicdn.com/imgextra/i4/O1CN019GKk901VE0od1PU9t_!!6000000002620-2-tps-4084-2126.png)
 
 **Method 2:** Edit `~/.prowlr/config.json`
 
@@ -359,33 +268,16 @@ If you need a proxy (e.g. for network restrictions):
 
 1. Open the [QQ Developer Platform](https://q.qq.com/)
 
-![Platform](https://img.alicdn.com/imgextra/i4/O1CN01OjCvUf1oT6ZDWpEk5_!!6000000005225-2-tps-4082-2126.png)
-
 2. Create a **bot application** and click to open the edit page
-
-![bot](https://img.alicdn.com/imgextra/i3/O1CN01xBbXWa1pSTdioYFdg_!!6000000005359-2-tps-4082-2126.png)
-
-![confirm](https://img.alicdn.com/imgextra/i3/O1CN01zt7w0V1Ij4fjcm5MS_!!6000000000928-2-tps-4082-2126.png)
 
 3. Go to **Callback config** → enable **C2C message events** under **Direct message events**, and **At-event for group messages** under **Group events**, then confirm
 
-![c2c](https://img.alicdn.com/imgextra/i4/O1CN01HDSoX91iOAbTVULZf_!!6000000004402-2-tps-4082-2126.png)
-
-![at](https://img.alicdn.com/imgextra/i4/O1CN01UJn1AK1UKatKkjMv4_!!6000000002499-2-tps-4082-2126.png)
 
 4. In **Sandbox config** → **Message list**, click **Add member** and add **yourself**
-
-![1](https://img.alicdn.com/imgextra/i4/O1CN01BSdkXl1ckG0dC7vH9_!!6000000003638-2-tps-4082-2126.png)
-
-![1](https://img.alicdn.com/imgextra/i4/O1CN01LGYUMe1la1hmtcuyY_!!6000000004834-2-tps-4082-2126.png)
-
-5. In **Developer settings**, get **AppID** and **AppSecret** (ClientSecret) and fill them into config (see below). Add your server’s **IP to the whitelist** — only whitelisted IPs can call the Open API outside sandbox.
-
-![1](https://img.alicdn.com/imgextra/i4/O1CN012UQWI21cnvBAUcz54_!!6000000003646-2-tps-4082-2126.png)
+  
+6. In **Developer settings**, get **AppID** and **AppSecret** (ClientSecret) and fill them into config (see below). Add your server’s **IP to the whitelist** — only whitelisted IPs can call the Open API outside sandbox.
 
 6. In sandbox config, scan the QR code with QQ to add the bot to your message list
-
-![1](https://img.alicdn.com/imgextra/i3/O1CN01r1OvPy1kcwc30w32K_!!6000000004705-2-tps-4082-2126.png)
 
 ### Fill config.json
 
@@ -405,8 +297,6 @@ You provide **AppID** and **AppSecret** as two separate fields; do not concatena
 them into a single token.
 
 You can also fill them in the Console UI.
-
-![1](https://img.alicdn.com/imgextra/i1/O1CN013zS1dF1hLal9IM4rc_!!6000000004261-2-tps-4082-2126.png)
 
 ---
 
