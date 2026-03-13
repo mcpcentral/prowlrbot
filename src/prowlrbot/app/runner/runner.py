@@ -170,21 +170,24 @@ class AgentRunner(Runner):
                 from ...autonomy.controller import AutonomyController
 
                 controller = AutonomyController()
-                policy = controller.get_policy(session_id or "default")
-                if policy:
-                    policy_note = (
-                        f"\n\n## Autonomy Policy\n"
-                        f"Level: {policy.level.value}\n"
-                        f"Blocked tools: {', '.join(policy.blocked_tools) or 'none'}\n"
-                        f"Require approval for: {', '.join(policy.require_approval_for) or 'none'}\n"
-                        f"You must respect these constraints."
-                    )
-                    agent.sys_prompt = agent.sys_prompt + policy_note
-                    logger.debug(
-                        "Injected autonomy policy (level=%s) for session %s",
-                        policy.level.value,
-                        session_id,
-                    )
+                try:
+                    policy = controller.get_policy(session_id or "default")
+                    if policy:
+                        policy_note = (
+                            f"\n\n## Autonomy Policy\n"
+                            f"Level: {policy.level.value}\n"
+                            f"Blocked tools: {', '.join(policy.blocked_tools) or 'none'}\n"
+                            f"Require approval for: {', '.join(policy.require_approval_for) or 'none'}\n"
+                            f"You must respect these constraints."
+                        )
+                        agent.sys_prompt = agent.sys_prompt + policy_note
+                        logger.debug(
+                            "Injected autonomy policy (level=%s) for session %s",
+                            policy.level.value,
+                            session_id,
+                        )
+                finally:
+                    controller.close()
             except Exception:  # pylint: disable=broad-except
                 pass  # autonomy is best-effort; never block a query
 

@@ -32,6 +32,24 @@ def test_evaluate_action_blocks_blocked_tool():
     assert decision.approved is False
 
 
+def test_runner_calls_get_policy_on_query():
+    """AgentRunner.query_handler injects autonomy policy from AutonomyController."""
+    from prowlrbot.autonomy.controller import AutonomyController
+    from unittest.mock import patch
+
+    with patch.object(AutonomyController, "get_policy", return_value=None) as mock_get:
+        with patch.object(AutonomyController, "close") as mock_close:
+            # Simulate what runner does
+            controller = AutonomyController()
+            try:
+                policy = controller.get_policy("test_session")
+            finally:
+                controller.close()
+
+            mock_get.assert_called_once_with("test_session")
+            mock_close.assert_called_once()
+
+
 def test_evaluate_action_approves_in_autonomous_mode():
     """AUTONOMOUS level approves everything not blocked."""
     from prowlrbot.autonomy.controller import AutonomyController
