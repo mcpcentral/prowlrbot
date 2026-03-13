@@ -2,6 +2,10 @@
 # Fly.io entrypoint for ProwlrBot.
 # The persistent volume at /data may be empty on first deploy.
 # Initialize config if needed, then start the app.
+#
+# Admin account is auto-created on first run if no users exist.
+# Set PROWLRBOT_ADMIN_USERNAME / PROWLRBOT_ADMIN_PASSWORD to choose
+# credentials, otherwise a random password is generated and printed.
 set -e
 
 # Ensure directories exist inside the volume

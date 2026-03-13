@@ -52,6 +52,8 @@ from ..auth.csrf import CSRFMiddleware
 from .websocket import create_websocket_router
 from ..dashboard.events import EventBus
 from ..envs import load_envs_into_environ
+from ..auth.store import UserStore
+from ..auth.models import Role
 
 # Apply log level on load so reload child process gets same level as CLI.
 logger = setup_logger(os.environ.get(LOG_LEVEL_ENV, "info"))
@@ -77,8 +79,55 @@ agent_app = AgentApp(
 )
 
 
+def _ensure_admin_user() -> None:
+    """Create an admin user on first run if no users exist.
+
+    Credentials come from env vars ``PROWLRBOT_ADMIN_USERNAME`` /
+    ``PROWLRBOT_ADMIN_PASSWORD``. If not set, a random password is
+    generated and printed to the log.
+    """
+    try:
+        store = UserStore()
+        if store.list_users():
+            return  # users already exist
+
+        import secrets as _secrets
+
+        username = os.environ.get("PROWLRBOT_ADMIN_USERNAME", "admin")
+        password = os.environ.get("PROWLRBOT_ADMIN_PASSWORD", "")
+        generated = False
+        if not password:
+            password = _secrets.token_urlsafe(16)
+            generated = True
+
+        store.create_user(
+            username=username,
+            password=password,
+            role=Role.admin,
+        )
+
+        logger.info("Created admin user '%s'", username)
+        if generated:
+            logger.info(
+                "Generated admin password (save it now!): %s",
+                password,
+            )
+            # Also print to stdout so it's visible in container logs
+            print(f"\n{'='*60}")
+            print(f"  Admin account created!")
+            print(f"  Username: {username}")
+            print(f"  Password: {password}")
+            print(f"  (Set PROWLRBOT_ADMIN_PASSWORD env var to choose your own)")
+            print(f"{'='*60}\n")
+    except Exception:
+        logger.exception("Failed to create initial admin user")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # pylint: disable=too-many-statements
+    # Ensure at least one admin user exists for fresh installs
+    _ensure_admin_user()
+
     # Clean up stale temp files from previous runs
     try:
         from .runner.query_error_dump import cleanup_old_error_dumps
