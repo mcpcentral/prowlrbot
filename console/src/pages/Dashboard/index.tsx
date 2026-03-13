@@ -490,14 +490,14 @@ export default function Dashboard() {
                     <Tooltip content={<ChartTooltip />} />
                     <defs>
                       <linearGradient id="costGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                        <stop offset="5%" stopColor="var(--pb-accent-purple)" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="var(--pb-accent-purple)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <Area
                       type="monotone"
                       dataKey="cost"
-                      stroke="#6366f1"
+                      stroke="var(--pb-accent-purple)"
                       strokeWidth={2}
                       fill="url(#costGrad)"
                     />

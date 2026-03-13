@@ -1,6 +1,6 @@
 .container {
-  background: #12121a;
-  border: 1px solid #1e1e2e;
+  background: var(--pb-bg-card);
+  border: 1px solid var(--pb-border);
   border-radius: 8px;
   padding: 16px;
 }
@@ -13,7 +13,7 @@
 }
 
 .title {
-  color: #14b8a6;
+  color: var(--pb-accent-teal);
   font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
@@ -22,7 +22,7 @@
 
 .count {
   font-size: 11px;
-  color: #555;
+  color: var(--pb-text-tertiary);
   margin-left: 8px;
   font-weight: 400;
   text-transform: none;
@@ -30,22 +30,22 @@
 }
 
 .searchInput {
-  background: #1e1e2e;
-  border: 1px solid #2e2e3e;
+  background: var(--pb-bg-hover);
+  border: 1px solid var(--pb-border-strong);
   border-radius: 4px;
   padding: 4px 8px;
-  color: #e0e0e0;
+  color: var(--pb-text-primary);
   font-size: 11px;
   outline: none;
   width: 160px;
   transition: border-color 0.15s ease;
 
   &::placeholder {
-    color: #555;
+    color: var(--pb-text-tertiary);
   }
 
   &:focus {
-    border-color: #14b8a6;
+    border-color: var(--pb-accent-teal);
   }
 }
 
@@ -56,21 +56,13 @@
   max-height: 400px;
   overflow-y: auto;
 
-  /* Thin scrollbar */
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #2e2e3e;
-    border-radius: 2px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: var(--pb-border-strong); border-radius: 2px; }
+  &::-webkit-scrollbar-track { background: transparent; }
 }
 
 .empty {
-  color: #555;
+  color: var(--pb-text-tertiary);
   font-size: 12px;
   text-align: center;
   padding: 20px 0;
@@ -79,8 +71,8 @@
 }
 
 .card {
-  background: #1a1a2e;
-  border: 1px solid #1e1e2e;
+  background: var(--pb-bg-hover);
+  border: 1px solid var(--pb-border);
   border-radius: 6px;
   padding: 12px;
   cursor: pointer;
@@ -91,16 +83,16 @@
   animation: fadeIn 0.2s ease;
 
   &:hover {
-    border-color: #14b8a6;
+    border-color: var(--pb-accent-teal);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 }
 
 .cardKey {
   font-size: 12px;
   font-weight: 600;
-  color: #e0e0e0;
+  color: var(--pb-text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -109,7 +101,7 @@
 
 .cardValue {
   font-size: 11px;
-  color: #aaa;
+  color: var(--pb-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -119,7 +111,7 @@
 
 .cardValueExpanded {
   font-size: 11px;
-  color: #aaa;
+  color: var(--pb-text-secondary);
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.5;
@@ -127,19 +119,13 @@
 
 .cardFooter {
   font-size: 10px;
-  color: #555;
+  color: var(--pb-text-tertiary);
   margin-top: 6px;
   display: flex;
   justify-content: space-between;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }

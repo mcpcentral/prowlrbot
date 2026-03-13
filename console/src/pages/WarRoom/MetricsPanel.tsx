@@ -79,8 +79,8 @@ function StatCard({
   return (
     <div
       style={{
-        background: "var(--pb-wr-bg-card)",
-        border: "1px solid var(--pb-wr-border-strong)",
+        background: "var(--pb-bg-hover)",
+        border: "1px solid var(--pb-border-strong)",
         borderRadius: 8,
         padding: "12px 16px",
         flex: 1,
@@ -89,7 +89,7 @@ function StatCard({
     >
       <div
         style={{
-          color: "var(--pb-wr-text-dim)",
+          color: "var(--pb-text-tertiary)",
           fontSize: 10,
           textTransform: "uppercase",
           letterSpacing: 1,
@@ -101,7 +101,7 @@ function StatCard({
       <div style={{ color, fontSize: 24, fontWeight: 700, lineHeight: 1.2 }}>
         {value}
         {suffix && (
-          <span style={{ fontSize: 12, fontWeight: 400, color: "var(--pb-wr-text-secondary)", marginLeft: 4 }}>
+          <span style={{ fontSize: 12, fontWeight: 400, color: "var(--pb-text-secondary)", marginLeft: 4 }}>
             {suffix}
           </span>
         )}
@@ -157,8 +157,8 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
   const lockContention = useMemo(() => buildHourlyBuckets(events, "lock.acquired", 12), [events]);
 
   const chartTooltipStyle = {
-    background: "var(--pb-wr-bg-card)",
-    border: "1px solid var(--pb-wr-border-strong)",
+    background: "var(--pb-bg-hover)",
+    border: "1px solid var(--pb-border-strong)",
     borderRadius: 4,
     fontSize: 11,
   };
@@ -168,8 +168,8 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
       <div
         onClick={() => setCollapsed(false)}
         style={{
-          background: "var(--pb-wr-bg-panel)",
-          border: "1px solid var(--pb-wr-border)",
+          background: "var(--pb-bg-card)",
+          border: "1px solid var(--pb-border)",
           borderRadius: 8,
           padding: "10px 16px",
           cursor: "pointer",
@@ -180,7 +180,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
       >
         <span
           style={{
-            color: "var(--pb-wr-accent)",
+            color: "var(--pb-accent-teal)",
             fontSize: 13,
             fontWeight: 600,
             textTransform: "uppercase",
@@ -190,17 +190,17 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
           Metrics
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <span style={{ color: "var(--pb-wr-text-secondary)", fontSize: 11 }}>
+          <span style={{ color: "var(--pb-text-secondary)", fontSize: 11 }}>
             {stats.activeAgents} agents | {stats.activeTasks} tasks | {stats.activeLocks} locks
           </span>
-          <span style={{ color: "var(--pb-wr-text-tertiary)", fontSize: 11 }}>Click to expand</span>
+          <span style={{ color: "var(--pb-text-tertiary)", fontSize: 11 }}>Click to expand</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "var(--pb-wr-bg-panel)", border: "1px solid var(--pb-wr-border)", borderRadius: 8, padding: 16 }}>
+    <div style={{ background: "var(--pb-bg-card)", border: "1px solid var(--pb-border)", borderRadius: 8, padding: 16 }}>
       {/* Header */}
       <div
         onClick={() => setCollapsed(true)}
@@ -214,7 +214,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
       >
         <span
           style={{
-            color: "var(--pb-wr-accent)",
+            color: "var(--pb-accent-teal)",
             fontSize: 13,
             fontWeight: 600,
             textTransform: "uppercase",
@@ -223,7 +223,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         >
           Metrics
         </span>
-        <span style={{ color: "var(--pb-wr-text-tertiary)", fontSize: 11 }}>Click to collapse</span>
+        <span style={{ color: "var(--pb-text-tertiary)", fontSize: 11 }}>Click to collapse</span>
       </div>
 
       {/* Summary Stats Row */}
@@ -232,12 +232,12 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
           label="Active Agents"
           value={stats.activeAgents}
           suffix={`/ ${stats.totalAgents}`}
-          color="var(--pb-wr-status-done)"
+          color="var(--pb-status-success)"
         />
         <StatCard
           label="Working"
           value={stats.workingAgents}
-          color="var(--pb-wr-status-progress)"
+          color="var(--pb-status-info)"
         />
         <StatCard
           label="Active Tasks"
@@ -247,17 +247,17 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         <StatCard
           label="Completed"
           value={stats.completedTasks}
-          color="var(--pb-wr-accent)"
+          color="var(--pb-accent-teal)"
         />
         <StatCard
           label="Success Rate"
           value={stats.totalFinished > 0 ? `${stats.completionRate}%` : "--"}
-          color={stats.completionRate >= 80 ? "var(--pb-wr-status-done)" : stats.completionRate >= 50 ? "var(--pb-status-warning)" : "var(--pb-wr-status-failed)"}
+          color={stats.completionRate >= 80 ? "var(--pb-status-success)" : stats.completionRate >= 50 ? "var(--pb-status-warning)" : "var(--pb-status-error)"}
         />
         <StatCard
           label="File Locks"
           value={stats.activeLocks}
-          color={stats.activeLocks > 0 ? "var(--pb-wr-lock-active)" : "var(--pb-wr-text-tertiary)"}
+          color={stats.activeLocks > 0 ? "var(--pb-status-warning)" : "var(--pb-text-tertiary)"}
         />
       </div>
 
@@ -267,7 +267,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         <div>
           <div
             style={{
-              color: "var(--pb-wr-text-secondary)",
+              color: "var(--pb-text-secondary)",
               fontSize: 11,
               marginBottom: 8,
               textTransform: "uppercase",
@@ -280,11 +280,11 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
             <AreaChart data={velocity}>
               <defs>
                 <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--pb-wr-accent)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="var(--pb-wr-accent)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--pb-accent-teal)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--pb-accent-teal)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--pb-wr-border)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--pb-border)" />
               <XAxis
                 dataKey="hour"
                 tick={{ fill: "var(--pb-chart-tick)", fontSize: 10 }}
@@ -292,12 +292,12 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                 tickLine={false}
               />
               <YAxis hide allowDecimals={false} />
-              <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "var(--pb-wr-text-secondary)" }} />
+              <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "var(--pb-text-secondary)" }} />
               <Area
                 type="monotone"
                 dataKey="count"
                 name="Tasks"
-                stroke="var(--pb-wr-accent)"
+                stroke="var(--pb-accent-teal)"
                 fill="url(#tealGrad)"
                 strokeWidth={2}
               />
@@ -309,7 +309,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         <div>
           <div
             style={{
-              color: "var(--pb-wr-text-secondary)",
+              color: "var(--pb-text-secondary)",
               fontSize: 11,
               marginBottom: 8,
               textTransform: "uppercase",
@@ -349,7 +349,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                     alignItems: "center",
                     gap: 6,
                     fontSize: 11,
-                    color: "var(--pb-wr-text-secondary)",
+                    color: "var(--pb-text-secondary)",
                   }}
                 >
                   <span
@@ -372,7 +372,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
         <div>
           <div
             style={{
-              color: "var(--pb-wr-text-secondary)",
+              color: "var(--pb-text-secondary)",
               fontSize: 11,
               marginBottom: 8,
               textTransform: "uppercase",
@@ -383,7 +383,7 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
           </div>
           <ResponsiveContainer width="100%" height={140}>
             <BarChart data={lockContention}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--pb-wr-border)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--pb-border)" />
               <XAxis
                 dataKey="hour"
                 tick={{ fill: "var(--pb-chart-tick)", fontSize: 10 }}
@@ -391,8 +391,8 @@ export default function MetricsPanel({ agents, tasks, events, conflicts }: Metri
                 tickLine={false}
               />
               <YAxis hide allowDecimals={false} />
-              <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "var(--pb-wr-text-secondary)" }} />
-              <Bar dataKey="count" name="Locks" fill="var(--pb-wr-lock-active)" radius={[3, 3, 0, 0]} />
+              <Tooltip contentStyle={chartTooltipStyle} labelStyle={{ color: "var(--pb-text-secondary)" }} />
+              <Bar dataKey="count" name="Locks" fill="var(--pb-status-warning)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -169,11 +169,11 @@ export default function AnalyticsPage() {
                   <Tooltip content={<ChartTooltip />} />
                   <defs>
                     <linearGradient id="costGradAnalytics" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--pb-accent-purple)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--pb-accent-purple)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <Area type="monotone" dataKey="cost" stroke="#6366f1" strokeWidth={2} fill="url(#costGradAnalytics)" name="Cost" />
+                  <Area type="monotone" dataKey="cost" stroke="var(--pb-accent-purple)" strokeWidth={2} fill="url(#costGradAnalytics)" name="Cost" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -209,7 +209,7 @@ export default function AnalyticsPage() {
                     tickFormatter={(v) => formatTokens(v)}
                   />
                   <Tooltip content={<ChartTooltip />} />
-                  <Bar dataKey="tokens" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Tokens" />
+                  <Bar dataKey="tokens" fill="var(--pb-accent-purple)" radius={[4, 4, 0, 0]} name="Tokens" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

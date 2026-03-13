@@ -15,11 +15,11 @@ interface KanbanBoardProps {
 }
 
 const COLUMNS = [
-  { id: "pending", label: "Pending", color: "var(--pb-wr-text-secondary)" },
-  { id: "claimed", label: "Claimed", color: "var(--pb-wr-accent)" },
-  { id: "in_progress", label: "In Progress", color: "var(--pb-wr-status-progress)" },
-  { id: "done", label: "Done", color: "var(--pb-wr-status-done)" },
-  { id: "failed", label: "Failed", color: "var(--pb-wr-status-failed)" },
+  { id: "pending", label: "Pending", color: "var(--pb-text-secondary)" },
+  { id: "claimed", label: "Claimed", color: "var(--pb-accent-teal)" },
+  { id: "in_progress", label: "In Progress", color: "var(--pb-status-info)" },
+  { id: "done", label: "Done", color: "var(--pb-status-success)" },
+  { id: "failed", label: "Failed", color: "var(--pb-status-error)" },
 ] as const;
 
 function priorityClass(priority: string): string {

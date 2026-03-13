@@ -131,30 +131,6 @@ html[data-theme="light"] {
   --pb-chat-gradient-start: #6b73ff;
   --pb-chat-gradient-end: #000dff;
 
-  /* ── War Room panel surfaces (dark even in light mode for mission-control feel) ── */
-  --pb-wr-bg-deep: #0a0a0f;
-  --pb-wr-bg-panel: #12121a;
-  --pb-wr-bg-card: #1a1a2e;
-  --pb-wr-border: #1e1e2e;
-  --pb-wr-border-strong: #2e2e3e;
-  --pb-wr-text: #e0e0e0;
-  --pb-wr-text-secondary: #888;
-  --pb-wr-text-tertiary: #555;
-  --pb-wr-text-dim: #666;
-  --pb-wr-text-faint: #444;
-  --pb-wr-accent: #14b8a6;
-  --pb-wr-status-done: #22c55e;
-  --pb-wr-status-done-bg: rgba(34, 197, 94, 0.15);
-  --pb-wr-status-failed: #ef4444;
-  --pb-wr-status-failed-bg: rgba(239, 68, 68, 0.15);
-  --pb-wr-status-progress: #3b82f6;
-  --pb-wr-status-progress-bg: rgba(59, 130, 246, 0.15);
-  --pb-wr-status-pending: #14b8a6;
-  --pb-wr-status-pending-bg: rgba(20, 184, 166, 0.15);
-  --pb-wr-priority-high: #ef4444;
-  --pb-wr-priority-high-bg: rgba(239, 68, 68, 0.15);
-  --pb-wr-owner: #14b8a6;
-  --pb-wr-lock-active: #f97316;
 }
 
 html[data-theme="dark"] {
@@ -278,28 +254,4 @@ html[data-theme="dark"] {
   --pb-chat-gradient-start: #6b73ff;
   --pb-chat-gradient-end: #000dff;
 
-  /* ── War Room (same in dark — already dark) ── */
-  --pb-wr-bg-deep: #0a0a0f;
-  --pb-wr-bg-panel: #12121a;
-  --pb-wr-bg-card: #1a1a2e;
-  --pb-wr-border: #1e1e2e;
-  --pb-wr-border-strong: #2e2e3e;
-  --pb-wr-text: #e0e0e0;
-  --pb-wr-text-secondary: #888;
-  --pb-wr-text-tertiary: #555;
-  --pb-wr-text-dim: #666;
-  --pb-wr-text-faint: #444;
-  --pb-wr-accent: #14b8a6;
-  --pb-wr-status-done: #22c55e;
-  --pb-wr-status-done-bg: rgba(34, 197, 94, 0.15);
-  --pb-wr-status-failed: #ef4444;
-  --pb-wr-status-failed-bg: rgba(239, 68, 68, 0.15);
-  --pb-wr-status-progress: #3b82f6;
-  --pb-wr-status-progress-bg: rgba(59, 130, 246, 0.15);
-  --pb-wr-status-pending: #14b8a6;
-  --pb-wr-status-pending-bg: rgba(20, 184, 166, 0.15);
-  --pb-wr-priority-high: #ef4444;
-  --pb-wr-priority-high-bg: rgba(239, 68, 68, 0.15);
-  --pb-wr-owner: #14b8a6;
-  --pb-wr-lock-active: #f97316;
 }

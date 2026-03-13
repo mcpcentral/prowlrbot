@@ -10,8 +10,8 @@
   flex: 1;
   min-width: 220px;
   max-width: 300px;
-  background: #12121a;
-  border: 1px solid #1e1e2e;
+  background: var(--pb-bg-card);
+  border: 1px solid var(--pb-border);
   border-radius: 8px;
   padding: 12px;
   display: flex;
@@ -24,7 +24,7 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 8px;
-  border-bottom: 1px solid #1e1e2e;
+  border-bottom: 1px solid var(--pb-border);
   margin-bottom: 4px;
 }
 
@@ -46,13 +46,13 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #e0e0e0;
+  color: var(--pb-text-primary);
 }
 
 .columnCount {
   font-size: 11px;
-  color: #888;
-  background: #1e1e2e;
+  color: var(--pb-text-secondary);
+  background: var(--pb-bg-hover);
   padding: 2px 8px;
   border-radius: 10px;
 }
@@ -68,12 +68,12 @@
 }
 
 .cardListDragOver {
-  background: rgba(20, 184, 166, 0.05);
+  background: var(--pb-tint-cyan);
 }
 
 .card {
-  background: #1a1a2e;
-  border: 1px solid #1e1e2e;
+  background: var(--pb-bg-hover);
+  border: 1px solid var(--pb-border);
   border-radius: 6px;
   padding: 12px;
   cursor: grab;
@@ -81,49 +81,49 @@
     border-color 0.15s ease,
     box-shadow 0.15s ease,
     transform 0.15s ease;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--pb-accent-blue);
 }
 
 .card:hover {
-  border-color: #14b8a6;
+  border-color: var(--pb-accent-teal);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .cardDragging {
-  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   transform: scale(1.02);
-  border-color: #14b8a6;
+  border-color: var(--pb-accent-teal);
 }
 
 .cardBlocked {
-  border: 1px dashed #ef4444;
-  border-left: 3px dashed #ef4444;
+  border: 1px dashed var(--pb-status-error);
+  border-left: 3px dashed var(--pb-status-error);
 }
 
 .cardHigh {
-  border-left-color: #ef4444;
+  border-left-color: var(--pb-status-error);
 }
 
 .cardNormal {
-  border-left-color: #3b82f6;
+  border-left-color: var(--pb-accent-blue);
 }
 
 .cardLow {
-  border-left-color: #888;
+  border-left-color: var(--pb-text-secondary);
 }
 
 .cardTitle {
   font-size: 13px;
   font-weight: 600;
-  color: #e0e0e0;
+  color: var(--pb-text-primary);
   margin-bottom: 4px;
   line-height: 1.3;
 }
 
 .cardDescription {
   font-size: 11px;
-  color: #666;
+  color: var(--pb-text-tertiary);
   margin-bottom: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -143,39 +143,39 @@
   font-size: 10px;
   padding: 2px 6px;
   border-radius: 4px;
-  background: #1e1e2e;
-  color: #888;
+  background: var(--pb-bg-hover);
+  color: var(--pb-text-secondary);
 }
 
 .tagOwner {
-  background: rgba(20, 184, 166, 0.15);
-  color: #14b8a6;
+  background: var(--pb-tint-cyan);
+  color: var(--pb-accent-teal);
 }
 
 .tagFiles {
-  background: rgba(139, 92, 246, 0.15);
-  color: #8b5cf6;
+  background: var(--pb-tint-purple);
+  color: var(--pb-accent-purple);
 }
 
 .tagBlocked {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px dashed #ef4444;
+  background: var(--pb-status-error-bg);
+  color: var(--pb-status-error);
+  border: 1px dashed var(--pb-status-error);
 }
 
 .tagPriorityHigh {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  background: var(--pb-status-error-bg);
+  color: var(--pb-status-error);
 }
 
 .tagPriorityLow {
-  background: rgba(136, 136, 136, 0.15);
-  color: #888;
+  background: var(--pb-bg-hover);
+  color: var(--pb-text-secondary);
 }
 
 .progressNote {
   font-size: 11px;
-  color: #666;
+  color: var(--pb-text-tertiary);
   margin-top: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -184,12 +184,12 @@
 
 .cardTimestamp {
   font-size: 10px;
-  color: #444;
+  color: var(--pb-text-disabled);
   margin-top: 6px;
 }
 
 .empty {
-  color: #555;
+  color: var(--pb-text-tertiary);
   font-size: 12px;
   text-align: center;
   padding: 20px 0;

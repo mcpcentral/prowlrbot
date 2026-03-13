@@ -262,7 +262,7 @@ function MCPPage() {
             fontFamily: "Monaco, Courier New, monospace",
             fontSize: 13,
             padding: 16,
-            border: "1px solid #d9d9d9",
+            border: "1px solid var(--pb-border)",
             borderRadius: 4,
             resize: "vertical",
           }}
