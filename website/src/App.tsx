@@ -6,6 +6,7 @@ import { Home } from "./pages/Home";
 import { Docs } from "./pages/Docs";
 import { Blog } from "./pages/Blog";
 import { Marketplace } from "./pages/Marketplace";
+import { Pricing } from "./pages/Pricing";
 import { AgentGreeting } from "./components/AgentGreeting";
 import "./index.css";
 
@@ -73,6 +74,7 @@ export default function App() {
       <Route path="/marketplace" element={<Marketplace config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
       <Route path="/blog" element={<Blog config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
       <Route path="/blog/:slug" element={<Blog config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
+      <Route path="/pricing" element={<Pricing config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
     </Routes>
     </>
   );
