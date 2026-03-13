@@ -104,10 +104,29 @@ class ACPServer:
             }
 
         try:
-            result = await self._runner.process_query(prompt)
+            from agentscope_runtime.engine.schemas.agent_schemas import (
+                AgentRequest,
+                Message,
+                TextContent,
+            )
+
+            request = AgentRequest(
+                input=[Message(role="user", content=[TextContent(text=str(prompt))])],
+                session_id=self._session_id,
+                user_id="acp_user",
+            )
+
+            last_text = ""
+            async for agent_msg, _is_last in self._runner.stream_query(request):
+                text = getattr(agent_msg, "content", None)
+                if isinstance(text, str):
+                    last_text = text
+                elif hasattr(agent_msg, "get_text_content"):
+                    last_text = agent_msg.get_text_content() or last_text
+
             return {
                 "session_id": self._session_id,
-                "response": result.get("response", ""),
+                "response": last_text,
                 "status": "ok",
             }
         except Exception:

@@ -82,10 +82,17 @@ class TestACPPrompt:
 
     async def test_prompt_with_mock_runner(self):
         """With a mock runner, should return the runner's response."""
+        from unittest.mock import MagicMock
+
+        async def _stream(request):
+            msg = MagicMock()
+            msg.content = f"Mock answer to: {request.input[0].content[0].text}"
+            yield msg, True
 
         class MockRunner:
-            async def process_query(self, prompt):
-                return {"response": f"Mock answer to: {prompt}"}
+            async def stream_query(self, request):
+                async for item in _stream(request):
+                    yield item
 
         server = ACPServer(runner=MockRunner())
         await server.handle_request(
@@ -110,8 +117,9 @@ class TestACPPrompt:
         """If runner raises, should return error status."""
 
         class FailRunner:
-            async def process_query(self, prompt):
+            async def stream_query(self, request):
                 raise RuntimeError("Model unavailable")
+                yield  # make it an async generator
 
         server = ACPServer(runner=FailRunner())
         await server.handle_request(

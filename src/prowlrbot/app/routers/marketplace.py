@@ -16,6 +16,11 @@ class TipRequest(PydanticBaseModel):
     message: str = ""
 
 
+class ScanRequest(PydanticBaseModel):
+    content: str
+    filename: str = "SKILL.md"
+
+
 from ...marketplace.models import (
     Bundle,
     CreditBalance,
@@ -182,6 +187,57 @@ async def get_listing_detail(listing_id: str) -> dict:
     }
 
 
+@router.post("/listings/{listing_id}/scan")
+async def scan_listing_content(
+    listing_id: str,
+    body: ScanRequest,
+    _user=Depends(get_current_user),
+) -> dict:
+    """Security-scan markdown content for a listing and store the result.
+
+    The scan result is persisted to the listing's `skill_scan` field.
+    Returns the full scan summary including risk level and any findings.
+    """
+    import tempfile
+    from pathlib import Path
+    from prowlrbot.marketplace.scanner import scan_file
+
+    listing = _get_store().get_listing(listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+
+    with tempfile.NamedTemporaryFile(
+        suffix=".md", mode="w", delete=False, encoding="utf-8"
+    ) as tf:
+        tf.write(body.content)
+        tmp_path = Path(tf.name)
+
+    try:
+        result = scan_file(tmp_path)
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+    scan_data = {
+        "risk_level": result.risk_level.value,
+        "blocked": result.blocked,
+        "findings": [
+            {
+                "risk": f.risk.value,
+                "category": f.category,
+                "detail": f.detail,
+                "line": f.line,
+            }
+            for f in result.findings
+        ],
+        "filename": body.filename,
+    }
+
+    # Persist scan result to listing
+    _get_store().update_listing(listing_id, {"skill_scan": scan_data})
+
+    return {"listing_id": listing_id, "scan": scan_data, "summary": result.summary()}
+
+
 @router.put("/listings/{listing_id}", response_model=MarketplaceListing)
 async def update_listing(
     listing_id: str, updates: dict, _user=Depends(get_current_user)
@@ -231,10 +287,26 @@ async def get_reviews(listing_id: str, limit: int = 50) -> list[ReviewEntry]:
 async def record_install(
     listing_id: str, record: InstallRecord, _user=Depends(get_current_user)
 ) -> InstallRecord:
-    """Record an installation of a listing."""
+    """Record an installation of a listing.
+
+    Blocked if the listing's security scan risk level is HIGH or above.
+    """
     listing = _get_store().get_listing(listing_id)
     if listing is None:
         raise HTTPException(status_code=404, detail="Listing not found")
+
+    scan = listing.skill_scan
+    if scan.get("blocked", False):
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                f"Installation blocked: security scan found "
+                f"{scan.get('risk_level', 'high')} risk content. "
+                "Review the scan results at "
+                f"POST /marketplace/listings/{listing_id}/scan"
+            ),
+        )
+
     record.listing_id = listing_id
     return _get_store().record_install(record)
 

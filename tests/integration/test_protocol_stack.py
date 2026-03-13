@@ -15,10 +15,14 @@ class TestACPFullLifecycle:
 
     async def test_full_lifecycle_with_mock_runner(self):
         """Test complete ACP lifecycle with a mocked AgentRunner."""
+
+        async def _stream(request):
+            msg = MagicMock()
+            msg.content = "The answer is 4."
+            yield msg, True
+
         mock_runner = MagicMock()
-        mock_runner.process_query = AsyncMock(
-            return_value={"response": "The answer is 4."}
-        )
+        mock_runner.stream_query = _stream
 
         server = ACPServer(runner=mock_runner)
 
@@ -47,7 +51,6 @@ class TestACPFullLifecycle:
         )
         assert resp["result"]["session_id"] == session_id
         assert "4" in resp["result"]["response"]
-        mock_runner.process_query.assert_called_once_with("What is 2+2?")
 
         # 4. Shutdown
         resp = await server.handle_request(
@@ -77,13 +80,15 @@ class TestACPFullLifecycle:
         """Multiple prompts in a single session should all work."""
         call_count = 0
 
-        async def mock_query(prompt: str):
+        async def _stream(request):
             nonlocal call_count
             call_count += 1
-            return {"response": f"Response #{call_count} to: {prompt}"}
+            msg = MagicMock()
+            msg.content = f"Response #{call_count}"
+            yield msg, True
 
         mock_runner = MagicMock()
-        mock_runner.process_query = mock_query
+        mock_runner.stream_query = _stream
 
         server = ACPServer(runner=mock_runner)
         await server.handle_request(
@@ -112,10 +117,13 @@ class TestACPErrorHandling:
 
     async def test_runner_exception_returns_error(self):
         """If the runner raises, ACP should return an error response."""
+
+        async def _fail_stream(request):
+            raise RuntimeError("Model unavailable")
+            yield  # make it an async generator
+
         mock_runner = MagicMock()
-        mock_runner.process_query = AsyncMock(
-            side_effect=RuntimeError("Model unavailable")
-        )
+        mock_runner.stream_query = _fail_stream
 
         server = ACPServer(runner=mock_runner)
         await server.handle_request(

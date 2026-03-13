@@ -21,11 +21,21 @@ def acp_cmd(debug: bool) -> None:
         logging.basicConfig(level=logging.DEBUG)
 
     from ..protocols.acp_server import ACPServer
+    from ..app.runner.runner import AgentRunner
 
     click.echo("ProwlrBot ACP server starting on stdio...", err=True)
-    server = ACPServer()
+
+    async def _run():
+        runner = AgentRunner()
+        await runner.start()
+        server = ACPServer(runner=runner)
+        try:
+            await server.run_stdio()
+        finally:
+            await runner.stop()
+
     try:
-        asyncio.run(server.run_stdio())
+        asyncio.run(_run())
     except KeyboardInterrupt:
         click.echo("ACP server stopped.", err=True)
         sys.exit(0)
