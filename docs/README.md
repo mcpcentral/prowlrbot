@@ -43,15 +43,20 @@ Step-by-step walkthroughs. Follow them in order, skip what you don't need.
 | # | Guide | What You'll Do | Time |
 |:--|:------|:---------------|:-----|
 | 1 | **[Quick Start](../README.md#-30-second-install)** | Install ProwlrBot, set API key, open console | 30 sec |
-| 2 | **[Add Channels](../README.md#channels-8)** | Connect Discord, Telegram, or other channels | 2 min |
-| 3 | **[Enable Skills](../README.md#skills-extensible)** | Add PDF, DOCX, news, browser, email capabilities | 1 min |
-| 4 | **[Add MCP Servers](../README.md#mcp-integration)** | Connect external tools via MCP protocol | 3 min |
-| 5 | **[Set Up War Room](../INSTALL.md)** | Multi-agent coordination with ProwlrHub | 5 min |
-| 6 | **[Cross-Network Setup](guides/cross-network-setup.md)** | Connect agents on different networks | 10 min |
-| 7 | **[Configure Swarm](../README.swarm.md)** | Cross-machine command execution via Redis | 15 min |
-| 8 | **[Run Local Models](../README.md#local-models-no-cloud-required)** | Ollama, llama.cpp, or MLX — no cloud needed | 5 min |
-| 9 | **[Set Up Monitoring](../README.md#web-monitoring)** | Watch websites and APIs for changes | 3 min |
-| 10 | **[Schedule Cron Jobs](../README.md#cron-jobs)** | Automate agent tasks on schedules | 2 min |
+| 2 | **[Channel Setup](guides/channels.md)** | Connect Discord, Telegram, DingTalk, Feishu, iMessage, QQ | 5 min |
+| 3 | **[Provider Configuration](guides/providers.md)** | OpenAI, Anthropic, Groq, Ollama, local models | 3 min |
+| 4 | **[Skills Guide](guides/skills.md)** | Enable built-ins, create custom skills, publish | 5 min |
+| 5 | **[MCP Server Setup](guides/mcp-setup.md)** | Connect filesystem, GitHub, Postgres, custom tools | 3 min |
+| 6 | **[Cron Jobs & Automation](guides/cron-jobs.md)** | Schedule agent tasks, heartbeat, examples | 5 min |
+| 7 | **[Monitoring](guides/monitoring.md)** | Watch websites and APIs for changes | 3 min |
+| 8 | **[Marketplace](guides/marketplace.md)** | Browse, install, publish, credits | 5 min |
+| 9 | **[Deployment](guides/deployment.md)** | Docker, fly.io, systemd, nginx | 10 min |
+| 10 | **[ACP / IDE Integration](guides/acp-ide-integration.md)** | VS Code, Zed, JetBrains via ACP stdio | 3 min |
+| 11 | **[Memory System](guides/memory-system.md)** | Auto-compaction, persistence, export | 3 min |
+| 12 | **[CLI Reference](guides/cli-reference.md)** | Every command, every flag | reference |
+| 13 | **[Set Up War Room](../INSTALL.md)** | Multi-agent coordination with ProwlrHub | 5 min |
+| 14 | **[Cross-Network Setup](guides/cross-network-setup.md)** | Connect agents on different networks | 10 min |
+| 15 | **[Configure Swarm](../README.swarm.md)** | Cross-machine command execution via Redis | 15 min |
 
 ---
 
@@ -233,6 +238,7 @@ Humanized posts about what we're building, why it matters, and where we're heade
 |:---------|:-------------|
 | **[SECURITY.md](../SECURITY.md)** | Trust model, vulnerability reporting, security boundaries |
 | **[CONTRIBUTING.md](../CONTRIBUTING.md)** | Commit conventions, PR process, skill structure, how to add channels/providers |
+| **[DISCREPANCIES.md](DISCREPANCIES.md)** | CLAUDE.md accuracy audit — additions and corrections found in code |
 
 ---
 
