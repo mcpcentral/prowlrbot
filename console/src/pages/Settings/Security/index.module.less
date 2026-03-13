@@ -20,7 +20,7 @@
 
 .sectionDesc {
   margin: 0 0 16px;
-  color: #999;
+  color: var(--pb-text-tertiary);
   font-size: 14px;
 }
 
@@ -41,31 +41,31 @@
 }
 
 .statusGreen {
-  background: #52c41a;
+  background: var(--pb-status-success);
   box-shadow: 0 0 6px rgba(82, 196, 26, 0.4);
 }
 
 .statusYellow {
-  background: #faad14;
+  background: var(--pb-status-warning);
   box-shadow: 0 0 6px rgba(250, 173, 20, 0.4);
 }
 
 .statusRed {
-  background: #ff4d4f;
+  background: var(--pb-status-error);
   box-shadow: 0 0 6px rgba(255, 77, 79, 0.4);
 }
 
 .statusLabel {
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--pb-text-primary);
 }
 
 /* ---- Card Section ---- */
 
 .cardSection {
-  background: #fff;
-  border: 1px solid #e8e8e8;
+  background: var(--pb-bg-card);
+  border: 1px solid var(--pb-border);
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   padding: 24px;
@@ -74,17 +74,17 @@
 
   &:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    border-color: #d9d9d9;
+    border-color: var(--pb-border-strong);
   }
 }
 
 .cardSectionTitle {
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--pb-text-primary);
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--pb-border-light);
 }
 
 /* ---- Loading / Error ---- */
@@ -99,12 +99,12 @@
 
 .stateText {
   font-size: 14px;
-  color: #999;
+  color: var(--pb-text-tertiary);
 }
 
 .stateTextError {
   font-size: 14px;
-  color: #ff4d4f;
+  color: var(--pb-status-error);
   margin-bottom: 4px;
 }
 
@@ -115,7 +115,7 @@
 
   :global(.ant-descriptions-item-label) {
     font-weight: 500;
-    color: #666;
+    color: var(--pb-text-secondary);
   }
 }
 

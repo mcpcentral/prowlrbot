@@ -8,7 +8,7 @@
 }
 
 .loadingText {
-  color: #999;
+  color: var(--pb-text-tertiary);
 }
 
 /* ---- Sections ---- */
@@ -29,7 +29,7 @@
 
 .sectionDesc {
   margin: 0 0 16px;
-  color: #999;
+  color: var(--pb-text-tertiary);
   font-size: 14px;
 }
 
@@ -52,7 +52,7 @@
 .providerGroupTitle {
   font-size: 14px;
   font-weight: 600;
-  color: #666;
+  color: var(--pb-text-secondary);
   margin: 0 0 12px;
   letter-spacing: 0.02em;
 }
@@ -75,17 +75,17 @@
   cursor: pointer;
   position: relative;
   overflow: visible;
-  background: #fff;
+  background: var(--pb-bg-card);
   display: flex;
   flex-direction: column;
 
   &.enabledCard {
-    border: 2px solid #615ced !important;
+    border: 2px solid var(--pb-brand-primary) !important;
     box-shadow: rgba(97, 92, 237, 0.2) 0px 8px 24px !important;
   }
 
   &.hover {
-    border: 1px solid #615ced;
+    border: 1px solid var(--pb-brand-primary);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
   }
 
@@ -112,11 +112,11 @@
     font-weight: 500;
 
     &.enabled {
-      color: #52c41a;
+      color: var(--pb-status-success);
     }
 
     &.disabled {
-      color: #999;
+      color: var(--pb-text-tertiary);
     }
   }
 }
@@ -133,11 +133,11 @@
 
   :global {
     .ant-badge-status-success .ant-badge-status-text {
-      color: #52c41a !important;
+      color: var(--pb-status-success) !important;
     }
 
     .ant-badge-status-error .ant-badge-status-text {
-      color: #ff4d4f !important;
+      color: var(--pb-status-error) !important;
     }
   }
 }
@@ -145,7 +145,7 @@
 .cardName {
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--pb-text-primary);
 }
 
 .cardInfo {
@@ -161,18 +161,18 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #666;
+  color: var(--pb-text-secondary);
 }
 
 .infoLabel {
-  color: #999;
+  color: var(--pb-text-tertiary);
   min-width: 70px;
   flex-shrink: 0;
   font-weight: 500;
 }
 
 .infoValue {
-  color: #333;
+  color: var(--pb-text-primary);
   font-family: "SF Mono", "Menlo", monospace;
   font-size: 12px;
   overflow: hidden;
@@ -185,7 +185,7 @@
 }
 
 .infoEmpty {
-  color: #ccc;
+  color: var(--pb-text-disabled);
   font-style: italic;
 }
 
@@ -195,7 +195,7 @@
   justify-content: flex-end;
   gap: 8px;
   padding-top: 14px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--pb-border-light);
 }
 
 .configBtn {
@@ -204,7 +204,7 @@
   justify-content: center;
   gap: 6px;
   padding: 6px 14px;
-  color: #555;
+  color: var(--pb-text-secondary);
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
@@ -236,15 +236,15 @@
 
 .slotSection {
   padding: 24px;
-  background: #ffffff;
+  background: var(--pb-bg-card);
   border-radius: 16px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--pb-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease-in-out;
 
   &:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    border-color: #d9d9d9;
+    border-color: var(--pb-border-strong);
   }
 }
 
@@ -254,23 +254,23 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--pb-border-light);
 }
 
 .slotTitle {
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--pb-text-primary);
 }
 
 .slotCurrent {
   font-size: 13px;
-  color: #52c41a;
+  color: var(--pb-status-success);
   font-family: "SF Mono", "Menlo", monospace;
-  background: #f6ffed;
+  background: var(--pb-status-success-bg);
   padding: 4px 12px;
   border-radius: 20px;
-  border: 1px solid #b7eb8f;
+  border: 1px solid var(--pb-status-success-border);
 }
 
 .slotForm {
@@ -301,7 +301,7 @@
 
 .slotLabel {
   font-size: 14px;
-  color: #666;
+  color: var(--pb-text-secondary);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -313,7 +313,7 @@
   justify-content: flex-end;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--pb-border-light);
 }
 
 /* ---- Section Header Row (title + button) ---- */
@@ -341,7 +341,7 @@
 .modelList {
   max-height: 360px;
   overflow-y: auto;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--pb-border-light);
   border-radius: 8px;
   margin-top: 8px;
 }
@@ -349,7 +349,7 @@
 .modelListEmpty {
   padding: 24px;
   text-align: center;
-  color: #999;
+  color: var(--pb-text-tertiary);
   font-size: 13px;
 }
 
@@ -358,7 +358,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 16px;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--pb-bg-hover);
   transition: background 0.15s;
 
   &:last-child {
@@ -366,7 +366,7 @@
   }
 
   &:hover {
-    background: #fafafa;
+    background: var(--pb-bg-hover);
   }
 }
 
@@ -381,12 +381,12 @@
 .modelListItemName {
   font-size: 14px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--pb-text-primary);
 }
 
 .modelListItemId {
   font-size: 12px;
-  color: #999;
+  color: var(--pb-text-tertiary);
   font-family: "SF Mono", "Menlo", monospace;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -404,7 +404,7 @@
 .modelAddForm {
   margin-top: 12px;
   padding: 16px;
-  background: #fafafa;
+  background: var(--pb-bg-hover);
   border-radius: 8px;
-  border: 1px dashed #d9d9d9;
+  border: 1px dashed var(--pb-border-strong);
 }

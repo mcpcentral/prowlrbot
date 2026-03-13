@@ -5,12 +5,12 @@
   padding: 16px;
 
   &.enabledCard {
-    border: 2px solid #615ced !important;
+    border: 2px solid var(--pb-brand-primary) !important;
     box-shadow: rgba(97, 92, 237, 0.2) 0px 4px 12px !important;
   }
 
   &.hover {
-    border: 1px solid #615ced;
+    border: 1px solid var(--pb-brand-primary);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
 
@@ -31,7 +31,7 @@
   margin: 0;
   font-size: 17px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--pb-text-primary);
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -45,15 +45,15 @@
   font-weight: 500;
 
   &.local {
-    background-color: #e6f7ff;
-    color: #1890ff;
-    border: 1px solid #91d5ff;
+    background-color: var(--pb-status-info-bg);
+    color: var(--pb-accent-blue);
+    border: 1px solid var(--pb-status-info-border);
   }
 
   &.remote {
-    background-color: #fff7e6;
-    color: #fa8c16;
-    border: 1px solid #ffd591;
+    background-color: var(--pb-tint-orange);
+    color: var(--pb-accent-orange);
+    border: 1px solid var(--pb-status-warning-border);
   }
 }
 
@@ -65,7 +65,7 @@
 
 .description {
   font-size: 14px;
-  color: #666;
+  color: var(--pb-text-secondary);
   line-height: 1.6;
   margin-bottom: 32px;
   min-height: 64px;
@@ -83,7 +83,7 @@
   gap: 8px;
   padding-top: 16px;
   margin-top: auto;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--pb-border-light);
 }
 
 .actionButton {
@@ -98,9 +98,9 @@
   justify-content: center;
 
   &:hover {
-    background-color: #ff4d4f;
-    color: #fff;
-    border-color: #ff4d4f;
+    background-color: var(--pb-status-error);
+    color: var(--pb-text-on-brand);
+    border-color: var(--pb-status-error);
   }
 }
 
@@ -116,11 +116,11 @@
   border-radius: 50%;
 
   &.enabled {
-    background-color: #52c41a;
+    background-color: var(--pb-status-success);
   }
 
   &.disabled {
-    background-color: #d9d9d9;
+    background-color: var(--pb-border);
   }
 }
 
@@ -128,11 +128,11 @@
   font-size: 12px;
 
   &.enabled {
-    color: #52c41a;
+    color: var(--pb-status-success);
   }
 
   &.disabled {
-    color: #999;
+    color: var(--pb-text-tertiary);
   }
 }
 
@@ -145,13 +145,13 @@
     monospace;
   font-size: 13px;
   padding: 16px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--pb-border);
   border-radius: 4px;
   resize: vertical;
 }
 
 .preformattedText {
-  background-color: #f5f5f5;
+  background-color: var(--pb-bg-hover);
   padding: 16px;
   border-radius: 8px;
   max-height: 500px;
