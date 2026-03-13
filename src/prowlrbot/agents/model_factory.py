@@ -281,12 +281,32 @@ def _create_remote_model_instance(
         api_key = llm_cfg.api_key
         base_url = llm_cfg.base_url
     else:
-        logger.warning(
-            "No active LLM configured — " "falling back to DASHSCOPE_API_KEY env var",
-        )
-        model_name = "qwen3-max"
-        api_key = os.getenv("DASHSCOPE_API_KEY", "")
-        base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        # Try common env vars before falling back to DashScope
+        if os.getenv("ANTHROPIC_API_KEY"):
+            model_name = "claude-sonnet-4-6"
+            api_key = os.getenv("ANTHROPIC_API_KEY", "")
+            base_url = "https://api.anthropic.com/v1"
+        elif os.getenv("OPENAI_API_KEY"):
+            model_name = "gpt-4o"
+            api_key = os.getenv("OPENAI_API_KEY", "")
+            base_url = "https://api.openai.com/v1"
+        elif os.getenv("GROQ_API_KEY"):
+            model_name = "llama-3.3-70b-versatile"
+            api_key = os.getenv("GROQ_API_KEY", "")
+            base_url = "https://api.groq.com/openai/v1"
+        elif os.getenv("DASHSCOPE_API_KEY"):
+            model_name = "qwen3-max"
+            api_key = os.getenv("DASHSCOPE_API_KEY", "")
+            base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        else:
+            logger.error(
+                "No active LLM configured and no API key found in environment. "
+                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, or configure via Settings > Models.",
+            )
+            model_name = "unconfigured"
+            api_key = ""
+            base_url = ""
+        logger.warning("No active LLM configured — falling back to env var detection")
 
     # Instantiate model
     model = chat_model_class(
