@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check, Zap, Crown, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -143,6 +144,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -373,7 +375,7 @@ export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
                     if (hero) {
                       hero.scrollIntoView({ behavior: "smooth" });
                     } else {
-                      window.location.href = "/";
+                      navigate("/");
                     }
                   }}
                 >
