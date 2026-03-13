@@ -27,6 +27,7 @@ import {
   BarChart3,
   HardDrive,
   Trophy,
+  Image,
 } from "lucide-react";
 
 const { Sider } = Layout;
@@ -59,6 +60,7 @@ const keyToPath: Record<string, string> = {
   analytics: "/analytics",
   hardware: "/hardware",
   leaderboard: "/leaderboard",
+  "ui-gallery": "/ui-gallery",
 };
 
 interface SidebarProps {
@@ -215,6 +217,11 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           key: "credits",
           label: "Credits",
           icon: <Zap size={16} />,
+        },
+        {
+          key: "ui-gallery",
+          label: "UI Gallery",
+          icon: <Image size={16} />,
         },
       ],
     },
