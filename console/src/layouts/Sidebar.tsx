@@ -218,11 +218,6 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           label: "Credits",
           icon: <Zap size={16} />,
         },
-        {
-          key: "ui-gallery",
-          label: "UI Gallery",
-          icon: <Image size={16} />,
-        },
       ],
     },
     {
