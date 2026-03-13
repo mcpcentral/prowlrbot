@@ -14,11 +14,13 @@ Auto-detection sniffs incoming messages to route them to the right adapter.
 
 from .mcp import MCPFullAdapter
 from .a2a import A2AFullAdapter
+from .acp import ACPAdapter
 from .detect import detect_protocol, ProtocolType
 
 __all__ = [
     "MCPFullAdapter",
     "A2AFullAdapter",
+    "ACPAdapter",
     "detect_protocol",
     "ProtocolType",
 ]
