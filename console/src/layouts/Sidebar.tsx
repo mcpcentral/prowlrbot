@@ -26,6 +26,7 @@ import {
   Bot,
   BarChart3,
   HardDrive,
+  Trophy,
 } from "lucide-react";
 
 const { Sider } = Layout;
@@ -57,6 +58,7 @@ const keyToPath: Record<string, string> = {
   terminal: "/terminal",
   analytics: "/analytics",
   hardware: "/hardware",
+  leaderboard: "/leaderboard",
 };
 
 interface SidebarProps {
@@ -97,6 +99,11 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
       key: "analytics",
       label: "Analytics",
       icon: <BarChart3 size={16} />,
+    },
+    {
+      key: "leaderboard",
+      label: "Leaderboard",
+      icon: <Trophy size={16} />,
     },
     {
       key: "chat-group",

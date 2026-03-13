@@ -32,6 +32,7 @@ import ReplayPage from "../../pages/Replay";
 import TerminalPage from "../../pages/Terminal";
 import AnalyticsPage from "../../pages/Analytics";
 import HardwareAdvisorPage from "../../pages/HardwareAdvisor";
+import LeaderboardPage from "../../pages/Leaderboard";
 
 const { Content } = Layout;
 
@@ -62,6 +63,7 @@ const pathToKey: Record<string, string> = {
   "/terminal": "terminal",
   "/analytics": "analytics",
   "/hardware": "hardware",
+  "/leaderboard": "leaderboard",
 };
 
 export default function MainLayout() {
@@ -112,6 +114,7 @@ export default function MainLayout() {
               <Route path="/terminal" element={<TerminalPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
               <Route path="/hardware" element={<HardwareAdvisorPage />} />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/" element={<Dashboard />} />
             </Routes>
           </div>
