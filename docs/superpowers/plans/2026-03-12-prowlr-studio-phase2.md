@@ -35,7 +35,7 @@ The Browser tab shows the agent's Playwright browser. SSE `browser_screenshot` e
 - Create: `frontend/src/components/workspace/tabs/BrowserTab.tsx`
 - Modify: `frontend/src/pages/AgentWorkspacePage.tsx` (remove PlaceholderTab for Browser)
 
-- [ ] **Step 1: Create BrowserTab**
+- [x] **Step 1: Create BrowserTab**
 
 ```tsx
 // frontend/src/components/workspace/tabs/BrowserTab.tsx
@@ -157,7 +157,7 @@ export function BrowserTab({ agentId }: BrowserTabProps) {
 }
 ```
 
-- [ ] **Step 2: Wire into AgentWorkspacePage**
+- [x] **Step 2: Wire into AgentWorkspacePage**
 
 In `frontend/src/pages/AgentWorkspacePage.tsx`, replace:
 ```tsx
@@ -169,7 +169,7 @@ with:
 ```
 And add import: `import { BrowserTab } from '@/components/workspace/tabs/BrowserTab';`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/components/workspace/tabs/BrowserTab.tsx frontend/src/pages/AgentWorkspacePage.tsx
@@ -184,7 +184,7 @@ git commit -m "feat(workspace): Browser tab with screenshot stream and Take Cont
 - Create: `frontend/src/components/workspace/tabs/FilesTab.tsx`
 - Modify: `frontend/src/pages/AgentWorkspacePage.tsx`
 
-- [ ] **Step 1: Create FilesTab**
+- [x] **Step 1: Create FilesTab**
 
 The Files tab shows a live file tree built from `file_change` SSE events. Files can be downloaded.
 
@@ -351,11 +351,11 @@ export function FilesTab({ agentId }: { agentId: string }) {
 }
 ```
 
-- [ ] **Step 2: Wire into AgentWorkspacePage**
+- [x] **Step 2: Wire into AgentWorkspacePage**
 
 Replace `<PlaceholderTab name="File Explorer" />` with `<FilesTab agentId={agentId} />` and add the import.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/components/workspace/tabs/FilesTab.tsx frontend/src/pages/AgentWorkspacePage.tsx
@@ -370,7 +370,7 @@ git commit -m "feat(workspace): Files tab with live file tree from SSE file_chan
 - Create: `frontend/src/components/workspace/tabs/MemoryTab.tsx`
 - Modify: `frontend/src/pages/AgentWorkspacePage.tsx`
 
-- [ ] **Step 1: Create MemoryTab**
+- [x] **Step 1: Create MemoryTab**
 
 ```tsx
 // frontend/src/components/workspace/tabs/MemoryTab.tsx
@@ -464,11 +464,11 @@ export function MemoryTab({ agentId }: { agentId: string }) {
 }
 ```
 
-- [ ] **Step 2: Wire into AgentWorkspacePage**
+- [x] **Step 2: Wire into AgentWorkspacePage**
 
 Replace `<PlaceholderTab name="Memory Inspector" />` with `<MemoryTab agentId={agentId} />`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/components/workspace/tabs/MemoryTab.tsx frontend/src/pages/AgentWorkspacePage.tsx
@@ -483,7 +483,7 @@ git commit -m "feat(workspace): Memory tab with live CRUD from SSE memory_update
 - Create: `frontend/src/components/workspace/tabs/ConfigTab.tsx`
 - Modify: `frontend/src/pages/AgentWorkspacePage.tsx`
 
-- [ ] **Step 1: Create ConfigTab**
+- [x] **Step 1: Create ConfigTab**
 
 Config tab shows agent settings editable live. Fetches from `/api/studio/agents/{id}`, PATCHes changes.
 
@@ -642,11 +642,11 @@ export function ConfigTab({ agentId }: { agentId: string }) {
 }
 ```
 
-- [ ] **Step 2: Wire into AgentWorkspacePage**
+- [x] **Step 2: Wire into AgentWorkspacePage**
 
 Replace `<PlaceholderTab name="Agent Configuration" />` with `<ConfigTab agentId={agentId} />`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/components/workspace/tabs/ConfigTab.tsx frontend/src/pages/AgentWorkspacePage.tsx
@@ -665,7 +665,7 @@ Phase 1 renders Tile (grid) and Stack (tabs). Phase 2 adds Float (draggable wind
 - Create: `frontend/src/components/workspace/layouts/FloatLayout.tsx`
 - Modify: `frontend/src/pages/AgentWorkspacePage.tsx`
 
-- [ ] **Step 1: Create FloatLayout**
+- [x] **Step 1: Create FloatLayout**
 
 ```tsx
 // frontend/src/components/workspace/layouts/FloatLayout.tsx
@@ -762,7 +762,7 @@ export function FloatLayout({ agentIds, renderAgent }: FloatLayoutProps) {
 }
 ```
 
-- [ ] **Step 2: Wire into AgentWorkspacePage**
+- [x] **Step 2: Wire into AgentWorkspacePage**
 
 Add to the layout dispatch in `AgentWorkspacePage.tsx`:
 ```tsx
@@ -779,7 +779,7 @@ if (layoutMode === 'float') {
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/components/workspace/layouts/FloatLayout.tsx frontend/src/pages/AgentWorkspacePage.tsx
@@ -796,7 +796,7 @@ git commit -m "feat(workspace): Float layout — draggable, resizable, z-stacked
 - Create: `frontend/src/components/workspace/layouts/FocusLayout.tsx`
 - Modify: `frontend/src/pages/AgentWorkspacePage.tsx`
 
-- [ ] **Step 1: Create SplitLayout**
+- [x] **Step 1: Create SplitLayout**
 
 One main agent full-height left, others stacked in a narrow right sidebar.
 
@@ -839,7 +839,7 @@ export function SplitLayout({ agentIds, renderAgent }: SplitLayoutProps) {
 }
 ```
 
-- [ ] **Step 2: Create PiPLayout**
+- [x] **Step 2: Create PiPLayout**
 
 Main agent full-screen, others as small floating overlays in corners.
 
@@ -889,7 +889,7 @@ export function PiPLayout({ agentIds, renderAgent }: PiPLayoutProps) {
 }
 ```
 
-- [ ] **Step 3: Create FocusLayout**
+- [x] **Step 3: Create FocusLayout**
 
 Full-screen single agent with a scrubber timeline at the bottom showing event history.
 
@@ -955,11 +955,11 @@ export function FocusLayout({ agentIds, renderAgent }: FocusLayoutProps) {
 }
 ```
 
-- [ ] **Step 4: Wire all three into AgentWorkspacePage**
+- [x] **Step 4: Wire all three into AgentWorkspacePage**
 
 Add imports and layout dispatch cases for `'split'`, `'pip'`, `'focus'` in `AgentWorkspacePage.tsx`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend/src/components/workspace/layouts/ frontend/src/pages/AgentWorkspacePage.tsx
@@ -979,7 +979,7 @@ Five pages from ProwlrBot's old React console get rebuilt using Studio's Tailwin
 - Create: `backend/src/prowlrbot/prowlrbot.controller.ts`
 - Modify: `backend/src/app.module.ts`
 
-- [ ] **Step 1: Create prowlrbot proxy controller**
+- [x] **Step 1: Create prowlrbot proxy controller**
 
 ```typescript
 // backend/src/prowlrbot/prowlrbot.controller.ts
@@ -1026,11 +1026,11 @@ import { ProwlrBotController } from './prowlrbot.controller';
 export class ProwlrBotModule {}
 ```
 
-- [ ] **Step 2: Register in app.module.ts**
+- [x] **Step 2: Register in app.module.ts**
 
 Import and add `ProwlrBotModule` to the `imports` array in `backend/src/app.module.ts`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add backend/src/prowlrbot/
@@ -1045,7 +1045,7 @@ git commit -m "feat(backend): /prowlrbot/* proxy routes to ProwlrBot FastAPI at 
 - Create: `frontend/src/pages/ChatPage.tsx`
 - Modify: `frontend/src/App.tsx` (add route)
 
-- [ ] **Step 1: Create ChatPage**
+- [x] **Step 1: Create ChatPage**
 
 Chat page mirrors ProwlrBot console's chat — session list sidebar, message thread, input bar. Uses `GET /prowlrbot/chats`, `GET /prowlrbot/chats/{id}/messages`, `POST /prowlrbot/chats/{id}/message`.
 
@@ -1173,7 +1173,7 @@ export function ChatPage() {
 }
 ```
 
-- [ ] **Step 2: Add route in App.tsx**
+- [x] **Step 2: Add route in App.tsx**
 
 ```tsx
 import { ChatPage } from '@/pages/ChatPage';
@@ -1181,7 +1181,7 @@ import { ChatPage } from '@/pages/ChatPage';
 <Route path="/chat" element={<ChatPage />} />
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/pages/ChatPage.tsx frontend/src/App.tsx
@@ -1196,7 +1196,7 @@ git commit -m "feat(pages): Chat page — session list + message thread + Prowlr
 - Create: `frontend/src/pages/ChannelsPage.tsx`
 - Modify: `frontend/src/App.tsx`
 
-- [ ] **Step 1: Create ChannelsPage**
+- [x] **Step 1: Create ChannelsPage**
 
 CRUD for channels. Fetches `GET /prowlrbot/channels`, toggles enable/disable, shows status badges. Each channel card has type, status (connected/disconnected), edit button.
 
@@ -1302,14 +1302,14 @@ export function ChannelsPage() {
 }
 ```
 
-- [ ] **Step 2: Add route**
+- [x] **Step 2: Add route**
 
 ```tsx
 import { ChannelsPage } from '@/pages/ChannelsPage';
 <Route path="/channels" element={<ChannelsPage />} />
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/pages/ChannelsPage.tsx frontend/src/App.tsx
@@ -1324,7 +1324,7 @@ git commit -m "feat(pages): Channels page — type cards with status badges and 
 - Create: `frontend/src/pages/MonitorsPage.tsx`
 - Modify: `frontend/src/App.tsx`
 
-- [ ] **Step 1: Create MonitorsPage**
+- [x] **Step 1: Create MonitorsPage**
 
 Lists web/API monitors. Shows URL, type, interval, last status, last checked. Toggle enabled. Uses `GET/POST/PATCH/DELETE /prowlrbot/monitors`.
 
@@ -1437,14 +1437,14 @@ export function MonitorsPage() {
 }
 ```
 
-- [ ] **Step 2: Add route**
+- [x] **Step 2: Add route**
 
 ```tsx
 import { MonitorsPage } from '@/pages/MonitorsPage';
 <Route path="/monitors" element={<MonitorsPage />} />
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/pages/MonitorsPage.tsx frontend/src/App.tsx
@@ -1459,7 +1459,7 @@ git commit -m "feat(pages): Monitors page with status badges, toggle, delete"
 - Create: `frontend/src/pages/CronPage.tsx`
 - Modify: `frontend/src/App.tsx`
 
-- [ ] **Step 1: Create CronPage**
+- [x] **Step 1: Create CronPage**
 
 Lists scheduled cron jobs. Shows name, expression, next run, last run, status. Uses `GET/POST/PATCH/DELETE /prowlrbot/crons`.
 
@@ -1567,7 +1567,7 @@ export function CronPage() {
 }
 ```
 
-- [ ] **Step 2: Add route, commit**
+- [x] **Step 2: Add route, commit**
 
 ```tsx
 import { CronPage } from '@/pages/CronPage';
@@ -1587,7 +1587,7 @@ git commit -m "feat(pages): Cron page — scheduled jobs with expression, next/l
 - Create: `frontend/src/pages/SettingsPage.tsx`
 - Modify: `frontend/src/App.tsx`
 
-- [ ] **Step 1: Create SettingsPage**
+- [x] **Step 1: Create SettingsPage**
 
 Tabbed settings page: Models (provider selector, model config), Environment (env vars CRUD), About (version info). Uses `GET/PUT /prowlrbot/config`, `GET/POST/DELETE /prowlrbot/envs`.
 
@@ -1718,7 +1718,7 @@ export function SettingsPage() {
 }
 ```
 
-- [ ] **Step 2: Add route, commit**
+- [x] **Step 2: Add route, commit**
 
 ```tsx
 import { SettingsPage } from '@/pages/SettingsPage';
@@ -1737,15 +1737,15 @@ git commit -m "feat(pages): Settings page — model config, env vars, about (rep
 **Files:**
 - Modify: whichever sidebar/nav component exists in Studio (check `frontend/src/components/` or `frontend/src/App.tsx`)
 
-- [ ] **Step 1: Find sidebar component**
+- [x] **Step 1: Find sidebar component**
 
 Run `grep -r "AgentHub\|Workspace\|/workspace" frontend/src/ --include="*.tsx" -l` to find the nav.
 
-- [ ] **Step 2: Add nav entries for Chat, Channels, Monitors, Crons, Settings**
+- [x] **Step 2: Add nav entries for Chat, Channels, Monitors, Crons, Settings**
 
 Add links to `/chat`, `/channels`, `/monitors`, `/crons`, `/settings` in the sidebar nav, grouping them under a "ProwlrBot" section heading, below the existing Studio sections.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/
@@ -1763,11 +1763,11 @@ Phase 1 Canvas only has approve/reject. Phase 2 adds annotations, agent redirect
 **Files:**
 - Modify: `frontend/src/pages/CollaborationCanvasPage.tsx`
 
-- [ ] **Step 1: Read current CollaborationCanvasPage.tsx**
+- [x] **Step 1: Read current CollaborationCanvasPage.tsx**
 
 Read the full file to understand current structure before editing.
 
-- [ ] **Step 2: Add annotation panel, merge button, export**
+- [x] **Step 2: Add annotation panel, merge button, export**
 
 Extend the existing finding cards with:
 - **Annotation field**: `<textarea>` per card, persisted to local state (and `PATCH /api/studio/canvas/findings/{id}/annotation` when saved)
@@ -1775,7 +1775,7 @@ Extend the existing finding cards with:
 - **Merge button** (in header): selects multiple findings and merges them into a single summary card. Summary is created locally.
 - **Export button** (in header): downloads `canvas-export-{date}.json` with all findings and their statuses/annotations
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend/src/pages/CollaborationCanvasPage.tsx
@@ -1798,11 +1798,11 @@ Five new ReactFlow node types for the workflow builder that wrap ProwlrBot capab
 - Create: `frontend/src/features/workflow-builder/nodes/prowlrbot/HubTaskNode.tsx`
 - Modify: workflow builder node registry (wherever existing nodes are registered)
 
-- [ ] **Step 1: Read existing node structure**
+- [x] **Step 1: Read existing node structure**
 
 Read one existing node file (e.g. an `AI` or `Core` node) to understand the props interface, handle positions, and styling conventions before creating new ones.
 
-- [ ] **Step 2: Create ProwlrbotAgentNode**
+- [x] **Step 2: Create ProwlrbotAgentNode**
 
 ```tsx
 // ProwlrbotAgentNode.tsx
@@ -1813,7 +1813,7 @@ Read one existing node file (e.g. an `AI` or `Core` node) to understand the prop
 // Icon: Bot from lucide
 ```
 
-- [ ] **Step 3: Create ChannelTriggerNode**
+- [x] **Step 3: Create ChannelTriggerNode**
 
 ```tsx
 // Entry point node. Triggers workflow from channel message.
@@ -1822,7 +1822,7 @@ Read one existing node file (e.g. an `AI` or `Core` node) to understand the prop
 // Color: blue border. Icon: Radio/MessageCircle
 ```
 
-- [ ] **Step 4: Create MonitorTriggerNode**
+- [x] **Step 4: Create MonitorTriggerNode**
 
 ```tsx
 // Entry point node. Triggers from monitor alert.
@@ -1831,7 +1831,7 @@ Read one existing node file (e.g. an `AI` or `Core` node) to understand the prop
 // Color: orange border. Icon: AlertTriangle
 ```
 
-- [ ] **Step 5: Create RoarMessageNode**
+- [x] **Step 5: Create RoarMessageNode**
 
 ```tsx
 // Send/receive ROAR protocol messages between agents.
@@ -1840,7 +1840,7 @@ Read one existing node file (e.g. an `AI` or `Core` node) to understand the prop
 // Color: teal border. Icon: Zap
 ```
 
-- [ ] **Step 6: Create HubTaskNode**
+- [x] **Step 6: Create HubTaskNode**
 
 ```tsx
 // Create/claim/complete ProwlrHub tasks.
@@ -1849,7 +1849,7 @@ Read one existing node file (e.g. an `AI` or `Core` node) to understand the prop
 // Color: green border. Icon: CheckSquare
 ```
 
-- [ ] **Step 7: Register all 5 nodes in the node registry**
+- [x] **Step 7: Register all 5 nodes in the node registry**
 
 Find the file that maps node type strings to components (e.g. `nodeTypes` object). Add:
 ```ts
@@ -1860,11 +1860,11 @@ Find the file that maps node type strings to components (e.g. `nodeTypes` object
 'prowlrbot.hub-task': HubTaskNode,
 ```
 
-- [ ] **Step 8: Add to component palette**
+- [x] **Step 8: Add to component palette**
 
 Find the component picker/library panel. Add a "ProwlrBot" section with these 5 nodes, descriptions matching the spec.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add frontend/src/features/workflow-builder/nodes/prowlrbot/
@@ -1877,7 +1877,7 @@ git commit -m "feat(workflow): 5 ProwlrBot node types — Agent, ChannelTrigger,
 
 ### Task 6.1: Run all tests and verify
 
-- [ ] **Step 1: Run ProwlrBot tests**
+- [x] **Step 1: Run ProwlrBot tests**
 
 ```bash
 cd /home/anon/dev/prowlrbot && pytest -x -q 2>&1 | tail -20
@@ -1885,7 +1885,7 @@ cd /home/anon/dev/prowlrbot && pytest -x -q 2>&1 | tail -20
 
 Expect: all existing tests pass. No regressions from proxy module or nav changes.
 
-- [ ] **Step 2: Run Studio TypeScript check**
+- [x] **Step 2: Run Studio TypeScript check**
 
 ```bash
 cd /home/anon/dev/prowrl-studio && npx tsc --noEmit
@@ -1893,7 +1893,7 @@ cd /home/anon/dev/prowrl-studio && npx tsc --noEmit
 
 Expect: zero type errors.
 
-- [ ] **Step 3: Build Studio frontend**
+- [x] **Step 3: Build Studio frontend**
 
 ```bash
 cd /home/anon/dev/prowrl-studio && bun run build 2>&1 | tail -10
@@ -1901,15 +1901,15 @@ cd /home/anon/dev/prowrl-studio && bun run build 2>&1 | tail -10
 
 Expect: successful build with no errors.
 
-- [ ] **Step 4: Smoke test workspace tabs**
+- [x] **Step 4: Smoke test workspace tabs**
 
 Run Studio and verify each of the 12 tabs renders without crashing. BrowserTab, FilesTab, MemoryTab, ConfigTab should show their empty states (not the old PlaceholderTab).
 
-- [ ] **Step 5: Smoke test layout modes**
+- [x] **Step 5: Smoke test layout modes**
 
 Verify all 6 layout mode buttons in the workspace toolbar work: tile, stack, float, split, pip, focus.
 
-- [ ] **Step 6: Final commit + push**
+- [x] **Step 6: Final commit + push**
 
 ```bash
 cd /home/anon/dev/prowrl-studio && git push origin main
