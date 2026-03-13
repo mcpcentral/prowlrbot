@@ -1,0 +1,23 @@
+ProwlrBot
+Copyright 2025-2026 kdairatchi (https://github.com/kdairatchi)
+
+This product is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+---
+
+This software is a derivative work of CoPaw, originally developed by the
+AgentScope team (https://github.com/agentscope-ai/CoPaw).
+
+CoPaw is Copyright 2024-2025 The AgentScope Team and contributors,
+licensed under the Apache License, Version 2.0.
+
+Substantial modifications have been made to the original work, including
+but not limited to: full rebranding, new channel integrations, marketplace
+system, ROAR Protocol integration, AgentVerse guild system, smart model
+routing, and security hardening. These modifications are Copyright 2025-2026
+kdairatchi and are provided under the same Apache License, Version 2.0.
+
+The agentscope and agentscope-runtime packages are maintained separately
+under the ProwlrBot organization (https://github.com/ProwlrBot) and are also
+licensed under the Apache License, Version 2.0.
