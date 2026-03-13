@@ -18,10 +18,32 @@ from ...agentverse.models import (
 )
 from ...agentverse.world import AgentVerseWorld
 from ...constant import WORKING_DIR
+from ...dashboard.agent_teams import AgentTeam, TeamStore
+from ...marketplace.models import CreditTransactionType
+from ...marketplace.store import MarketplaceStore
 
 router = APIRouter(prefix="/agentverse", tags=["agentverse"])
 
 _world = AgentVerseWorld(db_path=WORKING_DIR / "agentverse.db")
+
+_BATTLE_WIN_CREDITS = 50
+
+_team_store: TeamStore | None = None
+_marketplace_store: MarketplaceStore | None = None
+
+
+def _get_team_store() -> TeamStore:
+    global _team_store
+    if _team_store is None:
+        _team_store = TeamStore(WORKING_DIR / "teams.db")
+    return _team_store
+
+
+def _get_marketplace_store() -> MarketplaceStore:
+    global _marketplace_store
+    if _marketplace_store is None:
+        _marketplace_store = MarketplaceStore(WORKING_DIR / "marketplace.db")
+    return _marketplace_store
 
 
 # --- Agents ---
@@ -82,12 +104,33 @@ async def agents_in_zone(zone: Zone) -> List[AgentPresence]:
 
 @router.post("/guilds", response_model=Guild)
 async def create_guild(guild: Guild) -> Guild:
-    return _world.create_guild(guild)
+    created = _world.create_guild(guild)
+    # Bridge: auto-create a matching AgentTeam in the Teams system
+    team = AgentTeam(
+        id=created.id,
+        name=created.name,
+        description=created.description,
+    )
+    try:
+        _get_team_store().create_team(team)
+    except Exception:
+        # Team may already exist if guild id was reused; non-fatal
+        pass
+    return created
 
 
 @router.get("/guilds", response_model=List[Guild])
 async def list_guilds() -> List[Guild]:
     return _world.list_guilds()
+
+
+@router.get("/guilds/{guild_id}/team", response_model=AgentTeam)
+async def get_guild_team(guild_id: str) -> AgentTeam:
+    """Return the AgentTeam linked to a guild (created automatically on guild creation)."""
+    team = _get_team_store().get_team(guild_id)
+    if team is None:
+        raise HTTPException(404, f"No linked team found for guild '{guild_id}'")
+    return team
 
 
 # --- Trades ---
@@ -136,4 +179,17 @@ async def complete_battle(result: BattleResult) -> Dict[str, Any]:
     )
     if not battle:
         raise HTTPException(404, "Battle not found")
-    return {"winner": battle.winner_id, "status": "completed"}
+    # Award credits to the winner
+    if battle.winner_id:
+        try:
+            _get_marketplace_store().add_credits(
+                user_id=battle.winner_id,
+                amount=_BATTLE_WIN_CREDITS,
+                transaction_type=CreditTransactionType.earned,
+                reference_id=battle.id,
+                description="Won arena battle",
+            )
+        except Exception:
+            # Credit award failure is non-fatal — don't break the battle result
+            pass
+    return {"winner": battle.winner_id, "status": "completed", "credits_awarded": _BATTLE_WIN_CREDITS if battle.winner_id else 0}

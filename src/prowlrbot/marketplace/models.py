@@ -230,6 +230,7 @@ class CreditTransactionType(StrEnum):
     referral = "referral"  # +200 for referring a user
     bug_report = "bug_report"  # +50 for confirmed bug report
     purchased = "purchased"  # bought with real money
+    earned = "earned"  # generic earn (e.g. arena battle win)
 
     # Spending
     listing_purchase = "listing_purchase"  # spent on a marketplace item
