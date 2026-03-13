@@ -32,8 +32,8 @@ def test_evaluate_action_blocks_blocked_tool():
     assert decision.approved is False
 
 
-def test_runner_calls_get_policy_on_query():
-    """AgentRunner.query_handler injects autonomy policy from AutonomyController."""
+def test_controller_lifecycle_closes_connection():
+    """Controller connection is closed even when policy is None (try/finally pattern)."""
     from prowlrbot.autonomy.controller import AutonomyController
     from unittest.mock import patch
 
