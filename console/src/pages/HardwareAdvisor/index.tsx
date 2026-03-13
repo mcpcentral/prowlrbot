@@ -65,7 +65,7 @@ export const HardwareAdvisor: React.FC = () => {
   const handleInstall = async (ollamaTag: string) => {
     setInstalling(ollamaTag);
     try {
-      const resp = await fetch("/api/ollama-models/pull", {
+      const resp = await fetch("/api/ollama-models/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: ollamaTag }),
