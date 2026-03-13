@@ -127,6 +127,42 @@ html[data-theme="light"] {
   --pb-chart-pie-working: #3b82f6;
   --pb-chart-pie-disconnected: #555;
 
+  /* ── Dashboard (Grafana-style panels) ── */
+  --pb-dash-bg: #111217;
+  --pb-dash-panel: #181b1f;
+  --pb-dash-panel-hover: #1e2125;
+  --pb-dash-border: #2c3235;
+  --pb-dash-border-strong: #3c4245;
+  --pb-dash-text: #d8d9da;
+  --pb-dash-text-secondary: #9da5b4;
+  --pb-dash-text-dim: #6e7681;
+  --pb-dash-text-faint: #4d5562;
+  --pb-dash-topbar: #181b1f;
+  --pb-dash-stat-queries: #6366f1;
+  --pb-dash-stat-cost: #22c55e;
+  --pb-dash-stat-agents: #f59e0b;
+  --pb-dash-stat-tokens: #94a3b8;
+  --pb-dash-feed-success: #22c55e;
+  --pb-dash-feed-tool: #6366f1;
+  --pb-dash-feed-alert: #f59e0b;
+  --pb-dash-feed-error: #ef4444;
+  --pb-dash-feed-info: #3b82f6;
+  --pb-dash-xp: #f59e0b;
+  --pb-dash-xp-gradient-end: #f97316;
+  --pb-dash-chart-primary: #6366f1;
+  --pb-dash-chart-secondary: #8b5cf6;
+  --pb-dash-chart-tertiary: #f59e0b;
+  --pb-dash-achievement-bg: #1e2227;
+  --pb-dash-action-primary: #6366f1;
+  --pb-dash-action-secondary: #1e2227;
+  --pb-dash-monitor-ok: #22c55e;
+  --pb-dash-monitor-warn: #f59e0b;
+  --pb-dash-monitor-down: #ef4444;
+  --pb-dash-monitor-off: #6e7681;
+  --pb-dash-alert-badge: #ef4444;
+  --pb-dash-scrollbar-track: #1e2227;
+  --pb-dash-scrollbar-thumb: #3c4245;
+
   /* ── Chat gradient ── */
   --pb-chat-gradient-start: #6b73ff;
   --pb-chat-gradient-end: #000dff;
@@ -273,6 +309,42 @@ html[data-theme="dark"] {
   --pb-chart-pie-idle: #22c55e;
   --pb-chart-pie-working: #3b82f6;
   --pb-chart-pie-disconnected: #555;
+
+  /* ── Dashboard (same in dark — already dark-first design) ── */
+  --pb-dash-bg: #111217;
+  --pb-dash-panel: #181b1f;
+  --pb-dash-panel-hover: #1e2125;
+  --pb-dash-border: #2c3235;
+  --pb-dash-border-strong: #3c4245;
+  --pb-dash-text: #d8d9da;
+  --pb-dash-text-secondary: #9da5b4;
+  --pb-dash-text-dim: #6e7681;
+  --pb-dash-text-faint: #4d5562;
+  --pb-dash-topbar: #181b1f;
+  --pb-dash-stat-queries: #6366f1;
+  --pb-dash-stat-cost: #22c55e;
+  --pb-dash-stat-agents: #f59e0b;
+  --pb-dash-stat-tokens: #94a3b8;
+  --pb-dash-feed-success: #22c55e;
+  --pb-dash-feed-tool: #6366f1;
+  --pb-dash-feed-alert: #f59e0b;
+  --pb-dash-feed-error: #ef4444;
+  --pb-dash-feed-info: #3b82f6;
+  --pb-dash-xp: #f59e0b;
+  --pb-dash-xp-gradient-end: #f97316;
+  --pb-dash-chart-primary: #6366f1;
+  --pb-dash-chart-secondary: #8b5cf6;
+  --pb-dash-chart-tertiary: #f59e0b;
+  --pb-dash-achievement-bg: #1e2227;
+  --pb-dash-action-primary: #6366f1;
+  --pb-dash-action-secondary: #1e2227;
+  --pb-dash-monitor-ok: #22c55e;
+  --pb-dash-monitor-warn: #f59e0b;
+  --pb-dash-monitor-down: #ef4444;
+  --pb-dash-monitor-off: #6e7681;
+  --pb-dash-alert-badge: #ef4444;
+  --pb-dash-scrollbar-track: #1e2227;
+  --pb-dash-scrollbar-thumb: #3c4245;
 
   /* ── Chat gradient ── */
   --pb-chat-gradient-start: #6b73ff;

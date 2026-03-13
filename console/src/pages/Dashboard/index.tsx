@@ -1,32 +1,69 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "antd";
 import {
-  Bot,
+  AreaChart,
+  Area,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
+import {
   Zap,
-  Activity,
-  Shield,
-  Wifi,
-  Plus,
-  Sparkles,
-  Eye,
-  MessageSquare,
-  Globe,
-  Layers,
+  Swords,
+  Store,
+  BarChart3,
+  LayoutGrid,
+  List,
 } from "lucide-react";
-import api from "../../api";
+import api, {
+  getAnalyticsSummary,
+  getCostOverTime,
+  getModelBreakdown,
+  getHealthStatus,
+  getLevelInfo,
+  getAchievements,
+  listNotifications,
+  getNotificationStats,
+} from "../../api";
+import type { UsageSummary, CostDataPoint, ModelStats } from "../../api/modules/analytics";
 import styles from "./index.module.less";
 
 // ── Types ──
-interface AgentInfo {
+
+interface HealthData {
+  status: string;
+  version: string;
+  uptime_formatted: string;
+  uptime_seconds: number;
+  channels: Record<string, string>;
+  cron_active_jobs: number;
+  mcp_servers: number;
+}
+
+interface LevelData {
+  level: number;
+  total_xp: number;
+  xp_for_next: number;
+  title: string;
+}
+
+interface Achievement {
   id: string;
   name: string;
-  avatar: string;
-  color: string;
-  status: "online" | "idle" | "offline";
-  model: string;
-  skills: string[];
-  autonomy: string;
+  icon: string;
+  unlocked_at: string;
+}
+
+interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  icon: string;
+  timestamp: string;
+  read: boolean;
 }
 
 interface ActivityEvent {
@@ -34,105 +71,207 @@ interface ActivityEvent {
   type: string;
   text: string;
   time: string;
+  tag: string;
+  color: string;
+  tagBg: string;
+}
+
+interface AgentInfo {
+  id: string;
+  name: string;
+  status: string;
+  model: string;
+  description: string;
   icon: string;
   color: string;
 }
 
-// ── Avatar emoji map ──
-const AVATAR_EMOJI: Record<string, string> = {
-  robot: "\u{1F916}",
-  cat: "\u{1F431}",
-  dog: "\u{1F436}",
-  fox: "\u{1F98A}",
-  owl: "\u{1F989}",
-  dragon: "\u{1F409}",
-  paw: "\u{1F43E}",
-};
-
-// ── Helpers ──
-function timeAgo(iso: string): string {
-  const d = new Date(iso);
-  const now = Date.now();
-  const secs = Math.floor((now - d.getTime()) / 1000);
-  if (secs < 60) return "just now";
-  if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
-  if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
-  return `${Math.floor(secs / 86400)}d ago`;
+interface MonitorInfo {
+  id: string;
+  name: string;
+  status: "ok" | "warning" | "down" | "unknown";
+  latency_ms: number | null;
 }
 
-const EVENT_ICON_MAP: Record<string, { icon: string; bg: string }> = {
-  tool_call: { icon: "\u{1F527}", bg: "var(--pb-tint-blue)" },
-  reasoning: { icon: "\u{1F9E0}", bg: "var(--pb-tint-orange)" },
-  task_update: { icon: "\u{2705}", bg: "var(--pb-tint-green)" },
-  monitor_alert: { icon: "\u{1F6A8}", bg: "var(--pb-tint-red)" },
-  mcp_request: { icon: "\u{1F50C}", bg: "var(--pb-tint-blue)" },
-  stream_token: { icon: "\u{1F4AC}", bg: "var(--pb-tint-purple)" },
-  agent_status: { icon: "\u{1F916}", bg: "var(--pb-bg-sunken)" },
-  error: { icon: "\u{274C}", bg: "var(--pb-tint-red)" },
+// ── Helpers ──
+
+function timeAgo(iso: string): string {
+  const secs = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (secs < 60) return "now";
+  if (secs < 3600) return `${Math.floor(secs / 60)}m`;
+  if (secs < 86400) return `${Math.floor(secs / 3600)}h`;
+  return `${Math.floor(secs / 86400)}d`;
+}
+
+function formatCost(val: number): string {
+  return `$${val.toFixed(2)}`;
+}
+
+function formatTokens(val: number): string {
+  if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}M`;
+  if (val >= 1_000) return `${(val / 1_000).toFixed(0)}K`;
+  return String(val);
+}
+
+const EVENT_STYLE: Record<string, { tag: string; color: string; tagBg: string }> = {
+  tool_call: { tag: "tool", color: "#6366f1", tagBg: "rgba(99,102,241,0.15)" },
+  reasoning: { tag: "think", color: "#8b5cf6", tagBg: "rgba(139,92,246,0.15)" },
+  task_update: { tag: "task", color: "#22c55e", tagBg: "rgba(34,197,94,0.15)" },
+  monitor_alert: { tag: "alert", color: "#f59e0b", tagBg: "rgba(245,158,11,0.15)" },
+  mcp_request: { tag: "mcp", color: "#3b82f6", tagBg: "rgba(59,130,246,0.15)" },
+  agent_status: { tag: "agent", color: "#22c55e", tagBg: "rgba(34,197,94,0.15)" },
+  error: { tag: "error", color: "#ef4444", tagBg: "rgba(239,68,68,0.15)" },
+  stream_token: { tag: "stream", color: "#94a3b8", tagBg: "rgba(148,163,184,0.15)" },
 };
 
-// ── Default demo agents when no agents are configured ──
-const DEFAULT_AGENTS: AgentInfo[] = [
-  {
-    id: "prowlr-main",
-    name: "ProwlrBot",
-    avatar: "paw",
-    color: "#6B5CE7",
-    status: "online",
-    model: "Auto-detect",
-    skills: ["shell", "file_io", "browser"],
-    autonomy: "guide",
-  },
-];
+function formatEventText(data: any): string {
+  switch (data.type) {
+    case "tool_call":
+      return `Tool: ${data.data?.tool || "unknown"}${data.data?.command ? ` — ${data.data.command}` : ""}`;
+    case "reasoning":
+      return `Reasoning: ${(data.data?.text || "").slice(0, 80)}`;
+    case "task_update":
+      return `Task ${data.data?.status || "updated"}: ${data.data?.name || ""}`;
+    case "monitor_alert":
+      return `Alert: ${data.data?.alert || data.data?.message || ""}`;
+    case "agent_status":
+      return `Agent ${data.data?.status || "status change"}`;
+    case "error":
+      return `Error: ${data.data?.message || data.data?.error || "unknown"}`;
+    default:
+      return `${data.type}: ${JSON.stringify(data.data || {}).slice(0, 60)}`;
+  }
+}
+
+// ── Dashboard Component ──
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [agents] = useState<AgentInfo[]>(DEFAULT_AGENTS);
-  const [activities, setActivities] = useState<ActivityEvent[]>([]);
-  const [stats, setStats] = useState({
-    agents: 1,
-    channels: 0,
-    skills: 0,
-    uptime: "—",
+
+  // State
+  const [density, setDensity] = useState<"visual" | "compact">(() => {
+    return (localStorage.getItem("pb-dash-density") as "visual" | "compact") || "visual";
   });
+  const [summary, setSummary] = useState<UsageSummary | null>(null);
+  const [costData, setCostData] = useState<CostDataPoint[]>([]);
+  const [costDays, setCostDays] = useState(7);
+  const [models, setModels] = useState<Record<string, ModelStats>>({});
+  const [health, setHealth] = useState<HealthData | null>(null);
+  const [levelData, setLevelData] = useState<LevelData | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [agents, setAgents] = useState<AgentInfo[]>([]);
+  const [monitors, setMonitors] = useState<MonitorInfo[]>([]);
+  const [activities, setActivities] = useState<ActivityEvent[]>([]);
   const [wsConnected, setWsConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
 
-  // Load initial data
+  // Density toggle
+  const toggleDensity = useCallback(() => {
+    setDensity((d) => {
+      const next = d === "visual" ? "compact" : "visual";
+      localStorage.setItem("pb-dash-density", next);
+      return next;
+    });
+  }, []);
+
+  // ── Fetch all data on mount ──
   useEffect(() => {
-    // Load channels count
+    // Analytics
+    getAnalyticsSummary("day").then(setSummary).catch(() => {});
+    getCostOverTime(costDays).then(setCostData).catch(() => {});
+    getModelBreakdown().then(setModels).catch(() => {});
+
+    // Health
+    getHealthStatus()
+      .then((h: any) => setHealth(h))
+      .catch(() => {});
+
+    // Gamification
+    getLevelInfo("default")
+      .then((l: any) => setLevelData(l))
+      .catch(() => {});
+    getAchievements("default")
+      .then((a: any) => {
+        if (Array.isArray(a)) setAchievements(a.slice(0, 6));
+      })
+      .catch(() => {});
+
+    // Notifications
+    listNotifications(false, 10)
+      .then((n: any) => {
+        if (Array.isArray(n)) setNotifications(n);
+      })
+      .catch(() => {});
+    getNotificationStats()
+      .then((s: any) => {
+        if (s?.unread_count != null) setUnreadCount(s.unread_count);
+      })
+      .catch(() => {});
+
+    // Agents
+    api
+      .listSkills()
+      .then(() => {})
+      .catch(() => {});
+
+    // Load channels as monitors
     api
       .listChannels()
       .then((channels: any) => {
         const list = Array.isArray(channels) ? channels : channels?.channels;
         if (Array.isArray(list)) {
-          setStats((s) => ({ ...s, channels: list.length }));
+          const mons: MonitorInfo[] = list.map((ch: any) => ({
+            id: ch.channel || ch.id || ch.name,
+            name: ch.channel || ch.name || "channel",
+            status: ch.status === "connected" ? "ok" as const : ch.status === "stopped" ? "unknown" as const : "warning" as const,
+            latency_ms: null,
+          }));
+          setMonitors(mons);
         }
       })
       .catch(() => {});
 
-    // Load skills count
-    api
-      .listSkills()
-      .then((skills: any) => {
-        if (Array.isArray(skills)) {
-          setStats((s) => ({ ...s, skills: skills.length }));
-        }
-      })
-      .catch(() => {});
-
-    // Load version for uptime display
-    api
-      .getVersion()
-      .then((v: any) => {
-        if (v?.version) {
-          setStats((s) => ({ ...s, uptime: `v${v.version}` }));
-        }
-      })
-      .catch(() => {});
+    // Agents list
+    const fetchAgents = async () => {
+      try {
+        const config = await api.getAgentRunningConfig();
+        const agentList: AgentInfo[] = [
+          {
+            id: "prowlrbot",
+            name: "ProwlrBot",
+            status: "online",
+            model: (config as any)?.model || "Auto-detect",
+            description: "Main agent",
+            icon: "\u{26A1}",
+            color: "#22c55e",
+          },
+        ];
+        setAgents(agentList);
+      } catch {
+        setAgents([
+          {
+            id: "prowlrbot",
+            name: "ProwlrBot",
+            status: "online",
+            model: "Auto-detect",
+            description: "Main agent",
+            icon: "\u{26A1}",
+            color: "#22c55e",
+          },
+        ]);
+      }
+    };
+    fetchAgents();
   }, []);
 
-  // WebSocket connection for real-time events
+  // Re-fetch cost data when period changes
+  useEffect(() => {
+    getCostOverTime(costDays).then(setCostData).catch(() => {});
+  }, [costDays]);
+
+  // ── WebSocket for live feed ──
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws/dashboard?session_id=dashboard`;
@@ -157,22 +296,25 @@ export default function Dashboard() {
             const data = JSON.parse(msg.data);
             if (data.type === "ping") return;
 
-            const meta = EVENT_ICON_MAP[data.type] || {
-              icon: "\u{1F4E1}",
-              bg: "var(--pb-bg-sunken)",
+            const style = EVENT_STYLE[data.type] || {
+              tag: data.type,
+              color: "#94a3b8",
+              tagBg: "rgba(148,163,184,0.15)",
             };
+
             const event: ActivityEvent = {
               id: Date.now() + Math.random(),
               type: data.type,
               text: formatEventText(data),
               time: new Date().toISOString(),
-              icon: meta.icon,
-              color: meta.bg,
+              tag: style.tag,
+              color: style.color,
+              tagBg: style.tagBg,
             };
 
             setActivities((prev) => [event, ...prev].slice(0, 50));
           } catch {
-            // ignore parse errors
+            // ignore
           }
         };
       } catch {
@@ -181,280 +323,446 @@ export default function Dashboard() {
     }
 
     connect();
-
     return () => {
       clearTimeout(retryTimer);
       if (ws) ws.close();
     };
   }, []);
 
-  function formatEventText(data: any): string {
-    switch (data.type) {
-      case "tool_call":
-        return `Tool: ${data.data?.tool || "unknown"} ${data.data?.command ? `— ${data.data.command}` : ""}`;
-      case "reasoning":
-        return `Agent reasoning: ${(data.data?.text || "").slice(0, 80)}...`;
-      case "task_update":
-        return `Task ${data.data?.status || "updated"}: ${data.data?.name || ""}`;
-      case "monitor_alert":
-        return `Alert: ${data.data?.alert || data.data?.message || ""}`;
-      case "agent_status":
-        return `Agent ${data.data?.status || "status change"}`;
-      default:
-        return `${data.type}: ${JSON.stringify(data.data || {}).slice(0, 60)}`;
-    }
-  }
+  // ── Derived values ──
+  const systemStatus = health?.status === "healthy" ? "green" : "red";
+  const modelEntries = Object.entries(models).sort(([, a], [, b]) => b.total_cost - a.total_cost);
+  const xpProgress = levelData
+    ? Math.min(100, Math.round((levelData.total_xp / levelData.xp_for_next) * 100))
+    : 0;
+  const isCompact = density === "compact";
 
-  // ── Stat Cards ──
-  const statCards = [
-    {
-      icon: <Bot size={22} />,
-      bg: "var(--pb-tint-blue)",
-      iconColor: "var(--pb-icon-blue)",
-      value: stats.agents,
-      label: "Active Agents",
-    },
-    {
-      icon: <Wifi size={22} />,
-      bg: "var(--pb-tint-green)",
-      iconColor: "var(--pb-icon-green)",
-      value: stats.channels,
-      label: "Channels",
-    },
-    {
-      icon: <Sparkles size={22} />,
-      bg: "var(--pb-tint-orange)",
-      iconColor: "var(--pb-icon-orange)",
-      value: stats.skills,
-      label: "Skills",
-    },
-    {
-      icon: <Shield size={22} />,
-      bg: "var(--pb-tint-purple)",
-      iconColor: "var(--pb-icon-purple)",
-      value: stats.uptime,
-      label: "Version",
-    },
-  ];
-
-  // ── Quick Actions ──
-  const quickActions = [
-    {
-      icon: <Plus size={16} />,
-      bg: "var(--pb-tint-blue)",
-      label: "New Agent",
-      onClick: () => navigate("/agent-config"),
-    },
-    {
-      icon: <MessageSquare size={16} />,
-      bg: "var(--pb-tint-green)",
-      label: "Open Chat",
-      onClick: () => navigate("/chat"),
-    },
-    {
-      icon: <Layers size={16} />,
-      bg: "var(--pb-tint-orange)",
-      label: "Manage Skills",
-      onClick: () => navigate("/skills"),
-    },
-    {
-      icon: <Globe size={16} />,
-      bg: "var(--pb-tint-purple)",
-      label: "Channels",
-      onClick: () => navigate("/channels"),
-    },
-  ];
-
-  return (
-    <div className={styles.dashboard}>
-      {/* ── Stats Row ── */}
-      <div className={styles.statsRow}>
-        {statCards.map((card, i) => (
-          <div key={i} className={styles.statCard}>
-            <div
-              className={styles.statIcon}
-              style={{ background: card.bg, color: card.iconColor }}
-            >
-              {card.icon}
-            </div>
-            <div className={styles.statInfo}>
-              <div className={styles.statValue}>{card.value}</div>
-              <div className={styles.statLabel}>{card.label}</div>
-            </div>
+  // ── Chart tooltip ──
+  const ChartTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload?.length) return null;
+    return (
+      <div
+        style={{
+          background: "#181b1f",
+          border: "1px solid #2c3235",
+          borderRadius: 4,
+          padding: "8px 12px",
+          fontSize: 11,
+        }}
+      >
+        <div style={{ color: "#9da5b4", marginBottom: 4 }}>{label}</div>
+        {payload.map((p: any) => (
+          <div key={p.dataKey} style={{ color: p.color }}>
+            {p.dataKey === "cost" ? formatCost(p.value) : formatTokens(p.value)}
           </div>
         ))}
       </div>
+    );
+  };
 
-      {/* ── Main Grid ── */}
-      <div className={styles.mainGrid}>
-        {/* ── Left: Agents Panel ── */}
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelTitle}>
-              <Bot size={16} /> Your Agents
-            </span>
-            <Button
-              type="text"
-              size="small"
-              icon={<Plus size={14} />}
-              onClick={() => navigate("/agent-config")}
-            >
-              Add
-            </Button>
+  return (
+    <div className={styles.dashboard}>
+      {/* ── Top Bar ── */}
+      <div className={styles.topbar}>
+        <div className={styles.topbarLeft}>
+          <div className={styles.topbarLogo}>P</div>
+          <div>
+            <div className={styles.topbarTitle}>ProwlrBot</div>
+            <div className={styles.topbarBreadcrumb}>
+              Dashboard / Overview
+              {health ? ` \u00b7 ${health.uptime_formatted || ""}` : ""}
+            </div>
           </div>
-
-          {agents.length === 0 ? (
-            <div className={styles.emptyState}>
-              <Bot size={40} strokeWidth={1} />
-              <div className={styles.emptyText}>
-                No agents configured yet. Create one to get started!
-              </div>
-              <Button type="primary" onClick={() => navigate("/agent-config")}>
-                Create Agent
-              </Button>
+        </div>
+        <div className={styles.topbarRight}>
+          <div
+            className={`${styles.badge} ${systemStatus === "green" ? styles.badgeGreen : styles.badgeRed}`}
+          >
+            <span>\u25CF</span>
+            {systemStatus === "green" ? "ALL SYSTEMS GO" : "ISSUES DETECTED"}
+          </div>
+          <button className={styles.densityToggle} onClick={toggleDensity} title="Toggle density">
+            {isCompact ? <List size={12} /> : <LayoutGrid size={12} />}
+            {" "}
+            {isCompact ? "Compact" : "Visual"}
+          </button>
+          <div className={styles.topbarUser}>
+            <div>
+              <div className={styles.topbarName}>Nunu</div>
+              {levelData && (
+                <div className={styles.topbarLevel}>Lv. {levelData.level}</div>
+              )}
             </div>
-          ) : (
-            <div className={styles.agentGrid}>
-              {agents.map((agent) => (
-                <div
-                  key={agent.id}
-                  className={styles.agentCard}
-                  onClick={() => navigate("/chat")}
-                >
-                  <div
-                    className={styles.agentAvatar}
-                    style={{ background: agent.color }}
-                  >
-                    {AVATAR_EMOJI[agent.avatar] || AVATAR_EMOJI.robot}
-                  </div>
-                  <div className={styles.agentInfo}>
-                    <div className={styles.agentName}>{agent.name}</div>
-                    <div className={styles.agentMeta}>
-                      <span
-                        className={`${styles.agentStatus} ${
-                          agent.status === "online"
-                            ? styles.agentStatusOnline
-                            : agent.status === "idle"
-                              ? styles.agentStatusIdle
-                              : styles.agentStatusOffline
-                        }`}
-                      />
-                      {agent.status} &middot; {agent.model}
-                    </div>
-                    <div className={styles.agentTags}>
-                      {agent.skills.slice(0, 3).map((s) => (
-                        <span key={s} className={styles.agentTag}>
-                          {s}
-                        </span>
-                      ))}
-                      {agent.skills.length > 3 && (
-                        <span className={styles.agentTag}>
-                          +{agent.skills.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className={styles.topbarAvatar}>N</div>
+          </div>
+        </div>
+      </div>
 
-              {/* Add Agent card */}
-              <div
-                className={styles.agentCard}
-                onClick={() => navigate("/agent-config")}
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderStyle: "dashed",
-                  minHeight: 100,
-                  flexDirection: "column",
-                  gap: 8,
-                }}
-              >
-                <Plus size={24} color="var(--pb-text-disabled)" />
-                <span style={{ fontSize: 13, color: "var(--pb-text-tertiary)" }}>
-                  Add Agent
-                </span>
-              </div>
+      {/* ── Dashboard Grid ── */}
+      <div className={styles.grid}>
+        {/* ── Row 1: Stat Panels ── */}
+        <div className={`${styles.panel} ${styles.col1}`}>
+          <div className={styles.statPanel}>
+            <div className={styles.statValue} style={{ color: "var(--pb-dash-stat-queries)" }}>
+              {summary?.total_queries ?? "—"}
             </div>
-          )}
+            <div className={styles.statLabel}>Queries Today</div>
+            {!isCompact && (
+              <div className={`${styles.statDelta} ${styles.deltaUp}`}>{"\u25B2"} active</div>
+            )}
+          </div>
         </div>
 
-        {/* ── Right Sidebar ── */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {/* Quick Actions */}
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelTitle}>
-                <Zap size={16} /> Quick Actions
-              </span>
+        <div className={`${styles.panel} ${styles.col1}`}>
+          <div className={styles.statPanel}>
+            <div className={styles.statValue} style={{ color: "var(--pb-dash-stat-cost)" }}>
+              {summary ? formatCost(summary.total_cost) : "—"}
             </div>
-            <div className={styles.quickActions}>
-              {quickActions.map((action, i) => (
-                <div
-                  key={i}
-                  className={styles.quickAction}
-                  onClick={action.onClick}
-                >
-                  <div
-                    className={styles.quickActionIcon}
-                    style={{ background: action.bg }}
-                  >
-                    {action.icon}
-                  </div>
-                  <span className={styles.quickActionLabel}>
-                    {action.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <div className={styles.statLabel}>Cost Today</div>
+            {!isCompact && (
+              <div className={`${styles.statDelta} ${styles.deltaNeutral}`}>
+                {summary?.avg_latency_ms ? `${Math.round(summary.avg_latency_ms)}ms avg` : "—"}
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* Activity Feed */}
-          <div className={styles.panel} style={{ flex: 1, minHeight: 0 }}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelTitle}>
-                <Activity size={16} /> Activity Feed
-                {wsConnected && (
-                  <span
-                    className={`${styles.healthDot} ${styles.healthGreen}`}
-                    style={{ marginLeft: 4 }}
-                  />
-                )}
-              </span>
-              <span style={{ fontSize: 11, color: "var(--pb-text-disabled)" }}>
-                {wsConnected ? "Live" : "Connecting..."}
-              </span>
+        <div className={`${styles.panel} ${styles.col1}`}>
+          <div className={styles.statPanel}>
+            <div className={styles.statValue} style={{ color: "var(--pb-dash-stat-agents)" }}>
+              {agents.length || "—"}
             </div>
-            <div className={styles.panelBody}>
-              {activities.length === 0 ? (
-                <div className={styles.emptyState} style={{ padding: "20px 0" }}>
-                  <Eye size={28} strokeWidth={1} />
-                  <div className={styles.emptyText} style={{ fontSize: 12 }}>
-                    Watching for events...
-                    <br />
-                    Activity will appear here in real-time
-                  </div>
-                </div>
-              ) : (
-                activities.map((event) => (
-                  <div key={event.id} className={styles.activityItem}>
+            <div className={styles.statLabel}>Active Agents</div>
+            {!isCompact && (
+              <div className={`${styles.statDelta} ${styles.deltaNeutral}`}>
+                {health?.mcp_servers ? `${health.mcp_servers} MCP` : ""}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className={`${styles.panel} ${styles.col1}`}>
+          <div className={styles.statPanel}>
+            <div className={styles.statValue} style={{ color: "var(--pb-dash-stat-tokens)" }}>
+              {summary ? formatTokens(summary.total_tokens) : "—"}
+            </div>
+            <div className={styles.statLabel}>Tokens Used</div>
+            {!isCompact && costData.length > 0 && (
+              <div className={styles.statSpark}>
+                {costData.slice(-7).map((d, i) => {
+                  const max = Math.max(...costData.slice(-7).map((x) => x.tokens || 1));
+                  const h = Math.max(10, ((d.tokens || 0) / max) * 100);
+                  return (
                     <div
-                      className={styles.activityIcon}
-                      style={{ background: event.color }}
-                    >
-                      {event.icon}
-                    </div>
-                    <div className={styles.activityContent}>
-                      <div className={styles.activityText}>{event.text}</div>
-                      <div className={styles.activityTime}>
-                        {timeAgo(event.time)}
-                      </div>
-                    </div>
-                  </div>
-                ))
+                      key={i}
+                      className={styles.sparkBar}
+                      style={{
+                        height: `${h}%`,
+                        background:
+                          i === costData.slice(-7).length - 1
+                            ? "var(--pb-dash-chart-secondary)"
+                            : undefined,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Row 2: Cost Chart (3 cols) + Agents (1 col) ── */}
+        {!isCompact && (
+          <div className={`${styles.panel} ${styles.col3}`}>
+            <div className={styles.panelHeader}>
+              <div className={styles.panelTitle}>Cost &amp; Usage</div>
+              <div className={styles.panelActions}>
+                {[7, 30, 90].map((d) => (
+                  <span
+                    key={d}
+                    className={`${styles.panelAction} ${costDays === d ? styles.panelActionActive : ""}`}
+                    onClick={() => setCostDays(d)}
+                  >
+                    {d}d
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className={styles.panelBody} style={{ height: 180 }}>
+              {costData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={costData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                    <CartesianGrid stroke="#2c3235" strokeDasharray="4 4" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: "#6e7681", fontSize: 10 }}
+                      axisLine={{ stroke: "#2c3235" }}
+                      tickLine={false}
+                      tickFormatter={(v) => {
+                        const d = new Date(v);
+                        return `${d.getMonth() + 1}/${d.getDate()}`;
+                      }}
+                    />
+                    <YAxis
+                      tick={{ fill: "#6e7681", fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v) => `$${v}`}
+                    />
+                    <Tooltip content={<ChartTooltip />} />
+                    <defs>
+                      <linearGradient id="costGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <Area
+                      type="monotone"
+                      dataKey="cost"
+                      stroke="#6366f1"
+                      strokeWidth={2}
+                      fill="url(#costGrad)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className={styles.emptyState}>No cost data yet — usage will appear here</div>
               )}
             </div>
           </div>
+        )}
+
+        <div className={`${styles.panel} ${styles.col1}`}>
+          <div className={styles.panelHeader}>
+            <div className={styles.panelTitle}>Agents</div>
+            <span
+              className={styles.panelAction}
+              onClick={() => navigate("/agent-config")}
+            >
+              Manage {"\u2192"}
+            </span>
+          </div>
+          <div className={styles.panelBody}>
+            {agents.map((agent) => (
+              <div key={agent.id} className={styles.agentRow}>
+                <div
+                  className={styles.agentAvatar}
+                  style={{ color: agent.color }}
+                >
+                  {agent.icon}
+                </div>
+                <div className={styles.agentInfo}>
+                  <div className={styles.agentName}>{agent.name}</div>
+                  <div className={styles.agentDesc}>
+                    {agent.description} &bull; {agent.model}
+                  </div>
+                </div>
+                <div
+                  className={styles.agentStatus}
+                  style={{
+                    background:
+                      agent.status === "online"
+                        ? "var(--pb-dash-stat-cost)"
+                        : "var(--pb-dash-text-dim)",
+                  }}
+                  title={agent.status}
+                />
+              </div>
+            ))}
+
+            {/* XP / Level */}
+            {levelData && (
+              <div className={styles.xpSection}>
+                <div className={styles.xpHeader}>
+                  <span className={styles.xpLevel}>Lv. {levelData.level}</span>
+                  <span className={styles.xpTitle}>{levelData.title || "Operator"}</span>
+                </div>
+                <div className={styles.xpBarBg}>
+                  <div className={styles.xpBarFill} style={{ width: `${xpProgress}%` }} />
+                </div>
+                <div className={styles.xpBarLabel}>
+                  <span>{levelData.total_xp} XP</span>
+                  <span>{levelData.xp_for_next} XP</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Row 3: Live Feed + Monitors + Quick Actions / Notifs ── */}
+        <div
+          className={`${styles.panel} ${isCompact ? styles.col2 : styles.col2}`}
+          style={{ maxHeight: isCompact ? 200 : 320 }}
+        >
+          <div className={styles.panelHeader}>
+            <div className={styles.panelTitle} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              Live Feed
+              {wsConnected && <span className={styles.liveDot} />}
+            </div>
+            <span style={{ fontSize: 10, color: wsConnected ? "#22c55e" : "#6e7681" }}>
+              {wsConnected ? "LIVE" : "CONNECTING..."}
+            </span>
+          </div>
+          <div className={`${styles.panelBody} ${styles.panelScroll}`}>
+            {activities.length === 0 ? (
+              <div className={styles.emptyState}>
+                Watching for events... Activity will appear in real-time
+              </div>
+            ) : (
+              activities.map((event) => (
+                <div key={event.id} className={styles.feedItem}>
+                  <div className={styles.feedDot} style={{ background: event.color }} />
+                  <div style={{ flex: 1 }}>
+                    <div className={styles.feedText}>{event.text}</div>
+                    <span
+                      className={styles.feedTag}
+                      style={{ background: event.tagBg, color: event.color }}
+                    >
+                      {event.tag}
+                    </span>
+                  </div>
+                  <div className={styles.feedTime}>{timeAgo(event.time)}</div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Monitors + Model Breakdown */}
+        <div className={`${styles.panel} ${styles.col1}`}>
+          <div className={styles.panelHeader}>
+            <div className={styles.panelTitle}>Monitors</div>
+          </div>
+          <div className={styles.panelBody}>
+            {monitors.length > 0 ? (
+              <div className={styles.monitorGrid}>
+                {monitors.map((m) => (
+                  <div key={m.id} className={styles.monitorItem}>
+                    <div
+                      className={styles.monitorDot}
+                      style={{
+                        background:
+                          m.status === "ok"
+                            ? "var(--pb-dash-monitor-ok)"
+                            : m.status === "warning"
+                              ? "var(--pb-dash-monitor-warn)"
+                              : m.status === "down"
+                                ? "var(--pb-dash-monitor-down)"
+                                : "var(--pb-dash-monitor-off)",
+                      }}
+                    />
+                    <div className={styles.monitorLatency}>
+                      {m.latency_ms != null ? `${m.latency_ms}ms` : "\u2014"}
+                    </div>
+                    <div className={styles.monitorName}>{m.name}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>No monitors configured</div>
+            )}
+
+            {/* Model cost breakdown */}
+            {modelEntries.length > 0 && (
+              <div style={{ marginTop: 12, paddingTop: 8, borderTop: "1px solid var(--pb-dash-border)" }}>
+                <div
+                  style={{
+                    fontSize: 10,
+                    color: "var(--pb-dash-text-dim)",
+                    textTransform: "uppercase" as const,
+                    letterSpacing: 0.5,
+                    marginBottom: 6,
+                  }}
+                >
+                  Model Breakdown
+                </div>
+                {modelEntries.slice(0, 5).map(([name, stats]) => (
+                  <div key={name} className={styles.modelRow}>
+                    <span className={styles.modelName}>{name}</span>
+                    <span className={styles.modelCost}>{formatCost(stats.total_cost)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions + Notifications + Achievements */}
+        <div className={`${styles.panel} ${styles.col1}`}>
+          <div className={styles.panelHeader}>
+            <div className={styles.panelTitle}>Quick Launch</div>
+          </div>
+          <div className={styles.panelBody}>
+            <button
+              className={`${styles.actionBtn} ${styles.actionPrimary}`}
+              onClick={() => navigate("/chat")}
+            >
+              <Zap size={14} /> New Chat
+            </button>
+            <button
+              className={`${styles.actionBtn} ${styles.actionSecondary}`}
+              onClick={() => navigate("/warroom")}
+            >
+              <Swords size={14} /> War Room
+            </button>
+            <button
+              className={`${styles.actionBtn} ${styles.actionSecondary}`}
+              onClick={() => navigate("/marketplace")}
+            >
+              <Store size={14} /> Marketplace
+            </button>
+            <button
+              className={`${styles.actionBtn} ${styles.actionSecondary}`}
+              onClick={() => navigate("/analytics")}
+            >
+              <BarChart3 size={14} /> Analytics
+            </button>
+          </div>
+
+          {/* Notifications */}
+          <div className={styles.panelHeader}>
+            <div className={styles.panelTitle}>Notifications</div>
+            {unreadCount > 0 && (
+              <span className={styles.alertBadge}>{unreadCount}</span>
+            )}
+          </div>
+          <div className={`${styles.panelBody} ${styles.panelScroll}`} style={{ maxHeight: 140 }}>
+            {notifications.length > 0 ? (
+              notifications.map((n) => (
+                <div key={n.id} className={styles.notifRow}>
+                  <span className={styles.notifIcon}>{n.icon || "\u{1F514}"}</span>
+                  <span className={styles.notifText}>{n.title || n.message}</span>
+                  <span className={styles.notifTime}>{timeAgo(n.timestamp)}</span>
+                </div>
+              ))
+            ) : (
+              <div className={styles.emptyState}>No notifications</div>
+            )}
+          </div>
+
+          {/* Achievements */}
+          {achievements.length > 0 && (
+            <div style={{ padding: "8px 12px", borderTop: "1px solid var(--pb-dash-border)" }}>
+              <div
+                style={{
+                  fontSize: 10,
+                  color: "var(--pb-dash-text-dim)",
+                  textTransform: "uppercase" as const,
+                  letterSpacing: 0.5,
+                  marginBottom: 6,
+                }}
+              >
+                Achievements
+              </div>
+              <div>
+                {achievements.map((a) => (
+                  <span key={a.id} className={styles.achievementPill}>
+                    {a.icon} {a.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

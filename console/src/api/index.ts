@@ -30,6 +30,8 @@ export * from "./modules/replay";
 export * from "./modules/health";
 export * from "./modules/leaderboard";
 export * from "./modules/externalAgents";
+export * from "./modules/analytics";
+export * from "./modules/credits";
 
 export const api = {
   // Root
