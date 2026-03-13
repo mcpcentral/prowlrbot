@@ -53,20 +53,20 @@ export default function StatusLine() {
     <div
       style={{
         height: 30,
-        background: "var(--pb-bg-elevated, #141414)",
-        borderTop: "1px solid var(--pb-border, #303030)",
+        background: "var(--pb-bg-elevated)",
+        borderTop: "1px solid var(--pb-border)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 16px",
         fontSize: 11,
-        color: "var(--pb-text-secondary, #888)",
+        color: "var(--pb-text-secondary)",
         flexShrink: 0,
         userSelect: "none",
       }}
     >
       <Space size={8}>
-        <span style={{ color: active ? "#52c41a" : "#ff4d4f", fontSize: 8 }}>●</span>
+        <span style={{ color: active ? "var(--pb-status-success)" : "var(--pb-status-error)", fontSize: 8 }}>●</span>
         <span>ProwlrBot</span>
       </Space>
       <span>Autonomy: {AUTONOMY_LABELS[autonomy] ?? autonomy}</span>

@@ -132,7 +132,7 @@ export function MarkdownCopy({
       padding: 16,
       height: "100%",
       overflow: "auto",
-      backgroundColor: "#fff",
+      backgroundColor: "var(--pb-bg-card)",
       borderRadius: 6,
       ...markdownViewerProps.style,
     },

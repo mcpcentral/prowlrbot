@@ -83,7 +83,7 @@ export default function Header({ selectedKey }: HeaderProps) {
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={["click"]}>
             <Avatar
               icon={<UserOutlined />}
-              style={{ cursor: "pointer", backgroundColor: "var(--prowlrbot-primary, #1677ff)" }}
+              style={{ cursor: "pointer", backgroundColor: "var(--pb-brand-primary)" }}
             />
           </Dropdown>
         )}
