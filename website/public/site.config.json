@@ -2,5 +2,6 @@
   "projectName": "ProwlrBot",
   "projectTaglineEn": "Always watching. Always ready.",
   "repoUrl": "https://github.com/prowlrbot/prowlrbot",
-  "docsPath": "/docs/"
+  "docsPath": "/docs/",
+  "consoleUrl": "https://prowlrbot.fly.dev"
 }

@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { loadSiteConfig, type SiteConfig } from "./config";
+import { useAuthEnabled } from "./contexts/AuthContext";
 import { type Lang, t } from "./i18n";
 import { Home } from "./pages/Home";
 import { Docs } from "./pages/Docs";
 import { Blog } from "./pages/Blog";
 import { Marketplace } from "./pages/Marketplace";
 import { Pricing } from "./pages/Pricing";
+import { SignInPage } from "./pages/SignIn";
+import { SignUpPage } from "./pages/SignUp";
+import { SignInSsoCallbackPage } from "./pages/SignInSsoCallback";
 import { AgentGreeting } from "./components/AgentGreeting";
 import "./index.css";
 
@@ -42,6 +46,8 @@ export default function App() {
     localStorage.setItem(THEME_KEY, next);
   };
 
+  const authEnabled = useAuthEnabled();
+
   if (!config) {
     return (
       <div
@@ -75,6 +81,46 @@ export default function App() {
       <Route path="/blog" element={<Blog config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
       <Route path="/blog/:slug" element={<Blog config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
       <Route path="/pricing" element={<Pricing config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
+      <Route
+        path="/sign-in"
+        element={
+          authEnabled ? (
+            <SignInPage config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+      <Route
+        path="/sign-in/sso-callback"
+        element={
+          authEnabled ? (
+            <SignInSsoCallbackPage />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+      <Route
+        path="/sign-up"
+        element={
+          authEnabled ? (
+            <SignUpPage config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+      <Route
+        path="/sign-up/sso-callback"
+        element={
+          authEnabled ? (
+            <SignInSsoCallbackPage />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
     </Routes>
     </>
   );

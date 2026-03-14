@@ -18,7 +18,7 @@ if _sentry_dsn:
         ),
     )
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -420,7 +420,7 @@ from ..protocols.a2a_server import router as a2a_router
 app.include_router(a2a_router, dependencies=[Depends(auth_dep)])
 
 # --- ROAR Protocol (unified agent communication) ---
-from ..protocols.roar import AgentIdentity
+from ..protocols.roar import AgentCard, AgentIdentity
 from ..protocols.sdk import ROARServer, create_roar_router
 
 _roar_identity = AgentIdentity(
@@ -434,6 +434,31 @@ roar_server = ROARServer(
     skills=["code", "monitor", "chat", "mcp", "a2a"],
     channels=["console", "discord", "telegram"],
 )
+
+# Public ROAR endpoints (no auth) so health checks and discovery work
+@app.get("/roar/health", tags=["roar"])
+def _roar_health() -> dict:
+    """ROAR protocol health check. Used by Fly and external agents."""
+    return {"status": "ok", "protocol": "roar/1.0"}
+
+
+@app.get("/roar/card", tags=["roar"])
+def _roar_card(request: Request) -> dict:
+    """Return this agent's ROAR card for discovery (identity, endpoints)."""
+    base = str(request.base_url).rstrip("/")
+    card = AgentCard(
+        identity=roar_server.identity,
+        description=roar_server._description,
+        skills=roar_server._skills,
+        channels=roar_server._channels,
+        endpoints={
+            "http": f"{base}/roar/message",
+            "websocket": f"{base}/roar/ws",
+            "events": f"{base}/roar/events",
+        },
+    )
+    return card.model_dump(by_alias=True)
+
 app.include_router(create_roar_router(roar_server), dependencies=[Depends(auth_dep)])
 
 # Wire EXECUTE and DELEGATE intents through AgentRunner
@@ -528,6 +553,13 @@ if os.path.isdir(_CONSOLE_STATIC_DIR):
 
     @app.get("/{full_path:path}")
     def _console_spa(full_path: str):
+        # Never serve SPA for API/protocol paths (let them 404 if not registered)
+        if full_path.startswith(("api/", "roar/", "ws/")) or full_path in (
+            "roar",
+            "api",
+            "ws",
+        ):
+            raise HTTPException(status_code=404, detail="Not Found")
         if _CONSOLE_INDEX and _CONSOLE_INDEX.exists():
             return FileResponse(_CONSOLE_INDEX)
 

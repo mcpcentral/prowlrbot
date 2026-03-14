@@ -90,6 +90,7 @@ CLAUDE.md
 
 # Local / agent-only (do not commit)
 docs/plans/local/
+docs/local/
 **/*.local.md
 *.local.md
 .local/

@@ -145,6 +145,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
   const navigate = useNavigate();
+  const consoleUrl = config.consoleUrl ?? "https://prowlrbot.fly.dev";
+  const creditsUrl = `${consoleUrl.replace(/\/$/, "")}/credits`;
   return (
     <div
       style={{
@@ -346,41 +348,77 @@ export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
                   ))}
                 </ul>
 
-                <button
-                  type="button"
-                  className={`pricing-cta pricing-cta--${tier.ctaStyle}`}
-                  style={{
-                    width: "100%",
-                    padding: "0.6875rem 1rem",
-                    fontSize: "0.9375rem",
-                    fontWeight: 700,
-                    borderRadius: "0.5rem",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    border:
-                      tier.ctaStyle === "primary"
-                        ? "none"
-                        : "1px solid var(--border)",
-                    background:
-                      tier.ctaStyle === "primary"
-                        ? "var(--accent)"
-                        : "transparent",
-                    color:
-                      tier.ctaStyle === "primary"
-                        ? "var(--bg)"
-                        : "var(--text-muted)",
-                  }}
-                  onClick={() => {
-                    const hero = document.querySelector(".hero-section");
-                    if (hero) {
-                      hero.scrollIntoView({ behavior: "smooth" });
-                    } else {
-                      navigate("/");
-                    }
-                  }}
-                >
-                  {tier.cta}
-                </button>
+                {tier.name === "Free" ? (
+                  <button
+                    type="button"
+                    className={`pricing-cta pricing-cta--${tier.ctaStyle}`}
+                    style={{
+                      width: "100%",
+                      padding: "0.6875rem 1rem",
+                      fontSize: "0.9375rem",
+                      fontWeight: 700,
+                      borderRadius: "0.5rem",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      border:
+                        tier.ctaStyle === "primary"
+                          ? "none"
+                          : "1px solid var(--border)",
+                      background:
+                        tier.ctaStyle === "primary"
+                          ? "var(--accent)"
+                          : "transparent",
+                      color:
+                        tier.ctaStyle === "primary"
+                          ? "var(--bg)"
+                          : "var(--text-muted)",
+                    }}
+                    onClick={() => {
+                      const hero = document.querySelector(".hero-section");
+                      if (hero) {
+                        hero.scrollIntoView({ behavior: "smooth" });
+                      } else {
+                        navigate("/");
+                      }
+                    }}
+                  >
+                    {tier.cta}
+                  </button>
+                ) : (
+                  <a
+                    href={creditsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`pricing-cta pricing-cta--${tier.ctaStyle}`}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      padding: "0.6875rem 1rem",
+                      fontSize: "0.9375rem",
+                      fontWeight: 700,
+                      borderRadius: "0.5rem",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      border:
+                        tier.ctaStyle === "primary"
+                          ? "none"
+                          : "1px solid var(--border)",
+                      background:
+                        tier.ctaStyle === "primary"
+                          ? "var(--accent)"
+                          : "transparent",
+                      color:
+                        tier.ctaStyle === "primary"
+                          ? "var(--bg)"
+                          : "var(--text-muted)",
+                      textAlign: "center",
+                      textDecoration: "none",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    {tier.cta}
+                  </a>
+                )}
               </div>
             );
           })}

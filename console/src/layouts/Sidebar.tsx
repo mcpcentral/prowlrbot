@@ -291,35 +291,40 @@ export default function Sidebar({ selectedKey, plugins = [] }: SidebarProps) {
           alignItems: "center",
           justifyContent: "flex-start",
           flexWrap: "wrap",
-          padding: "12px 24px",
+          padding: "12px 12px",
           fontWeight: 600,
           gap: 8,
+          width: "100%",
+          boxSizing: "border-box",
         }}
       >
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-start",
-            flexWrap: "wrap",
-            minWidth: 250,
-            minHeight: 60,
-            padding: "8px 12px",
+            justifyContent: "center",
+            width: "100%",
+            maxWidth: "100%",
+            minHeight: 48,
+            padding: "6px 10px",
             backgroundColor: "rgb(255, 255, 255)",
             border: "1px solid rgba(0, 0, 0, 0.12)",
             borderRadius: 8,
             boxShadow: "0px 4px 12px 0px rgba(0, 0, 0, 0.15)",
-            overflow: "visible",
+            overflow: "hidden",
+            boxSizing: "border-box",
           }}
         >
           <img
             src="/logo.png"
             alt="ProwlrBot"
             style={{
-              width: "250px",
-              height: "60px",
+              maxWidth: "100%",
+              width: "auto",
+              height: "36px",
               display: "block",
               objectFit: "contain",
+              objectPosition: "center",
             }}
           />
         </div>

@@ -4,6 +4,8 @@ export interface SiteConfig {
   projectTaglineZh: string;
   repoUrl: string;
   docsPath: string;
+  /** Base URL of the ProwlrBot app (console). Used for Pricing "Upgrade" links. */
+  consoleUrl?: string;
 }
 
 const defaultConfig: SiteConfig = {
@@ -12,6 +14,7 @@ const defaultConfig: SiteConfig = {
   projectTaglineZh: "Always watching. Always ready.",
   repoUrl: "https://github.com/prowlrbot/prowlrbot",
   docsPath: "/docs/",
+  consoleUrl: "https://prowlrbot.fly.dev",
 };
 
 let cached: SiteConfig | null = null;

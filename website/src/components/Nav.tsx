@@ -1,7 +1,51 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, BookOpen, Github, Newspaper, Sun, Moon, Store, DollarSign } from "lucide-react";
+import { UserButton, useUser } from "@clerk/react";
+import { useAuthEnabled } from "../contexts/AuthContext";
 import { t, type Lang } from "../i18n";
+
+function NavAuthClerk({ onNavigate }: { onNavigate?: () => void }) {
+  const { isSignedIn } = useUser();
+  if (isSignedIn) {
+    return (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <UserButton />
+      </div>
+    );
+  }
+  return (
+    <>
+      <Link
+        to="/sign-in"
+        className="nav-item"
+        style={{ fontSize: "0.875rem", fontWeight: 500 }}
+        onClick={onNavigate}
+      >
+        Log in
+      </Link>
+      <Link
+        to="/sign-up"
+        className="nav-signup-btn"
+        style={{
+          padding: "0.5rem 1rem",
+          fontSize: "0.8125rem",
+          fontWeight: 700,
+          color: "var(--bg)",
+          background: "var(--accent)",
+          border: "none",
+          borderRadius: "0.375rem",
+          textDecoration: "none",
+          transition: "all 0.2s ease",
+          whiteSpace: "nowrap",
+        }}
+        onClick={onNavigate}
+      >
+        Sign up
+      </Link>
+    </>
+  );
+}
 
 interface NavProps {
   projectName: string;
@@ -24,6 +68,7 @@ export function Nav({
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
+  const authEnabled = useAuthEnabled();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -191,34 +236,38 @@ export function Nav({
               <Sun size={18} strokeWidth={1.5} aria-hidden />
             )}
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              const hero = document.querySelector('.hero-section');
-              if (hero) {
-                hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                setTimeout(() => {
-                  const input = hero.querySelector('input[type="email"]');
-                  if (input) (input as HTMLElement).focus();
-                }, 600);
-              }
-            }}
-            className="nav-signup-btn"
-            style={{
-              padding: "0.5rem 1rem",
-              fontSize: "0.8125rem",
-              fontWeight: 700,
-              color: "var(--bg)",
-              background: "var(--accent)",
-              border: "none",
-              borderRadius: "0.375rem",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Get Early Access
-          </button>
+          {authEnabled ? (
+            <NavAuthClerk />
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                const hero = document.querySelector('.hero-section');
+                if (hero) {
+                  hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  setTimeout(() => {
+                    const input = hero.querySelector('input[type="email"]');
+                    if (input) (input as HTMLElement).focus();
+                  }, 600);
+                }
+              }}
+              className="nav-signup-btn"
+              style={{
+                padding: "0.5rem 1rem",
+                fontSize: "0.8125rem",
+                fontWeight: 700,
+                color: "var(--bg)",
+                background: "var(--accent)",
+                border: "none",
+                borderRadius: "0.375rem",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Get Early Access
+            </button>
+          )}
         </div>
 
         <button
@@ -348,34 +397,40 @@ export function Nav({
             <><Sun size={18} /> Light mode</>
           )}
         </button>
-        <button
-          type="button"
-          onClick={() => {
-            setOpen(false);
-            const hero = document.querySelector('.hero-section');
-            if (hero) {
-              hero.scrollIntoView({ behavior: 'smooth' });
-              setTimeout(() => {
-                const form = hero.querySelector('input[type="email"]');
-                if (form) (form as HTMLElement).focus();
-              }, 500);
-            }
-          }}
-          style={{
-            marginTop: "var(--space-1)",
-            padding: "0.625rem 1.25rem",
-            fontSize: "0.875rem",
-            fontWeight: 700,
-            color: "var(--bg)",
-            background: "var(--accent)",
-            border: "none",
-            borderRadius: "0.375rem",
-            cursor: "pointer",
-            textAlign: "center",
-          }}
-        >
-          Get Early Access
-        </button>
+        {authEnabled ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", marginTop: "var(--space-1)" }}>
+            <NavAuthClerk onNavigate={() => setOpen(false)} />
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              const hero = document.querySelector('.hero-section');
+              if (hero) {
+                hero.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => {
+                  const form = hero.querySelector('input[type="email"]');
+                  if (form) (form as HTMLElement).focus();
+                }, 500);
+              }
+            }}
+            style={{
+              marginTop: "var(--space-1)",
+              padding: "0.625rem 1.25rem",
+              fontSize: "0.875rem",
+              fontWeight: 700,
+              color: "var(--bg)",
+              background: "var(--accent)",
+              border: "none",
+              borderRadius: "0.375rem",
+              cursor: "pointer",
+              textAlign: "center",
+            }}
+          >
+            Get Early Access
+          </button>
+        )}
       </div>
 
       <style>{`
