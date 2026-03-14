@@ -17,19 +17,6 @@
       "env": {
         "JDOCMUNCH_SHARE_SAVINGS": "1"
       }
-    },
-    "prowlr-hub": {
-      "command": "/usr/local/bin/python3",
-      "args": [
-        "-m",
-        "prowlrbot.hub"
-      ],
-      "cwd": "/Users/nunu/prowlrbot/prowlrbot",
-      "env": {
-        "PYTHONPATH": "/Users/nunu/prowlrbot/prowlrbot/src",
-        "PROWLR_AGENT_NAME": "prowlr",
-        "PROWLR_CAPABILITIES": "code,design,review,architecture"
-      }
     }
   }
 }

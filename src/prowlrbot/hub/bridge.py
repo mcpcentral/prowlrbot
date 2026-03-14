@@ -21,6 +21,7 @@ import asyncio
 import hmac
 import logging
 import os
+from contextlib import asynccontextmanager
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -219,10 +220,43 @@ def create_bridge_app() -> FastAPI:
         enabled=not bool(os.environ.get("PROWLR_NO_RATE_LIMIT")),
     )
 
+    db_path = os.environ.get("PROWLR_HUB_DB", None)
+    engine = WarRoomEngine(db_path)
+    engine.get_or_create_default_room()
+
+    _sweep_interval_sec = 60
+    _sweep_ttl_minutes = 5
+
+    async def _sweep_loop():
+        while True:
+            await asyncio.sleep(_sweep_interval_sec)
+            try:
+                await asyncio.to_thread(engine.sweep_dead_agents, _sweep_ttl_minutes)
+            except Exception as e:
+                logger.warning("Sweep dead agents failed: %s", e)
+
+    @asynccontextmanager
+    async def _lifespan(app: FastAPI):
+        sweep_task = asyncio.create_task(_sweep_loop())
+        logger.info(
+            "Dead agent sweep started (every %ds, TTL %d min)",
+            _sweep_interval_sec,
+            _sweep_ttl_minutes,
+        )
+        try:
+            yield
+        finally:
+            sweep_task.cancel()
+            try:
+                await sweep_task
+            except asyncio.CancelledError:
+                pass
+
     app = FastAPI(
         title="ProwlrHub Bridge",
         version="1.0.0",
         dependencies=[Depends(verify_auth)],
+        lifespan=_lifespan,
     )
     app.state.limiter = limiter
 
@@ -242,11 +276,6 @@ def create_bridge_app() -> FastAPI:
         allow_headers=["Content-Type", "Authorization"],
         allow_credentials=False,
     )
-    db_path = os.environ.get("PROWLR_HUB_DB", None)
-    engine = WarRoomEngine(db_path)
-
-    # Ensure default room exists
-    engine.get_or_create_default_room()
 
     # Wire engine events → WebSocket broadcast
     def _on_engine_event(event: dict):
@@ -268,15 +297,20 @@ def create_bridge_app() -> FastAPI:
         """Standalone war room status page."""
         return STATUS_HTML
 
+    def _active_agents_only(agents: list) -> list:
+        """Filter to agents that are not disconnected (for display/counts)."""
+        return [a for a in agents if a.get("status") != "disconnected"]
+
     @app.get("/health")
     def health():
         room = engine.get_or_create_default_room()
-        agents = engine.get_agents(room["room_id"])
+        all_agents = engine.get_agents(room["room_id"])
+        agents_active = _active_agents_only(all_agents)
         tasks = engine.get_mission_board(room["room_id"])
         return {
             "status": "ok",
             "room_id": room["room_id"],
-            "agents": len(agents),
+            "agents": len(agents_active),
             "tasks": len(tasks),
         }
 
@@ -379,9 +413,12 @@ def create_bridge_app() -> FastAPI:
 
     @app.get("/agents")
     @limiter.limit("60/minute")
-    def get_agents(request: Request):
+    def get_agents(request: Request, include_disconnected: bool = False):
         room = engine.get_or_create_default_room()
-        return {"agents": engine.get_agents(room["room_id"])}
+        agents = engine.get_agents(room["room_id"])
+        if not include_disconnected:
+            agents = _active_agents_only(agents)
+        return {"agents": agents}
 
     @app.post("/broadcast/{agent_id}")
     @limiter.limit("20/minute")
@@ -419,9 +456,12 @@ def create_bridge_app() -> FastAPI:
 
     @app.get("/api/agents")
     @limiter.limit("60/minute")
-    def api_agents(request: Request):
+    def api_agents(request: Request, include_disconnected: bool = False):
         room = engine.get_or_create_default_room()
-        return engine.get_agents(room["room_id"])
+        agents = engine.get_agents(room["room_id"])
+        if not include_disconnected:
+            agents = _active_agents_only(agents)
+        return agents
 
     @app.get("/api/board")
     @limiter.limit("60/minute")

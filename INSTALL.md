@@ -172,7 +172,8 @@ You are connected to ProwlrHub. Before any work:
 
 | Problem | Fix |
 |---------|-----|
-| "No module named prowlrbot" | `PYTHONPATH` must point to `prowlrbot/src/` |
+| "prowlr-hub exists in multiple scopes" | Remove from one scope: `claude mcp remove prowlr-hub -s project` then re-add with `-s local` (no `-c`). See [War Room MCP debug](docs/guides/war-room-mcp-debug.md). |
+| "No module named prowlrbot" | `PYTHONPATH` must point to `prowlrbot/src/` (e.g. `/home/anon/dev/prowlrbot/src`). No `-c` flag for `claude mcp add` — run from repo dir or use absolute path in env. |
 | Tools not appearing | Restart Claude Code fully, check `claude mcp list` |
 | "Database is locked" | Kill stale processes: `ps aux \| grep prowlrbot.hub` |
 | Bridge connection refused | Check bridge is running: `curl http://HOST:8099/health` |
@@ -185,6 +186,7 @@ You are connected to ProwlrHub. Before any work:
 
 ## Links
 
+- [War Room MCP debug](docs/guides/war-room-mcp-debug.md) — Fix duplicate scopes, wrong PYTHONPATH, `-c` errors
 - [Cross-Network Setup Guide](docs/guides/cross-network-setup.md) — Tailscale, Cloudflare, ngrok, SSH tunnels
 - [War Room Protocol](src/prowlrbot/hub/SKILL.md) — The 7 Iron Rules
 - [Hub Architecture](src/prowlrbot/hub/README.md) — Database schema, bridge API, developer guide
