@@ -70,6 +70,10 @@ There are a lot of AI chatbots. ProwlrBot is not a chatbot.
 ## 🚀 Quick Start
 
 ```bash
+# 0. Set up venv 
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+
 # 1. Install the package
 pip install prowlrbot
 
