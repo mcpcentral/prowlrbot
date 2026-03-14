@@ -36,11 +36,9 @@ async def health_check(request: Request) -> Dict[str, Any]:
     # Cron status
     cron_info: Dict[str, Any] = {"active_jobs": 0}
     cron_manager = getattr(request.app.state, "cron_manager", None)
-    if cron_manager:
+    if cron_manager and hasattr(cron_manager, "list_jobs"):
         try:
-            jobs = (
-                cron_manager.list_jobs() if hasattr(cron_manager, "list_jobs") else []
-            )
+            jobs = await cron_manager.list_jobs()
             cron_info["active_jobs"] = len(jobs) if jobs else 0
         except Exception:
             pass
