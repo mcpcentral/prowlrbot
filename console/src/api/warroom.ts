@@ -61,8 +61,9 @@ export const warroom = {
   health: () => request<{ status: string; agents: number; tasks: number }>("/warroom/health"),
 };
 
+/** Bridge may send flat { type, timestamp, agent_id?, task_id?, ... } without event_id or nested payload. */
 export function connectWarRoomWS(
-  onEvent: (event: WarRoomEvent) => void,
+  onEvent: (event: WarRoomEvent | Record<string, unknown>) => void,
   onStatus: (connected: boolean) => void,
 ): () => void {
   // Connect to same origin — no CORS issues
@@ -102,7 +103,7 @@ export function connectWarRoomWS(
       try {
         const data = JSON.parse(e.data);
         if (data.type && data.type !== "keepalive") {
-          onEvent(data as WarRoomEvent);
+          onEvent(data);
         }
       } catch {
         // Ignore non-JSON messages (like "pong")

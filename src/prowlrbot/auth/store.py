@@ -214,6 +214,19 @@ class UserStore:
         self.update_last_login(user.id)
         return self.get_user_by_id(user.id)
 
+    def update_password(self, username: str, new_password: str) -> bool:
+        """Set a new password for the user with the given username. Returns True if updated."""
+        user = self.get_user_by_username(username)
+        if user is None:
+            return False
+        hashed = _hash_password(new_password)
+        self._conn.execute(
+            "UPDATE users SET hashed_password = ? WHERE id = ?",
+            (hashed, user.id),
+        )
+        self._conn.commit()
+        return True
+
     # ------------------------------------------------------------------
     # OAuth identity linking
     # ------------------------------------------------------------------

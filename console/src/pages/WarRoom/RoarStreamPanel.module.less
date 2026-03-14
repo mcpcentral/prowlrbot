@@ -1,0 +1,99 @@
+.container {
+  background: var(--pb-bg-card);
+  border: 1px solid var(--pb-border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.title {
+  color: var(--pb-accent-teal);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--pb-accent-purple);
+  color: var(--pb-bg-page);
+  font-weight: 700;
+}
+
+.connected {
+  font-size: 10px;
+  color: var(--pb-status-success);
+}
+
+.disconnected {
+  font-size: 10px;
+  color: var(--pb-text-tertiary);
+}
+
+.list {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.empty {
+  color: var(--pb-text-tertiary);
+  font-size: 11px;
+  font-style: italic;
+  padding: 16px 0;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  background: var(--pb-bg-hover);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.time {
+  color: var(--pb-text-tertiary);
+  min-width: 52px;
+  font-variant-numeric: tabular-nums;
+}
+
+.type {
+  color: var(--pb-accent-purple);
+  flex-shrink: 0;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.source {
+  color: var(--pb-text-secondary);
+  flex-shrink: 0;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data {
+  color: var(--pb-text-secondary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -38,6 +38,7 @@ _record("..config.utils", time.perf_counter() - _t)
 
 _t = time.perf_counter()
 from .app_cmd import app_cmd  # noqa: E402
+from .auth_cmd import set_admin_password_cmd  # noqa: E402
 
 _record(".app_cmd", time.perf_counter() - _t)
 
@@ -185,6 +186,7 @@ def cli(ctx: click.Context, host: str | None, port: int | None) -> None:
 
 
 cli.add_command(app_cmd)
+cli.add_command(set_admin_password_cmd)
 cli.add_command(channels_group)
 cli.add_command(chats_group)
 cli.add_command(clean_cmd)

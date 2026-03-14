@@ -7,10 +7,18 @@ declare const TOKEN: string;
  * @returns Full API URL (e.g., "http://localhost:8088/api/models" or "/api/models")
  */
 export function getApiUrl(path: string): string {
-  const base = BASE_URL || "";
+  const base = typeof BASE_URL !== "undefined" ? BASE_URL : "";
   const apiPrefix = "/api";
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   return `${base}${apiPrefix}${normalizedPath}`;
+}
+
+/**
+ * ROAR protocol SSE stream URL (same origin; Vite proxies /roar to backend).
+ */
+export function getRoarEventsUrl(): string {
+  const base = typeof BASE_URL !== "undefined" ? BASE_URL : "";
+  return `${base}/roar/events`;
 }
 
 /**

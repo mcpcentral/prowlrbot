@@ -21,6 +21,7 @@ repos:
       - id: fix-encoding-pragma
         exclude: '.*/skills/.*'
       - id: detect-private-key
+        exclude: '^\.env\.example$'
       - id: trailing-whitespace
         exclude: '.*/skills/.*'
   - repo: https://github.com/asottile/add-trailing-comma

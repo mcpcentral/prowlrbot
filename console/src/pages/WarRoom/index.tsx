@@ -7,14 +7,32 @@ import AgentCards from "./AgentCards";
 import LiveFeed from "./LiveFeed";
 import FindingsWall from "./FindingsWall";
 import MetricsPanel from "./MetricsPanel";
+import AgentDetailDrawer from "./AgentDetailDrawer";
+import RoarStreamPanel from "./RoarStreamPanel";
 
 function TaskDetailDrawer({
   task,
+  events,
+  agents,
   onClose,
 }: {
   task: Task | null;
+  events: WarRoomEvent[];
+  agents: Agent[];
   onClose: () => void;
 }) {
+  const taskEvents = task
+    ? events
+        .filter((e) => e.task_id === task.task_id)
+        .sort(
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+        )
+        .slice(0, 30)
+    : [];
+
+  const agentNames = new Map(agents.map((a) => [a.agent_id, a.name]));
+
   if (!task) return null;
 
   return (
@@ -172,6 +190,45 @@ function TaskDetailDrawer({
             </span>
           )}
         </div>
+
+        {taskEvents.length > 0 && (
+          <div>
+            <div style={{ color: "var(--pb-text-secondary)", fontSize: 11, textTransform: "uppercase", marginBottom: 8 }}>
+              Timeline
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 200, overflowY: "auto" }}>
+              {taskEvents.map((ev) => (
+                <div
+                  key={ev.event_id}
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "flex-start",
+                    padding: "6px 8px",
+                    background: "var(--pb-bg-hover)",
+                    borderRadius: 4,
+                    fontSize: 12,
+                  }}
+                >
+                  <span style={{ color: "var(--pb-text-tertiary)", fontSize: 10, flexShrink: 0 }}>
+                    {new Date(ev.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                  </span>
+                  <span style={{ color: "var(--pb-accent-teal)", fontSize: 10, flexShrink: 0 }}>
+                    {ev.type}
+                  </span>
+                  <span style={{ color: "var(--pb-text-secondary)", flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {String(ev.payload?.message ?? ev.payload?.note ?? ev.payload?.reason ?? ev.type)}
+                  </span>
+                  {ev.agent_id && (
+                    <span style={{ color: "var(--pb-text-tertiary)", fontSize: 10 }}>
+                      {agentNames.get(ev.agent_id) ?? ev.agent_id.slice(0, 8)}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </Drawer>
   );
@@ -186,6 +243,7 @@ export default function WarRoomPage() {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const refresh = useCallback(async () => {
@@ -208,26 +266,46 @@ export default function WarRoomPage() {
     }
   }, []);
 
+  // Merge a single WebSocket event into state so the feed updates instantly.
+  // Bridge sends flat { type, timestamp, agent_id?, task_id?, ... } (no nested payload).
+  const appendLiveEvent = useCallback((raw: WarRoomEvent | Record<string, unknown>) => {
+    const r = raw as Record<string, unknown>;
+    if (!r.type || r.type === "keepalive") return;
+    // Already a full WarRoomEvent (e.g. from replay)
+    if (typeof r.event_id === "string" && r.payload !== undefined) {
+      setEvents((prev) => [raw as WarRoomEvent, ...prev].slice(0, 500));
+      refresh();
+      return;
+    }
+    const eventId = `ws-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const { type, timestamp, agent_id, task_id, ...rest } = r;
+    const warRoomEvent: WarRoomEvent = {
+      event_id: eventId,
+      type: String(type),
+      agent_id: (agent_id as string) ?? null,
+      task_id: (task_id as string) ?? null,
+      payload: typeof rest === "object" && rest !== null ? (rest as Record<string, unknown>) : {},
+      timestamp: typeof timestamp === "string" ? timestamp : new Date().toISOString(),
+    };
+    setEvents((prev) => [warRoomEvent, ...prev].slice(0, 500));
+    refresh();
+  }, [refresh]);
+
   useEffect(() => {
     refresh();
 
-    // WebSocket for real-time updates
     const disconnect = connectWarRoomWS(
-      () => {
-        // On any event, refresh all data
-        refresh();
-      },
+      appendLiveEvent,
       (status) => setConnected(status),
     );
 
-    // Fallback polling every 10s
     pollRef.current = setInterval(refresh, 10000);
 
     return () => {
       disconnect();
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [refresh]);
+  }, [refresh, appendLiveEvent]);
 
   const handleTaskSelect = useCallback((task: Task) => {
     setSelectedTask(task);
@@ -328,7 +406,11 @@ export default function WarRoomPage() {
 
       {/* Agent Cards */}
       <div style={{ marginBottom: 16 }}>
-        <AgentCards agents={agents} tasks={tasks} />
+        <AgentCards
+          agents={agents}
+          tasks={tasks}
+          onAgentSelect={(a) => setSelectedAgent(a)}
+        />
       </div>
 
       {/* Metrics */}
@@ -347,10 +429,25 @@ export default function WarRoomPage() {
         <FindingsWall findings={findings} agents={agents} />
       </div>
 
+      {/* ROAR protocol stream (when backend exposes /roar/events) */}
+      <div style={{ marginTop: 16 }}>
+        <RoarStreamPanel />
+      </div>
+
       {/* Task Detail Drawer */}
       <TaskDetailDrawer
         task={selectedTask}
+        events={events}
+        agents={agents}
         onClose={() => setSelectedTask(null)}
+      />
+
+      {/* Agent Detail Drawer */}
+      <AgentDetailDrawer
+        agent={selectedAgent}
+        tasks={tasks}
+        events={events}
+        onClose={() => setSelectedAgent(null)}
       />
     </div>
   );

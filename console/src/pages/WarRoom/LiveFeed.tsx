@@ -55,6 +55,75 @@ function formatTime(ts: string): string {
   }
 }
 
+function EventRow({
+  event,
+  agentLabel,
+  desc,
+  isBroadcast,
+  tagColor,
+  formatTime: fmt,
+}: {
+  event: WarRoomEvent;
+  agentLabel: string;
+  desc: string;
+  isBroadcast: boolean;
+  tagColor: string;
+  formatTime: (ts: string) => string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const hasPayload = Object.keys(event.payload || {}).length > 0;
+
+  if (isBroadcast && (event.payload?.message || desc)) {
+    return (
+      <div
+        className={styles.broadcastBubble}
+        onClick={() => setExpanded((e) => !e)}
+      >
+        <div className={styles.broadcastHeader}>
+          <span className={styles.broadcastTime}>{fmt(event.timestamp)}</span>
+          <span className={styles.broadcastAgent}>{agentLabel}</span>
+        </div>
+        <div className={styles.broadcastMessage}>
+          {String(event.payload?.message ?? desc)}
+        </div>
+        {expanded && hasPayload && (
+          <pre className={styles.broadcastPayload}>
+            {JSON.stringify(event.payload, null, 2)}
+          </pre>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.eventRowWrap}>
+      <div
+        className={styles.eventRow}
+        onClick={() => hasPayload && setExpanded((e) => !e)}
+      >
+        <span className={styles.eventTime}>{fmt(event.timestamp)}</span>
+        <Tag color={tagColor} style={{ fontSize: 10, margin: 0 }}>
+          {event.type.split(".").pop()}
+        </Tag>
+        <span className={styles.eventAgent}>
+          {agentLabel}
+          {event.task_id ? ` \u2192 ${event.task_id.slice(0, 12)}` : ""}
+        </span>
+        {desc && (
+          <span className={styles.eventPayload} title={desc}>
+            {desc}
+          </span>
+        )}
+      </div>
+      {expanded && hasPayload && (
+        <div className={styles.eventPayloadExpand}>
+          <pre>{JSON.stringify(event.payload, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function extractDescription(event: WarRoomEvent): string {
   const payload = event.payload;
   if (payload?.message) return String(payload.message);
@@ -142,28 +211,18 @@ export default function LiveFeed({ events, agents }: LiveFeedProps) {
           const agentLabel =
             agentNames.get(event.agent_id || "") ||
             (event.agent_id ? event.agent_id.slice(0, 12) : "system");
+          const isBroadcast = event.type === "agent.broadcast";
 
           return (
-            <div key={event.event_id} className={styles.eventRow}>
-              <span className={styles.eventTime}>
-                {formatTime(event.timestamp)}
-              </span>
-              <Tag
-                color={EVENT_COLORS[event.type] || "default"}
-                style={{ fontSize: 10, margin: 0 }}
-              >
-                {event.type.split(".").pop()}
-              </Tag>
-              <span className={styles.eventAgent}>
-                {agentLabel}
-                {event.task_id ? ` \u2192 ${event.task_id.slice(0, 12)}` : ""}
-              </span>
-              {desc && (
-                <span className={styles.eventPayload} title={desc}>
-                  {desc}
-                </span>
-              )}
-            </div>
+            <EventRow
+              key={event.event_id}
+              event={event}
+              agentLabel={agentLabel}
+              desc={desc}
+              isBroadcast={isBroadcast}
+              tagColor={EVENT_COLORS[event.type] || "default"}
+              formatTime={formatTime}
+            />
           );
         })}
       </div>

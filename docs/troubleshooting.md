@@ -117,9 +117,37 @@ prowlr --version
 lsof -i :8088    # macOS/Linux
 netstat -ano | findstr :8088    # Windows
 
+# Set alias 
+alias ports="ss -tlnp | grep"
+
+# If it’s an old prowlr app:
+
+pkill -f "uvicorn.*prowlrbot.app._app"
+
 # Kill it or use a different port
 prowlr app --port 8089
 ```
+Then start again:
+
+```bash
+prowlr app
+```
+
+---
+
+### Deprecation warnings and log noise when running `prowlr app`
+
+**What you see:**
+- `DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated` (from uvicorn/websockets)
+- `PydanticDeprecatedSince20` in `nacos/naming/model/service.py` (from a dependency)
+- `Vector search disabled` (memory manager — optional embedding config)
+- `reme.core` INFO lines (memory/embedding library loading `.env` and config)
+
+**Why:** These come from **dependencies** (uvicorn, websockets, nacos, reme), not from ProwlrBot’s own code. They are harmless; the app runs normally.
+
+**What we do:** The `prowlr app` command installs warning filters at startup so the websockets and Pydantic deprecation messages are suppressed by default. If you still see them (e.g. from a different entry point), you can run `PYTHONWARNINGS=ignore::DeprecationWarning prowlr app`.
+
+To enable vector search and remove that warning, set in `.env`: `EMBEDDING_API_KEY`, `EMBEDDING_BASE_URL`, `EMBEDDING_MODEL_NAME`, and `EMBEDDING_DIMENSIONS` (see memory/embedding docs).
 
 ---
 
@@ -182,6 +210,47 @@ npm run build
 # Restart the server
 prowlr app
 ```
+
+---
+
+### Local model 'X' not found (e.g. kimi-k2.5:cloud)
+
+**Symptoms:**
+- `ValueError: Local model 'kimi-k2.5:cloud' not found. Download it first with 'prowlr models download'.`
+- Or similar for another model ID
+
+**Cause:** Previously the app treated **Ollama** (including Ollama’s `:cloud` proxy models) as a manifest local provider (llama.cpp/MLX). That is fixed: Ollama is now routed to the daemon. If you still see this, the active provider is llama.cpp/MLX with a model ID you haven’t downloaded.
+
+**Fix:**
+
+1. **Ollama models** (e.g. `kimi-k2.5:cloud`, `deepseek-v3.1:671b-cloud` from `ollama list`): Ensure Ollama is running (`ollama serve`) and in Settings → Models choose provider **Ollama** and the model name. No extra step needed after the fix.
+
+2. **If the active provider is llama.cpp or MLX** but the model ID isn't one you downloaded: either download a model and set it, or switch provider:
+   - Cloud: `prowlr models set-llm aliyun-codingplan kimi-k2.5` (set that provider's API key)
+   - Local: `prowlr models download <repo_id>` then `prowlr models set-llm llamacpp <model_id>`
+   - Other: `prowlr models set-llm anthropic claude-sonnet-4-6` (or openai, groq, etc.)
+
+---
+
+### Commit blocked: "DANGER .env file(s)" or "grep: unrecognized option"
+
+**Symptoms:**
+- After staging changes, a hook or tool reports: `XX DANGER: .env file(s) about to be committed!` and points at `.env.example`, or suggests `git reset HEAD .env.example`.
+- Or: `grep: unrecognized option '-----BEGIN.*PRIVATE KEY-----'`.
+
+**Cause:**
+- **.env warning:** Some commit hooks (e.g. Cursor’s safe-commit or a global git hook) treat any filename containing `.env` as dangerous. **`.env.example` is a template and is safe to commit**; the repo’s `.gitignore` already excludes real `.env` and keeps `.env.example` trackable.
+- **grep error:** A script is calling `grep` with a pattern that starts with `-`, so grep treats it as an option. That often comes from a global or IDE hook, not from this repo’s pre-commit (our `detect-private-key` is Python-based).
+
+**Fix:**
+
+1. **To commit including `.env.example`:** If the blocker cannot be configured to allow `.env.example`, you can commit with hooks skipped for this one commit:  
+   `git commit --no-verify -m "your message"`  
+   Only do this when you are sure no real secrets are staged (e.g. only `.env.example` and code).
+
+2. **To fix the grep error:** Find the hook or script that runs `grep` with a private-key pattern (e.g. in `~/.config/git/hooks`, Cursor settings, or another global hook). Change it to use `grep -e '-----BEGIN.*PRIVATE KEY-----'` or `grep -- '...'` so the pattern is not interpreted as options.
+
+3. **Pre-commit in this repo:** We exclude `.env.example` from the `detect-private-key` hook so the in-repo pre-commit does not treat it as a key file.
 
 ---
 

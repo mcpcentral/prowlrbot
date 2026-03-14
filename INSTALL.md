@@ -127,6 +127,35 @@ Remote agents connect with `PROWLR_HUB_URL=http://<host_ip>:8099`.
 
 ---
 
+## Environment file and console login
+
+> Full details: [Environment file and console login](docs/guides/env-and-console-login.md).
+
+**Where `.env` belongs:** In the **project root** of the prowlrbot repo (same directory as `.env.example` and `pyproject.toml`). Do not commit `.env`; it is gitignored.
+
+**When it is loaded:** When you run `prowlr app` or `prowlr set-admin-password`, the CLI loads `.env` from the **current working directory**. Run those commands from the project root so the file is found.
+
+**Console admin login:** The first user is created from `PROWLRBOT_ADMIN_USERNAME` (default `admin`) and `PROWLRBOT_ADMIN_PASSWORD`. If you leave the password unset, the app generates a random one and prints it on first run. To use a fixed password:
+
+1. Create or edit `.env` in the project root and set:
+   ```bash
+   PROWLRBOT_ADMIN_USERNAME=admin
+   PROWLRBOT_ADMIN_PASSWORD=your-secure-password
+   ```
+2. If the admin user already exists (e.g. you ran the app before), update the stored password from `.env`:
+   ```bash
+   cd prowlrbot   # project root, where .env lives
+   prowlr set-admin-password
+   ```
+3. Start the app and log in to the console with that username and password:
+   ```bash
+   prowlr app
+   ```
+
+If you get **401 Invalid credentials**, the stored password does not match what you expect. Run `prowlr set-admin-password` from the project root (with `PROWLRBOT_ADMIN_PASSWORD` set in `.env`) to sync the stored password.
+
+---
+
 ## What You Get
 
 Once connected, every agent has these tools:
@@ -172,6 +201,7 @@ You are connected to ProwlrHub. Before any work:
 
 | Problem | Fix |
 |---------|-----|
+| 401 Invalid credentials (console login) | Put `PROWLRBOT_ADMIN_PASSWORD` in `.env` in the project root, then run from project root: `prowlr set-admin-password`. See [Environment file and console login](#environment-file-and-console-login). |
 | "prowlr-hub exists in multiple scopes" | Remove from one scope: `claude mcp remove prowlr-hub -s project` then re-add with `-s local` (no `-c`). See [War Room MCP debug](docs/guides/war-room-mcp-debug.md). |
 | "No module named prowlrbot" | `PYTHONPATH` must point to `prowlrbot/src/` (e.g. `/home/anon/dev/prowlrbot/src`). No `-c` flag for `claude mcp add` — run from repo dir or use absolute path in env. |
 | Tools not appearing | Restart Claude Code fully, check `claude mcp list` |
@@ -186,6 +216,7 @@ You are connected to ProwlrHub. Before any work:
 
 ## Links
 
+- [Environment file and console login](docs/guides/env-and-console-login.md) — Where `.env` goes, when it’s loaded, 401 fix
 - [War Room MCP debug](docs/guides/war-room-mcp-debug.md) — Fix duplicate scopes, wrong PYTHONPATH, `-c` errors
 - [Cross-Network Setup Guide](docs/guides/cross-network-setup.md) — Tailscale, Cloudflare, ngrok, SSH tunnels
 - [War Room Protocol](src/prowlrbot/hub/SKILL.md) — The 7 Iron Rules

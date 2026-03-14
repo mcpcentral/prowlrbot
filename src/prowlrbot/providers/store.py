@@ -390,9 +390,20 @@ def _resolve_slot(
     if not pid or not slot.model:
         return None
 
-    # Local providers don't need credentials or a providers.json entry
+    # Local providers: Ollama uses the daemon (remote path with base_url); llamacpp/mlx use manifest
     defn = PROVIDERS.get(pid)
     if defn is not None and defn.is_local:
+        if defn.id == "ollama":
+            # Ollama models (including :cloud proxy models) are served by the daemon
+            base_url, api_key = data.get_credentials(pid)
+            if not base_url and getattr(defn, "default_base_url", None):
+                base_url = defn.default_base_url
+            return ResolvedModelConfig(
+                model=slot.model,
+                base_url=base_url or "",
+                api_key=api_key or "",
+                is_local=False,
+            )
         return ResolvedModelConfig(
             model=slot.model,
             is_local=True,

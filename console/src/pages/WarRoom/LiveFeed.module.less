@@ -94,16 +94,23 @@
   font-style: italic;
 }
 
+.eventRowWrap {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--pb-border-light);
+  border-radius: 4px;
+  animation: slideIn 0.3s ease;
+}
+
 .eventRow {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 6px 4px;
-  border-bottom: 1px solid var(--pb-border-light);
   font-size: 12px;
-  animation: slideIn 0.3s ease;
   transition: background 0.1s ease;
   border-radius: 4px;
+  cursor: pointer;
 
   &:hover {
     background: var(--pb-bg-hover);
@@ -133,6 +140,75 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 120px;
+}
+
+.eventPayloadExpand {
+  margin-top: 0;
+  margin-left: 4px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  padding: 8px;
+  background: var(--pb-bg-card);
+  border-radius: 4px;
+  font-size: 10px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+
+  pre {
+    margin: 0;
+    color: var(--pb-text-secondary);
+  }
+}
+
+/* Broadcast = agent "talking" (speech bubble) */
+.broadcastBubble {
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: var(--pb-tint-cyan);
+  border-radius: 10px;
+  border-bottom-left-radius: 2px;
+  cursor: pointer;
+  animation: slideIn 0.3s ease;
+  max-width: 100%;
+}
+
+.broadcastHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.broadcastTime {
+  font-size: 10px;
+  color: var(--pb-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.broadcastAgent {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--pb-accent-teal);
+}
+
+.broadcastMessage {
+  font-size: 12px;
+  color: var(--pb-text-primary);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.broadcastPayload {
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: var(--pb-bg-card);
+  border-radius: 4px;
+  font-size: 10px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  color: var(--pb-text-secondary);
 }
 
 @keyframes slideIn {
