@@ -230,27 +230,6 @@ prowlr app
    - Local: `prowlr models download <repo_id>` then `prowlr models set-llm llamacpp <model_id>`
    - Other: `prowlr models set-llm anthropic claude-sonnet-4-6` (or openai, groq, etc.)
 
----
-
-### Commit blocked: "DANGER .env file(s)" or "grep: unrecognized option"
-
-**Symptoms:**
-- After staging changes, a hook or tool reports: `XX DANGER: .env file(s) about to be committed!` and points at `.env.example`, or suggests `git reset HEAD .env.example`.
-- Or: `grep: unrecognized option '-----BEGIN.*PRIVATE KEY-----'`.
-
-**Cause:**
-- **.env warning:** Some commit hooks (e.g. Cursor’s safe-commit or a global git hook) treat any filename containing `.env` as dangerous. **`.env.example` is a template and is safe to commit**; the repo’s `.gitignore` already excludes real `.env` and keeps `.env.example` trackable.
-- **grep error:** A script is calling `grep` with a pattern that starts with `-`, so grep treats it as an option. That often comes from a global or IDE hook, not from this repo’s pre-commit (our `detect-private-key` is Python-based).
-
-**Fix:**
-
-1. **To commit including `.env.example`:** If the blocker cannot be configured to allow `.env.example`, you can commit with hooks skipped for this one commit:  
-   `git commit --no-verify -m "your message"`  
-   Only do this when you are sure no real secrets are staged (e.g. only `.env.example` and code).
-
-2. **To fix the grep error:** Find the hook or script that runs `grep` with a private-key pattern (e.g. in `~/.config/git/hooks`, Cursor settings, or another global hook). Change it to use `grep -e '-----BEGIN.*PRIVATE KEY-----'` or `grep -- '...'` so the pattern is not interpreted as options.
-
-3. **Pre-commit in this repo:** We exclude `.env.example` from the `detect-private-key` hook so the in-repo pre-commit does not treat it as a key file.
 
 ---
 
