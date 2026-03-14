@@ -172,7 +172,7 @@ See [Cron Jobs & Automation Guide](cron-jobs.md) for examples.
 
 ## `prowlr monitor`
 
-Manage web/API monitors (stored in `~/.prowlrbot/monitors.json`).
+Manage web/API monitors. Config is read from `~/.prowlrbot/monitors.yaml`, `monitors.yml`, or `monitors.json` (first existing); `add`/`remove` write to `monitors.json`.
 
 ```bash
 prowlr monitor list

@@ -3,6 +3,7 @@
 
 import pytest
 import httpx
+from unittest.mock import patch
 
 from prowlrbot.monitor.detectors.web import WebDetector, _css_extract
 
@@ -32,6 +33,16 @@ class TestCssExtract:
 
 @pytest.mark.asyncio
 class TestWebDetector:
+    """WebDetector tests patch URL validation so mock transport is used (no real DNS)."""
+
+    @pytest.fixture(autouse=True)
+    def _allow_example_url(self):
+        with patch(
+            "prowlrbot.security.url_validator.validate_outbound_url",
+            return_value=(True, "OK"),
+        ):
+            yield
+
     async def test_detect_first_run(self):
         """First run should always report changed."""
         transport = httpx.MockTransport(

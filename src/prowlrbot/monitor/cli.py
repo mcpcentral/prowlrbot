@@ -13,18 +13,36 @@ from prowlrbot.constant import WORKING_DIR
 
 
 def _monitors_file() -> Path:
+    """Preferred monitors config file (YAML or JSON)."""
+    for name in ("monitors.yaml", "monitors.yml", "monitors.json"):
+        p = WORKING_DIR / name
+        if p.exists():
+            return p
     return WORKING_DIR / "monitors.json"
 
 
 def _load_monitors() -> list[dict]:
     f = _monitors_file()
-    if f.exists():
-        return json.loads(f.read_text())
+    if not f.exists():
+        return []
+    raw = f.read_text()
+    if f.suffix in (".yaml", ".yml"):
+        try:
+            import yaml
+            data = yaml.safe_load(raw)
+        except ImportError:
+            data = json.loads(raw)
+    else:
+        data = json.loads(raw)
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict) and "monitors" in data:
+        return data["monitors"]
     return []
 
 
 def _save_monitors(monitors: list[dict]) -> None:
-    f = _monitors_file()
+    f = WORKING_DIR / "monitors.json"
     f.parent.mkdir(parents=True, exist_ok=True)
     f.write_text(json.dumps(monitors, indent=2))
 

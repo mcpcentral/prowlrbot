@@ -873,10 +873,37 @@ def market_tiers():
 
 
 @market_group.command(name="upgrade")
-@click.argument("tier", type=click.Choice(["starter", "pro", "team"]))
+@click.argument(
+    "tier",
+    type=click.Choice(["starter", "pro", "team"], case_sensitive=False),
+)
 @click.option("--user", "-u", default="local", help="User ID")
-def market_upgrade(tier: str, user: str):
-    """Upgrade your subscription tier."""
+@click.option(
+    "--allow-local",
+    is_flag=True,
+    envvar="PROWLR_ALLOW_LOCAL_UPGRADE",
+    help="Allow CLI upgrade when Stripe is configured (default: only when Stripe is not set).",
+)
+def market_upgrade(tier: str, user: str, allow_local: bool):
+    """Upgrade your subscription tier.
+
+    When Stripe is configured (STRIPE_SECRET_KEY), upgrades must go through
+    the console or Stripe Checkout. Use --allow-local or PROWLR_ALLOW_LOCAL_UPGRADE=1
+    to allow CLI upgrade anyway (e.g. for dev).
+    """
+    import os
+
+    if os.environ.get("STRIPE_SECRET_KEY") and not allow_local:
+        click.echo(
+            "Stripe is configured. Use the console or Stripe Checkout to upgrade.",
+            err=True,
+        )
+        click.echo(
+            "To allow CLI upgrade anyway (e.g. dev): --allow-local or PROWLR_ALLOW_LOCAL_UPGRADE=1",
+            err=True,
+        )
+        raise SystemExit(1)
+
     store = _get_store()
     balance = store.get_balance(user)
     tier_prices = {"starter": 5, "pro": 15, "team": 29}

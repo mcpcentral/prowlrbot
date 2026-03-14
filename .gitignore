@@ -28,6 +28,7 @@ website/tsconfig.tsbuildinfo
 website/dist/
 
 # misc
+stripe
 .env
 .env.*
 providers.json

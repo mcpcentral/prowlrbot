@@ -2,6 +2,8 @@
 
 The ProwlrBot Marketplace is a community hub for sharing skills, channel adapters, agent blueprints, and workflow templates. Packages live in a GitHub registry and are indexed locally in `~/.prowlrbot/marketplace.db`.
 
+For **tiers, credits, and payments** (free tier, Stripe, monthly grants), see [Tiers and Payments](tiers-and-payments.md).
+
 ---
 
 ## Browsing and installing

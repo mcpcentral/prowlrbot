@@ -295,19 +295,40 @@ export default function Sidebar({ selectedKey, plugins = [] }: SidebarProps) {
     >
       <div
         style={{
-          height: 64,
+          minHeight: 64,
           display: "flex",
-          alignItems: "flex-end",
-          padding: "0 24px 10px",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          flexWrap: "wrap",
+          padding: "12px 24px",
           fontWeight: 600,
           gap: 8,
         }}
       >
-        <img
-          src="/logo.png"
-          alt="ProwlrBot"
-          style={{ height: 32, width: "auto" }}
-        />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            padding: "8px 12px",
+            backgroundColor: "rgba(255, 255, 255, 1)",
+            border: "1px solid rgba(0, 0, 0, 0.12)",
+            borderRadius: 8,
+            boxShadow: "0px 4px 12px 0px rgba(0, 0, 0, 0.15)",
+            overflow: "visible",
+          }}
+        >
+          <img
+            src="/logo.png"
+            alt="ProwlrBot"
+            style={{
+              width: 250,
+              height: 60,
+              display: "block",
+              objectFit: "contain",
+            }}
+          />
+        </div>
         {version && (
           <span
             style={{

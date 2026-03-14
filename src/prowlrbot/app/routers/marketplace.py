@@ -500,7 +500,8 @@ async def subscribe(
     """Create a Stripe Checkout Session for a monthly subscription tier.
 
     Returns ``{"checkout_url": "<stripe_url>"}`` on success.
-    The caller should redirect the user to ``checkout_url``.
+    When Stripe is not configured, returns ``{"checkout_url": null, "message": "..."}``
+    so the UI can show instructions (e.g. use CLI: prowlr market upgrade <tier>).
     """
     import os
 
@@ -509,7 +510,10 @@ async def subscribe(
 
     stripe_key = os.environ.get("STRIPE_SECRET_KEY")
     if not stripe_key:
-        raise HTTPException(status_code=503, detail="Stripe not configured")
+        return {
+            "checkout_url": None,
+            "message": "Stripe not configured. Set STRIPE_SECRET_KEY for paid upgrades, or use CLI: prowlr market upgrade <tier> for local tier changes.",
+        }
 
     # Derive fallback success/cancel URLs from the request origin when not provided.
     origin = str(request.base_url).rstrip("/")
@@ -787,8 +791,51 @@ async def stripe_webhook(request: Request) -> dict:
 
 @router.get("/credits/{user_id}", response_model=CreditBalance)
 async def get_credits(user_id: str) -> CreditBalance:
-    """Get a user's credit balance."""
+    """Get a user's credit balance. New users get welcome credits when PROWLR_FREE_TIER_WELCOME_CREDITS is set (default 100)."""
     return _get_store().get_balance(user_id)
+
+
+@router.post("/credits/{user_id}/grant-monthly", response_model=CreditBalance)
+async def grant_monthly_credits(user_id: str) -> CreditBalance:
+    """Grant monthly credits for the user's tier if at least 30 days since last grant.
+
+    Intended for cron (e.g. daily). Idempotent: only adds credits once per calendar month per user.
+    """
+    from ...marketplace.models import ProTier, PRO_TIER_LIMITS
+
+    store = _get_store()
+    balance = store.get_balance(user_id)
+    tier = getattr(ProTier, balance.tier, ProTier.free)
+    limits = PRO_TIER_LIMITS.get(tier, PRO_TIER_LIMITS[ProTier.free])
+    monthly = limits.get("monthly_credits", 0)
+    if monthly <= 0:
+        return balance
+
+    # Last monthly_grant transaction for this user
+    txns = store.get_transactions(user_id, limit=100)
+    from ...marketplace.models import CreditTransactionType
+
+    last_grant = None
+    for t in txns:
+        if t.transaction_type == CreditTransactionType.monthly_grant:
+            last_grant = t.created_at
+            break
+    if last_grant:
+        from datetime import datetime, timezone, timedelta
+
+        try:
+            dt = datetime.fromisoformat(last_grant.replace("Z", "+00:00"))
+            if (datetime.now(timezone.utc) - dt).days < 30:
+                return store.get_balance(user_id)
+        except Exception:
+            pass
+
+    return store.add_credits(
+        user_id=user_id,
+        amount=monthly,
+        transaction_type=CreditTransactionType.monthly_grant,
+        description=f"Monthly credit grant ({balance.tier} tier)",
+    )
 
 
 @router.get("/credits/{user_id}/transactions")

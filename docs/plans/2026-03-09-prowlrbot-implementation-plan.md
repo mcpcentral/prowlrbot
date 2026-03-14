@@ -832,13 +832,13 @@ Each agent gets the design doc context and works in its own worktree branch. Mer
 
 After all phases complete:
 
-- [ ] `prowlr --help` shows ProwlrBot branding
-- [ ] `prowlr init --defaults` creates `~/.prowlrbot/config.json`
-- [ ] `prowlr app` starts FastAPI on port 8088
-- [ ] Console loads with ProwlrBot branding at http://127.0.0.1:8088
-- [ ] `pytest tests/ -v` — all tests pass
-- [ ] No `copaw` references in user-facing output
-- [ ] Provider detection finds configured providers
-- [ ] Smart routing selects optimal provider
-- [ ] Monitoring engine can poll a web page for changes
-- [ ] Docker build succeeds
+- [x] `prowlr --help` shows ProwlrBot branding
+- [x] `prowlr init --defaults` creates `~/.prowlrbot/config.json`
+- [x] `prowlr app` starts FastAPI on port 8088
+- [x] Console loads with ProwlrBot branding at http://127.0.0.1:8088
+- [x] `pytest tests/ -v` — all tests pass
+- [x] No `copaw` references in user-facing output
+- [x] Provider detection finds configured providers
+- [x] Smart routing selects optimal provider
+- [x] Monitoring engine can poll a web page for changes
+- [x] Docker build succeeds

@@ -224,13 +224,13 @@ Target: `docker run prowlrbot` starts a working instance with zero config.
 
 ## 8. Success Criteria
 
-- [ ] `prowlr --help` works after rebrand
-- [ ] All existing tests pass with new package name
-- [ ] Console loads with ProwlrBot branding
-- [ ] Provider detection finds Anthropic + Z.ai from env vars
-- [ ] Smart routing selects best provider per request
-- [ ] Fallback chain activates on provider failure
-- [ ] Web monitor detects page changes and sends notifications
-- [ ] YAML config defines monitors declaratively
-- [ ] Docker deployment works with single command
-- [ ] No CoPaw references remain in user-facing surfaces
+- [x] `prowlr --help` works after rebrand
+- [x] All existing tests pass with new package name
+- [x] Console loads with ProwlrBot branding
+- [x] Provider detection finds Anthropic + Z.ai from env vars
+- [x] Smart routing selects best provider per request
+- [x] Fallback chain activates on provider failure
+- [x] Web monitor detects page changes and sends notifications
+- [x] YAML config defines monitors declaratively (monitors.yaml / monitors.yml in working dir)
+- [x] Docker deployment works with single command
+- [x] No CoPaw references remain in user-facing surfaces

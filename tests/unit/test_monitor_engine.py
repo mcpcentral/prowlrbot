@@ -3,6 +3,7 @@
 
 import asyncio
 import json
+from unittest.mock import patch
 
 import pytest
 import httpx
@@ -53,9 +54,6 @@ class TestMonitorEngine:
         )
         engine.add(config)
 
-        # Patch the detector to use our mock client
-        original = engine._make_detector
-
         def patched(cfg):
             from prowlrbot.monitor.detectors.web import WebDetector
 
@@ -67,7 +65,11 @@ class TestMonitorEngine:
 
         engine._make_detector = patched
 
-        result = await engine.run_once("web1")
+        with patch(
+            "prowlrbot.security.url_validator.validate_outbound_url",
+            return_value=(True, "OK"),
+        ):
+            result = await engine.run_once("web1")
         assert result.changed is True
         assert result.content == "Hello"
 
@@ -100,7 +102,11 @@ class TestMonitorEngine:
 
         engine._make_detector = patched
 
-        result = await engine.run_once("web1")
+        with patch(
+            "prowlrbot.security.url_validator.validate_outbound_url",
+            return_value=(True, "OK"),
+        ):
+            result = await engine.run_once("web1")
         assert result.changed is False
 
     @pytest.mark.asyncio
@@ -140,7 +146,11 @@ class TestMonitorEngine:
 
         engine._make_detector = patched
 
-        await engine.run_once("web1")
+        with patch(
+            "prowlrbot.security.url_validator.validate_outbound_url",
+            return_value=(True, "OK"),
+        ):
+            await engine.run_once("web1")
         assert len(notified) == 1
         assert notified[0]["name"] == "web1"
 

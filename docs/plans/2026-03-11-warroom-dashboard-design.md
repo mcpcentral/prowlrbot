@@ -378,13 +378,13 @@ On `SessionStart`, the learning engine:
 
 ## 8. Success Criteria
 
-- [ ] Statusline shows agent/task counts in Claude Code terminal within 10ms
-- [ ] Bridge status page loads at `http://host:8099/` without React build
-- [ ] Console `/warroom` renders kanban board with real-time updates
-- [ ] Drag-and-drop task management works
-- [ ] Agent cards show live status with pulse animation
+- [x] Statusline shows agent/task counts in Claude Code terminal within 10ms
+- [x] Bridge status page loads at `http://host:8099/` without React build
+- [x] Console `/warroom` renders kanban board with real-time updates
+- [x] Drag-and-drop task management works
+- [x] Agent cards show live status with pulse animation
 - [ ] Command palette opens with Cmd+K
-- [ ] Learning Engine captures corrections automatically via PostToolUse hook
+- [x] Learning Engine captures corrections automatically via PostToolUse hook
 - [ ] Learnings inject into SessionStart context (token-budgeted)
 - [ ] Free tier works without API key (no vector search)
-- [ ] All dark theme with ProwlrBot brand colors (#0a0a0f, #14b8a6)
+- [x] All dark theme with ProwlrBot brand colors (#0a0a0f, #14b8a6)

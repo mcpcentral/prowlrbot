@@ -15,6 +15,8 @@ def _escape_like(value: str) -> str:
     return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
+import os
+
 from .models import (
     Bundle,
     ConsolePluginManifest,
@@ -24,6 +26,8 @@ from .models import (
     InstallRecord,
     MarketplaceCategory,
     MarketplaceListing,
+    ProTier,
+    PRO_TIER_LIMITS,
     ReviewEntry,
     TipRecord,
 )
@@ -603,14 +607,22 @@ class MarketplaceStore:
         if row:
             return CreditBalance(**row)
         # Auto-create for new users
-        balance = CreditBalance(user_id=user_id)
         self._conn.execute(
             "INSERT INTO credit_balances (user_id, balance, total_earned, total_spent, tier) "
             "VALUES (?, ?, ?, ?, ?)",
             (user_id, 0, 0, 0, "free"),
         )
         self._conn.commit()
-        return balance
+        # Optional one-time welcome credits for free tier (set PROWLR_FREE_TIER_WELCOME_CREDITS to enable, e.g. 100)
+        welcome = int(os.environ.get("PROWLR_FREE_TIER_WELCOME_CREDITS", "0"))
+        if welcome > 0:
+            self.add_credits(
+                user_id=user_id,
+                amount=welcome,
+                transaction_type=CreditTransactionType.earned,
+                description="Welcome credits (free tier)",
+            )
+        return self.get_balance(user_id)
 
     def add_credits(
         self,

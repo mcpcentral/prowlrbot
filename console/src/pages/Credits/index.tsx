@@ -87,12 +87,15 @@ export default function CreditsPage() {
     if (!tierId) return;
     setUpgrading(tierName);
     try {
-      const data = await request<{ checkout_url: string }>(
+      const data = await request<{ checkout_url?: string | null; message?: string }>(
         `/marketplace/subscribe/${tierId}`,
         { method: "POST", body: JSON.stringify({ user_id: "default" }) }
       );
       if (data?.checkout_url) {
         window.location.href = data.checkout_url;
+      } else if (data?.message) {
+        // Stripe not configured: show CLI hint
+        console.info("Subscribe:", data.message);
       }
     } catch {
       // error handled by request helper
