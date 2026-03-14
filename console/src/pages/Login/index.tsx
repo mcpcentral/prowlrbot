@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Card, Divider, Form, Input, message, Tabs, Typography } from "antd";
 import {
   GithubOutlined,
@@ -20,6 +21,7 @@ const { Title, Text } = Typography;
 
 export default function LoginPage() {
   const { onLogin } = useAuth();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
   const [oauthProviders, setOauthProviders] = useState<string[]>([]);
@@ -52,6 +54,7 @@ export default function LoginPage() {
     try {
       const resp = await register(values.username, values.password, values.email);
       onLogin(resp.access_token);
+      navigate("/credits", { replace: true });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Registration failed";
       message.error(msg);

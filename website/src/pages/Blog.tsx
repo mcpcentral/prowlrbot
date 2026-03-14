@@ -408,6 +408,7 @@ export function Blog({ config, lang, theme, onThemeToggle }: BlogProps) {
         onThemeToggle={onThemeToggle}
         docsPath="/docs"
         repoUrl={config.repoUrl}
+        consoleUrl={config.consoleUrl}
       />
 
       <main

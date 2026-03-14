@@ -238,7 +238,13 @@ Humanized posts about what we're building, why it matters, and where we're heade
 |:---------|:-------------|
 | **[SECURITY.md](../SECURITY.md)** | Trust model, vulnerability reporting, security boundaries |
 | **[CONTRIBUTING.md](../CONTRIBUTING.md)** | Commit conventions, PR process, skill structure, how to add channels/providers |
-| **[DISCREPANCIES.md](DISCREPANCIES.md)** | CLAUDE.md accuracy audit — additions and corrections found in code |
+| **[DISCREPANCIES.md](plans/local/DISCREPANCIES.md)** | CLAUDE.md accuracy audit — additions and corrections found in code |
+
+### Plans (local)
+
+| Plan | What It Covers |
+|:-----|:---------------|
+| **[Website & app setup](plans/local/website-app-setup-plan.md)** | Connect site↔app, sign-up→credits, production hardening, workspace model, UX checklist |
 
 ---
 

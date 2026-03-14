@@ -163,6 +163,7 @@ export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
         onThemeToggle={onThemeToggle}
         docsPath="/docs"
         repoUrl={config.repoUrl}
+        consoleUrl={config.consoleUrl}
       />
 
       <main
@@ -201,6 +202,16 @@ export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
             }}
           >
             Start free. Scale when you&apos;re ready.
+          </p>
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "var(--text-muted)",
+              margin: "var(--space-2) 0 0",
+              lineHeight: 1.5,
+            }}
+          >
+            Sign up on the app to get free credits. You&apos;ll sign in to the app when upgrading.
           </p>
         </div>
 

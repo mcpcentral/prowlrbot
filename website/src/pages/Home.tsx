@@ -30,6 +30,7 @@ export function Home({ config, lang, theme, onThemeToggle }: HomeProps) {
         onThemeToggle={onThemeToggle}
         docsPath={config.docsPath}
         repoUrl={config.repoUrl}
+        consoleUrl={config.consoleUrl}
       />
       {/* Offset for fixed navbar */}
       <div style={{ paddingTop: "3.5rem" }} />
@@ -41,6 +42,7 @@ export function Home({ config, lang, theme, onThemeToggle }: HomeProps) {
           }
           lang={lang}
           docsPath={config.docsPath}
+          consoleUrl={config.consoleUrl}
         />
         <Features lang={lang} />
         <CompetitorComparison lang={lang} />

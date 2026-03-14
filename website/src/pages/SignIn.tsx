@@ -23,6 +23,7 @@ export function SignInPage({ config, lang, theme, onThemeToggle }: SignInProps) 
         onThemeToggle={onThemeToggle}
         docsPath={config.docsPath}
         repoUrl={config.repoUrl}
+        consoleUrl={config.consoleUrl}
       />
       <div style={{ paddingTop: "3.5rem" }} />
       <main

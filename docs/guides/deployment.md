@@ -4,6 +4,19 @@ How to run ProwlrBot in production: Docker, fly.io, or a plain Linux server.
 
 ---
 
+## Run locally vs use our hosted app
+
+| | **Run locally** | **Use our hosted app** |
+|--|------------------|-------------------------|
+| **What** | You run `prowlr app` on your machine (or your server). | One shared instance we host (e.g. app.prowlrbot.com). |
+| **Workspace** | One: your machine’s working dir (e.g. `~/.prowlrbot`). | One: the server’s working dir; all app users share it. |
+| **Who can sign up** | Only people with access to that machine (or you create users). | Anyone can register on the app and get an account. |
+| **Credits** | Stored locally (e.g. `~/.prowlrbot/marketplace.db`). Set `PROWLR_FREE_TIER_WELCOME_CREDITS` to grant welcome credits to new users. | Same logic on the server; Stripe for paid tiers if configured. |
+
+For details on sign-up, credits, and workspace (who gets what), see [Sign-up, credits, and workspace](signup-credits-and-workspace.md).
+
+---
+
 ## Quick start (development / local)
 
 ```bash

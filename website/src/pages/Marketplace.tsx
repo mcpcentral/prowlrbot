@@ -549,7 +549,7 @@ export function Marketplace({ config, lang, theme, onThemeToggle }: MarketplaceP
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "var(--bg)" }}>
-      <Nav projectName={config.projectName} lang={lang} theme={theme} onThemeToggle={onThemeToggle} docsPath="/docs" repoUrl={config.repoUrl} />
+      <Nav projectName={config.projectName} lang={lang} theme={theme} onThemeToggle={onThemeToggle} docsPath="/docs" repoUrl={config.repoUrl} consoleUrl={config.consoleUrl} />
 
       <main style={{ flex: 1, padding: "calc(var(--space-5) + 64px) var(--space-4) var(--space-5)", maxWidth: "var(--container)", margin: "0 auto", width: "100%" }}>
         {/* Hero */}

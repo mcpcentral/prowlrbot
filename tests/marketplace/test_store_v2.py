@@ -494,7 +494,8 @@ class TestTips:
 
 
 class TestCredits:
-    def test_get_balance_auto_creates(self, store: MarketplaceStore):
+    def test_get_balance_auto_creates(self, store: MarketplaceStore, monkeypatch):
+        monkeypatch.setenv("PROWLR_FREE_TIER_WELCOME_CREDITS", "0")
         balance = store.get_balance("new-user")
         assert balance.user_id == "new-user"
         assert balance.balance == 0

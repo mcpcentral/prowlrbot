@@ -537,6 +537,7 @@ export function Docs({ config, lang, theme, onThemeToggle }: DocsProps) {
         onThemeToggle={onThemeToggle}
         docsPath={config.docsPath}
         repoUrl={config.repoUrl}
+        consoleUrl={config.consoleUrl}
       />
       <div style={{ paddingTop: "3.5rem" }} />
       <div className="docs-layout">

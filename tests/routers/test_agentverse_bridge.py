@@ -179,8 +179,9 @@ def test_complete_battle_awards_credits_to_winner(client, marketplace_store):
     assert balance.balance == 50
 
 
-def test_complete_battle_loser_gets_no_credits(client, marketplace_store):
+def test_complete_battle_loser_gets_no_credits(client, marketplace_store, monkeypatch):
     """The losing agent does not receive credits."""
+    monkeypatch.setenv("PROWLR_FREE_TIER_WELCOME_CREDITS", "0")
     battle_payload = {
         "id": "battle_credits2",
         "challenger_id": "agent_c2",

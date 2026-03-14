@@ -54,6 +54,8 @@ interface NavProps {
   onThemeToggle: () => void;
   docsPath: string;
   repoUrl: string;
+  /** Base URL of the app (console). When set, shows "Open app" CTA. */
+  consoleUrl?: string;
 }
 
 export function Nav({
@@ -63,6 +65,7 @@ export function Nav({
   onThemeToggle,
   docsPath,
   repoUrl: _repoUrl,
+  consoleUrl,
 }: NavProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -207,6 +210,21 @@ export function Nav({
             <DollarSign size={18} strokeWidth={1.5} aria-hidden />
             <span>Pricing</span>
           </Link>
+          {consoleUrl && (
+            <a
+              href={consoleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-item"
+              style={{
+                fontWeight: 600,
+                color: "var(--accent)",
+              }}
+              title="Open ProwlrBot app (console)"
+            >
+              Open app
+            </a>
+          )}
           <a
             href="https://github.com/prowlrbot/prowlrbot"
             target="_blank"
@@ -364,6 +382,18 @@ export function Nav({
         >
           <DollarSign size={18} /> Pricing
         </Link>
+        {consoleUrl && (
+          <a
+            href={consoleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClass}
+            onClick={() => setOpen(false)}
+            title="Open ProwlrBot app"
+          >
+            Open app
+          </a>
+        )}
         <a
           href="https://github.com/prowlrbot/prowlrbot"
           target="_blank"

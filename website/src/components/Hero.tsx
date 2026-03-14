@@ -9,6 +9,8 @@ interface HeroProps {
   tagline: string;
   lang: Lang;
   docsPath: string;
+  /** When set, show "Open app" CTA and sign-up-on-app copy. */
+  consoleUrl?: string;
 }
 
 const container = {
@@ -29,6 +31,7 @@ export function Hero({
   tagline: _tagline,
   lang,
   docsPath: _docsPath,
+  consoleUrl,
 }: HeroProps) {
   return (
     <section
@@ -149,6 +152,19 @@ export function Hero({
           >
             {t(lang, "hero.sub")}
           </motion.p>
+          {consoleUrl && (
+            <motion.p
+              variants={item}
+              style={{
+                margin: "0 0 var(--space-3)",
+                fontSize: "0.9375rem",
+                color: "var(--text-muted)",
+                lineHeight: 1.5,
+              }}
+            >
+              Sign up on the app to get free credits and your dashboard.
+            </motion.p>
+          )}
 
           {/* Email capture form */}
           <motion.div variants={item} style={{ marginBottom: "var(--space-4)" }}>
@@ -163,8 +179,30 @@ export function Hero({
               alignItems: "center",
               gap: "var(--space-3)",
               marginBottom: "var(--space-5)",
+              flexWrap: "wrap",
             }}
           >
+            {consoleUrl && (
+              <a
+                href={consoleUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "var(--space-1)",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                  padding: "0.5rem 0.75rem",
+                  border: "1px solid var(--accent)",
+                  borderRadius: "0.375rem",
+                }}
+              >
+                Open app
+              </a>
+            )}
             <a
               href="https://github.com/prowlrbot/prowlrbot"
               target="_blank"

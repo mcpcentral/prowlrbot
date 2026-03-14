@@ -23,6 +23,7 @@ export function SignUpPage({ config, lang, theme, onThemeToggle }: SignUpProps) 
         onThemeToggle={onThemeToggle}
         docsPath={config.docsPath}
         repoUrl={config.repoUrl}
+        consoleUrl={config.consoleUrl}
       />
       <div style={{ paddingTop: "3.5rem" }} />
       <main
