@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@clerk/react": "^6.1.0",
-    "@ant-design/x-markdown": "^2.2.2",
+    "@ant-design/x-markdown": "^2.4.0",
     "@hello-pangea/dnd": "^18.0.1",
     "@prowlrbot/chat": "github:ProwlrBot/prowlr-chat#6bf695720fdb28a4030ba77e7ba490c5defcf82e",
     "@sentry/react": "^10.43.0",
