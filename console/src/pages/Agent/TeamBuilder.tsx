@@ -23,27 +23,43 @@ import {
 } from "@ant-design/icons";
 import { request } from "../../api/request";
 
-interface TeamAgent {
-  id: string;
-  name: string;
+/** Backend API shape (matches AgentTeam + TeamMember). */
+interface TeamMemberApi {
+  agent_id: string;
   role: string;
+  personality?: string;
+  skills?: string[];
+  model_preference?: string;
 }
 
-interface Team {
+interface TeamApi {
   id: string;
   name: string;
-  coordination_mode: "sequential" | "parallel" | "consensus";
-  agents: TeamAgent[];
+  description?: string;
+  coordination: "round_robin" | "hierarchical" | "consensus" | "auction";
+  members: TeamMemberApi[];
+  fallback_strategy?: string;
+  created_at?: number;
 }
 
-async function getTeams(): Promise<Team[]> {
-  return request<Team[]>("/teams");
+async function getTeams(): Promise<TeamApi[]> {
+  return request<TeamApi[]>("/teams");
 }
 
-async function createTeam(team: Partial<Team>): Promise<Team> {
-  return request<Team>("/teams", {
+async function createTeam(team: {
+  name: string;
+  coordination: TeamApi["coordination"];
+  description?: string;
+  members?: TeamMemberApi[];
+}): Promise<TeamApi> {
+  return request<TeamApi>("/teams", {
     method: "POST",
-    body: JSON.stringify(team),
+    body: JSON.stringify({
+      name: team.name,
+      coordination: team.coordination,
+      description: team.description ?? "",
+      members: team.members ?? [],
+    }),
   });
 }
 
@@ -52,20 +68,21 @@ async function deleteTeam(teamId: string): Promise<void> {
 }
 
 const modeDescriptions: Record<string, string> = {
-  sequential: "Agents work one after another, passing results along the chain",
-  parallel: "All agents work simultaneously, results are merged",
-  consensus:
-    "Agents vote on decisions, majority wins (requires 3+ agents)",
+  round_robin: "Agents work one after another, passing results along the chain",
+  hierarchical: "Director delegates; agents work in a hierarchy",
+  consensus: "Agents vote on decisions, majority wins (requires 3+ agents)",
+  auction: "Agents bid on tasks; highest bidder executes",
 };
 
 const modeColors: Record<string, string> = {
-  sequential: "blue",
-  parallel: "green",
+  round_robin: "blue",
+  hierarchical: "green",
   consensus: "purple",
+  auction: "orange",
 };
 
 export default function TeamBuilder() {
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<TeamApi[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [form] = Form.useForm();
@@ -74,8 +91,10 @@ export default function TeamBuilder() {
     setLoading(true);
     try {
       setTeams(await getTeams());
-    } catch {
+    } catch (e) {
       setTeams([]);
+      const msg = e instanceof Error ? e.message : "Failed to load teams";
+      message.error(msg);
     }
     setLoading(false);
   };
@@ -89,15 +108,17 @@ export default function TeamBuilder() {
       const values = await form.validateFields();
       await createTeam({
         name: values.name,
-        coordination_mode: values.coordination_mode,
-        agents: [],
+        coordination: values.coordination,
+        members: [],
       });
       setModalOpen(false);
       form.resetFields();
       message.success("Team created");
       fetchTeams();
-    } catch {
-      message.error("Failed to create team");
+    } catch (e) {
+      if (e && typeof e === "object" && "errorFields" in e) return; // validation
+      const msg = e instanceof Error ? e.message : "Failed to create team";
+      message.error(msg);
     }
   };
 
@@ -106,8 +127,9 @@ export default function TeamBuilder() {
       await deleteTeam(teamId);
       message.success("Team deleted");
       fetchTeams();
-    } catch {
-      message.error("Failed to delete team");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Failed to delete team";
+      message.error(msg);
     }
   };
 
@@ -170,27 +192,27 @@ export default function TeamBuilder() {
                   />
                 }
               >
-                <Tag color={modeColors[team.coordination_mode] ?? "default"}>
-                  {team.coordination_mode.toUpperCase()}
+                <Tag color={modeColors[team.coordination] ?? "default"}>
+                  {team.coordination.replace("_", " ").toUpperCase()}
                 </Tag>
                 <Typography.Text
                   type="secondary"
                   style={{ display: "block", margin: "8px 0", fontSize: 12 }}
                 >
-                  {modeDescriptions[team.coordination_mode]}
+                  {modeDescriptions[team.coordination]}
                 </Typography.Text>
-                {team.agents.length === 0 ? (
+                {team.members.length === 0 ? (
                   <Typography.Text type="secondary" italic>
                     No agents assigned yet
                   </Typography.Text>
                 ) : (
                   <List
                     size="small"
-                    dataSource={team.agents}
-                    renderItem={(agent) => (
+                    dataSource={team.members}
+                    renderItem={(member) => (
                       <List.Item>
-                        <Typography.Text>{agent.name}</Typography.Text>
-                        <Tag>{agent.role}</Tag>
+                        <Typography.Text>{member.agent_id}</Typography.Text>
+                        <Tag>{member.role}</Tag>
                       </List.Item>
                     )}
                   />
@@ -217,15 +239,16 @@ export default function TeamBuilder() {
             <Input placeholder="e.g., Code Review Squad" />
           </Form.Item>
           <Form.Item
-            name="coordination_mode"
+            name="coordination"
             label="Coordination Mode"
-            initialValue="sequential"
+            initialValue="round_robin"
           >
             <Select
               options={[
-                { label: "Sequential — agents work in order", value: "sequential" },
-                { label: "Parallel — agents work simultaneously", value: "parallel" },
+                { label: "Round robin — agents work in order", value: "round_robin" },
+                { label: "Hierarchical — director delegates", value: "hierarchical" },
                 { label: "Consensus — agents vote on decisions", value: "consensus" },
+                { label: "Auction — agents bid on tasks", value: "auction" },
               ]}
             />
           </Form.Item>
