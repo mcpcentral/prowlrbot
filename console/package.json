@@ -24,7 +24,7 @@
     "@sentry/react": "^10.43.0",
     "ahooks": "^3.9.6",
     "antd": "^5.29.1",
-    "antd-style": "^3.7.1",
+    "antd-style": "^4.1.0",
     "i18next": "^25.8.4",
     "lucide-react": "^0.562.0",
     "react": "^18",
