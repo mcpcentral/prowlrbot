@@ -93,7 +93,13 @@ def app_cmd(
     # Persist last used host/port for other terminals
     write_last_api(host, port)
     os.environ[LOG_LEVEL_ENV] = log_level
+    # So uvicorn worker subprocesses also suppress DeprecationWarnings
+    if "PYTHONWARNINGS" not in os.environ:
+        os.environ["PYTHONWARNINGS"] = "ignore::DeprecationWarning"
     setup_logger(log_level)
+    # Quiet optional dependency messages (Nacos SDK not installed is normal)
+    for _name in ("NacosRegistry", "agentscope_runtime.engine.deployers.adapter.a2a.nacos_a2a_registry"):
+        logging.getLogger(_name).setLevel(logging.ERROR)
     if log_level in ("debug", "trace"):
         from .main import log_init_timings
 

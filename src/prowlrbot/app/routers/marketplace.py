@@ -550,10 +550,10 @@ async def subscribe(
             "message": "Stripe not configured. Set STRIPE_SECRET_KEY for paid upgrades, or use CLI: prowlr market upgrade <tier> for local tier changes.",
         }
 
-    # Derive fallback success/cancel URLs from the request origin when not provided.
-    origin = str(request.base_url).rstrip("/")
-    success_url = body.success_url or f"{origin}/credits?subscribed=true&tier={tier_id}"
-    cancel_url = body.cancel_url or f"{origin}/credits"
+    # Use canonical app URL so Stripe redirects to app.prowlrbot.com/credits, not prowlrbot.fly.dev.
+    base = (os.environ.get("PROWLRBOT_BASE_URL") or str(request.base_url)).rstrip("/")
+    success_url = body.success_url or f"{base}/credits?subscribed=true&tier={tier_id}"
+    cancel_url = body.cancel_url or f"{base}/credits"
 
     try:
         import stripe

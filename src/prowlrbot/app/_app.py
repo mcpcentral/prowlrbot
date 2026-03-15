@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=redefined-outer-name,unused-argument
+import logging
 import mimetypes
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
+
+# Quiet Nacos SDK "not available" warning before agentscope_runtime is imported
+logging.getLogger("agentscope_runtime.engine.deployers.adapter.a2a.nacos_a2a_registry").setLevel(
+    logging.ERROR,
+)
 
 import sentry_sdk
 

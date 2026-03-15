@@ -7,6 +7,8 @@ import time
 
 import click
 
+from ..__version__ import __version__
+
 # On Windows, force UTF-8 for stdout/stderr so cron and other commands
 # can handle Chinese and other non-ASCII (Linux is UTF-8 by default).
 if sys.platform == "win32":
@@ -159,6 +161,7 @@ def log_init_timings() -> None:
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
+@click.version_option(version=__version__, prog_name="prowlr")
 @click.option("--host", default=None, help="API Host")
 @click.option(
     "--port",

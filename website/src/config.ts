@@ -25,11 +25,14 @@ export async function loadSiteConfig(): Promise<SiteConfig> {
     const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "") || "";
     const r = await fetch(`${base}/site.config.json`, { cache: "no-store" });
     if (r.ok) {
-      cached = (await r.json()) as SiteConfig;
+      const loaded = (await r.json()) as Partial<SiteConfig>;
+      cached = { ...defaultConfig, ...loaded };
+      if (!cached.consoleUrl) cached.consoleUrl = defaultConfig.consoleUrl;
       return cached;
     }
   } catch {
     /* use defaults */
   }
-  return defaultConfig;
+  cached = defaultConfig;
+  return cached;
 }

@@ -486,7 +486,7 @@ class MemoryManager(ReMeFb):
         if vector_enabled:
             logger.info("Vector search enabled.")
         else:
-            logger.warning(
+            logger.debug(
                 "Vector search disabled. "
                 "Memory search functionality will be restricted. "
                 "To enable, configure: EMBEDDING_API_KEY, EMBEDDING_BASE_URL, "

@@ -89,6 +89,8 @@ prowlr app
 
 Open **http://localhost:8088** – your agent is live.
 
+> **From source (dev):** `git clone https://github.com/ProwlrBot/prowlrbot.git && cd prowlrbot && pip install -e ".[dev]"`. See [troubleshooting](docs/troubleshooting.md) if install fails.
+
 > **No API key?** Run locally with Ollama:
 > `prowlr init --defaults && prowlr app` – ProwlrBot auto‑detects local models.
 

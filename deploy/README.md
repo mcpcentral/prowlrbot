@@ -179,6 +179,35 @@ docker run -p 8088:8088 -v prowlrbot_data:/data prowlrbot:latest
 
 ---
 
+## Credits and Stripe after deploy
+
+If the **website** Pricing page “Upgrade” or credits link doesn’t show or points to the wrong place, or the **app** Credits page shows “Stripe not configured” when you click Upgrade:
+
+**Website (prowlrbot.com)**
+
+- The site loads `site.config.json` for `consoleUrl`. The built site must serve that file (it lives in `website/public/` and is copied to `dist/`).
+- Default `consoleUrl` is `https://app.prowlrbot.com`. If your JSON omits it or the fetch fails, the app now falls back to that default so the Upgrade link always has a valid URL.
+
+**App (Fly) — Stripe required for Upgrade**
+
+- The app does **not** read Stripe keys from `fly.toml`; they must be **secrets**. If they’re missing, the subscribe API returns “Stripe not configured” and the console shows that message when you click Upgrade.
+- Set them after deploy (or before):
+
+  ```bash
+  fly secrets set STRIPE_SECRET_KEY=sk_live_xxxx
+  fly secrets set STRIPE_WEBHOOK_SECRET=whsec_xxxx
+  ```
+
+- In Stripe Dashboard → Webhooks, add endpoint URL: `https://app.prowlrbot.com/api/marketplace/webhook/stripe` (or your app URL) and use the signing secret for `STRIPE_WEBHOOK_SECRET`.
+- `fly.toml` already sets `PROWLRBOT_BASE_URL=https://app.prowlrbot.com` so Stripe success/cancel redirects go to app.prowlrbot.com/credits, not prowlrbot.fly.dev.
+
+**Quick check**
+
+- Website: open Pricing, click “Upgrade” on a tier — it should open `https://app.prowlrbot.com/credits`.
+- App: open app.prowlrbot.com/credits, click “Upgrade to Pro” — you should be sent to Stripe Checkout. If you see “Stripe not configured…”, set the two secrets above and redeploy or restart.
+
+---
+
 ## Environment Variables
 
 | Variable | Default | Description |
@@ -190,3 +219,5 @@ docker run -p 8088:8088 -v prowlrbot_data:/data prowlrbot:latest
 | `ANTHROPIC_API_KEY` | — | Anthropic API key |
 | `GROQ_API_KEY` | — | Groq API key |
 | `PROWLRBOT_ENABLED_CHANNELS` | `console` | Comma-separated channel list |
+| `STRIPE_SECRET_KEY` | — | **Required for Credits → Upgrade.** Set via `fly secrets set`. |
+| `STRIPE_WEBHOOK_SECRET` | — | Stripe webhook signing secret. Set via `fly secrets set`. |

@@ -6,6 +6,49 @@ Common issues and solutions for ProwlrBot installation and operation.
 
 ## Installation Issues
 
+### Install fails on other devices (git / GitHub / “Cannot find version”)
+
+**Symptoms:**
+- `pip install .` or `pip install prowlrbot` fails on a different machine, CI, or minimal environment
+- `ERROR: Cannot find a matching version` or `Could not find a version that satisfies the requirement agentscope`
+- `fatal: could not read Username for 'https://github.com'` or SSL/timeout when resolving dependencies
+
+**Cause:** ProwlrBot depends on two packages installed **from GitHub** (not PyPI):
+- `agentscope` from `github.com/prowlrbot/agentscope`
+- `agentscope-runtime` from `github.com/prowlrbot/agentscope-runtime`
+
+So every install needs:
+1. **Git** installed and on `PATH` (e.g. `git --version` works)
+2. **Network access** to GitHub (no strict firewall/proxy blocking `github.com`)
+3. **pip** that supports `git+https` URLs (recent pip/setuptools)
+
+**Fix:**
+
+1. **Install Git** on the target device:
+   - **Windows:** [git-scm.com](https://git-scm.com/) or `winget install Git.Git`
+   - **Linux:** `sudo apt install git` / `sudo dnf install git`
+   - **Docker:** Use an image that includes git, or a multi-stage build that installs deps in a stage with git
+
+2. **Use a fresh venv and upgrade pip:**
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate   # Windows: .venv\Scripts\activate
+   pip install --upgrade pip setuptools wheel
+   pip install -e .
+   ```
+
+3. **If GitHub is blocked or flaky:** use a VPN, or install from a machine that can reach GitHub and copy the built venv/artifacts. For CI, ensure the job has git and can reach GitHub.
+
+4. **Prefer Docker on “other devices”** so the image is built once (with git in the build stage) and runs anywhere:
+   ```bash
+   docker build -f deploy/Dockerfile.fly -t prowlrbot .
+   docker run -p 8088:8088 -v prowlrbot_data:/data prowlrbot
+   ```
+
+**Long-term:** Publishing ProwlrBot (and the two AgentScope forks) to **PyPI** would remove the need for Git and make `pip install prowlrbot` work everywhere. See [Publishing to PyPI](guides/pypi-publish.md).
+
+---
+
 ### WSL: I/O Error During pip install
 
 **Symptoms:**
@@ -78,6 +121,18 @@ pip install -e .
 ```
 
 If a specific package conflicts, check `pyproject.toml` for version constraints and report an issue.
+
+**After installing `nacos-sdk-python`:** its dependencies can downgrade `cryptography` and upgrade `jmespath`, which conflicts with ProwlrBot and with `aliyun-python-sdk-core` (used by agentscope-runtime). Fix:
+
+1. Restore ProwlrBot’s required cryptography:
+   ```bash
+   pip install 'cryptography>=46.0.5'
+   ```
+2. Prefer the optional extra so pip keeps cryptography and nacos together:
+   ```bash
+   pip install -e ".[nacos]"
+   ```
+   The `jmespath` conflict with aliyun-python-sdk-core (aliyun wants \<1.0, nacos deps want 1.x) is harmless unless you use Aliyun OSS; if you need both, use a separate venv or accept the resolver warning.
 
 ---
 
@@ -257,6 +312,23 @@ curl -H "Authorization: Bearer YOUR_JWT_OR_API_TOKEN" http://localhost:8088/api/
 ```
 
 **If you use the standalone bridge** (e.g. for multi-machine coordination), that's a separate process: `python -m prowlrbot.hub.bridge`. The in-app War Room does not depend on it.
+
+---
+
+### Clerk: "Production Keys are only allowed for domain …" / Origin must match
+
+**Symptoms:**
+- Console at `https://prowlrbot.fly.dev` (or another URL) shows: *Clerk: Production Keys are only allowed for domain "prowlrbot.com"* or *The Request HTTP Origin header must be equal to or a subdomain of the requesting URL*
+- Clerk API calls return 400; sign-in doesn’t load
+
+**Cause:** Clerk **production** keys are restricted to the domain(s) you configured in the Clerk Dashboard. If the app is served from a different origin (e.g. `https://prowlrbot.fly.dev`) than that domain (e.g. `prowlrbot.com`), Clerk blocks the request.
+
+**Fix:**
+
+1. **Allow the deployment origin in Clerk:** In [Clerk Dashboard](https://dashboard.clerk.com) → your application → **Domains**, add the exact origin users use (e.g. `https://prowlrbot.fly.dev`). Save. Reload the console.
+2. **Or use a custom domain:** Point your Fly (or other) app at a subdomain of the same domain (e.g. `https://app.prowlrbot.com` or `https://console.prowlrbot.com`) and ensure that domain is allowed in Clerk. Then users open the app at that URL so the Origin matches.
+
+After fixing, the CSP change that allows Clerk’s worker (`worker-src 'self' blob: …`) will let Clerk load without the "violates Content Security Policy" worker error.
 
 ---
 
