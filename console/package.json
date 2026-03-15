@@ -17,6 +17,7 @@
     "preview:test": "vite preview --mode test"
   },
   "dependencies": {
+    "@clerk/react": "^6.1.0",
     "@ant-design/x-markdown": "^2.2.2",
     "@hello-pangea/dnd": "^18.0.1",
     "@prowlrbot/chat": "github:ProwlrBot/prowlr-chat#6bf695720fdb28a4030ba77e7ba490c5defcf82e",

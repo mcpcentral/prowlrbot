@@ -6,6 +6,11 @@ import json
 import logging
 from pathlib import Path
 
+try:
+    import sentry_sdk
+except ImportError:
+    sentry_sdk = None
+
 
 async def _award_xp_background(
     entity_id: str,
@@ -266,6 +271,8 @@ class AgentRunner(Runner):
                 await agent.interrupt()
             raise
         except Exception as e:
+            if sentry_sdk is not None:
+                sentry_sdk.capture_exception(e)
             debug_dump_path = write_query_error_dump(
                 request=request,
                 exc=e,
@@ -312,16 +319,21 @@ class AgentRunner(Runner):
         """
         Init handler.
         """
-        # Load environment variables from .env file
-        env_path = Path(__file__).resolve().parents[4] / ".env"
-        if env_path.exists():
-            load_dotenv(env_path)
-            logger.debug(f"Loaded environment variables from {env_path}")
-        else:
-            logger.debug(
-                f".env file not found at {env_path}, "
-                "using existing environment variables",
-            )
+        # Load .env only when not in container (production uses Fly secrets / env, no .env file)
+        from prowlrbot.constant import RUNNING_IN_CONTAINER
+
+        in_container = RUNNING_IN_CONTAINER and str(RUNNING_IN_CONTAINER).lower() in (
+            "1",
+            "true",
+            "yes",
+        )
+        if not in_container:
+            env_path = Path(__file__).resolve().parents[4] / ".env"
+            if env_path.exists():
+                load_dotenv(env_path)
+                logger.debug("Loaded environment variables from .env")
+            else:
+                logger.debug("No .env file; using existing environment variables")
 
         session_dir = str(WORKING_DIR / "sessions")
         self.session = SafeJSONSession(save_dir=session_dir)

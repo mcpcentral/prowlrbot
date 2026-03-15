@@ -214,6 +214,35 @@ class RegistryClient:
                         )
         return None
 
+    def fetch_listing_files(self, category: str, dir_name: str) -> dict[str, str]:
+        """Fetch all file contents for a listing (category/dir_name). Returns relative path -> content."""
+        result: dict[str, str] = {}
+        prefix = f"{category}/{dir_name}"
+
+        def _fetch_dir(path: str, rel_prefix: str = "") -> None:
+            resp = self._client.get(
+                f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents/{path}"
+            )
+            if resp.status_code != 200:
+                return
+            for entry in resp.json():
+                name = entry.get("name", "")
+                if not name:
+                    continue
+                rel = f"{rel_prefix}{name}" if rel_prefix else name
+                if entry.get("type") == "file":
+                    content_b64 = entry.get("content", "")
+                    if content_b64:
+                        try:
+                            result[rel] = b64decode(content_b64).decode("utf-8")
+                        except (ValueError, UnicodeDecodeError):
+                            pass
+                elif entry.get("type") == "dir":
+                    _fetch_dir(f"{path}/{name}", rel_prefix=f"{rel}/")
+
+        _fetch_dir(prefix)
+        return result
+
 
 # ── Sync to local store ──────────────────────────────────────────────────────
 

@@ -51,6 +51,7 @@ Step-by-step walkthroughs. Follow them in order, skip what you don't need.
 | 7 | **[Monitoring](guides/monitoring.md)** | Watch websites and APIs for changes | 3 min |
 | 8 | **[Marketplace](guides/marketplace.md)** | Browse, install, publish, credits | 5 min |
 | 9 | **[Deployment](guides/deployment.md)** | Docker, fly.io, systemd, nginx | 10 min |
+| 9b | **[Production readiness](guides/production-readiness.md)** | Clerk, Stripe, Fly secrets, go-live checklist | 5 min |
 | 10 | **[ACP / IDE Integration](guides/acp-ide-integration.md)** | VS Code, Zed, JetBrains via ACP stdio | 3 min |
 | 11 | **[Memory System](guides/memory-system.md)** | Auto-compaction, persistence, export | 3 min |
 | 12 | **[CLI Reference](guides/cli-reference.md)** | Every command, every flag | reference |

@@ -107,7 +107,7 @@ class AuthDependency:
         ):
             return token
 
-        # Try JWT validation
+        # Try legacy app JWT
         try:
             import os
 
@@ -117,5 +117,11 @@ class AuthDependency:
             return token
         except (ValueError, Exception):
             pass
+
+        # Try Clerk JWT (when CLERK_JWKS_URL is set)
+        from ..auth.clerk_verifier import verify_clerk_token
+
+        if verify_clerk_token(token) is not None:
+            return token
 
         raise HTTPException(status_code=401, detail="Invalid authentication token")

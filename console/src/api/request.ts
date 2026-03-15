@@ -1,4 +1,4 @@
-import { getApiUrl, getApiToken } from "./config";
+import { getApiUrl, getApiTokenAsync } from "./config";
 
 export function getCsrfToken(): string | null {
   if (typeof document === "undefined") return null;
@@ -6,25 +6,20 @@ export function getCsrfToken(): string | null {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-function buildHeaders(method?: string, extra?: HeadersInit): Headers {
-  // Normalize extra to a Headers instance for consistent handling
+async function buildHeaders(method?: string, extra?: HeadersInit): Promise<Headers> {
   const headers = extra instanceof Headers ? extra : new Headers(extra);
 
-  // Only add Content-Type for methods that typically have a body
   if (method && ["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-    // Don't override if caller explicitly set Content-Type
     if (!headers.has("Content-Type")) {
       headers.set("Content-Type", "application/json");
     }
   }
 
-  // Add authorization token if available
-  const token = getApiToken();
+  const token = await getApiTokenAsync();
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  // Attach CSRF token for state-changing requests when available.
   if (!method || !["GET", "HEAD", "OPTIONS"].includes(method.toUpperCase())) {
     const csrf = getCsrfToken();
     if (csrf && !headers.has("x-csrf-token")) {
@@ -41,7 +36,7 @@ export async function request<T = unknown>(
 ): Promise<T> {
   const url = getApiUrl(path);
   const method = options.method || "GET";
-  const headers = buildHeaders(method, options.headers);
+  const headers = await buildHeaders(method, options.headers);
 
   const response = await fetch(url, {
     ...options,

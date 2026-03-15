@@ -14,7 +14,7 @@ const defaultConfig: SiteConfig = {
   projectTaglineZh: "Always watching. Always ready.",
   repoUrl: "https://github.com/prowlrbot/prowlrbot",
   docsPath: "/docs/",
-  consoleUrl: "https://prowlrbot.fly.dev",
+  consoleUrl: "https://app.prowlrbot.com",
 };
 
 let cached: SiteConfig | null = null;
@@ -23,7 +23,7 @@ export async function loadSiteConfig(): Promise<SiteConfig> {
   if (cached) return cached;
   try {
     const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "") || "";
-    const r = await fetch(`${base}/site.config.json`);
+    const r = await fetch(`${base}/site.config.json`, { cache: "no-store" });
     if (r.ok) {
       cached = (await r.json()) as SiteConfig;
       return cached;

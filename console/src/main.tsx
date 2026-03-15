@@ -1,7 +1,10 @@
 import "./instrument";
 import { createRoot } from "react-dom/client";
+import { ClerkProvider } from "@clerk/react";
 import App from "./App.tsx";
 import "./i18n";
+
+const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 
 if (typeof window !== "undefined") {
   const originalError = console.error;
@@ -28,4 +31,13 @@ if (typeof window !== "undefined") {
   };
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = createRoot(document.getElementById("root")!);
+if (clerkKey) {
+  root.render(
+    <ClerkProvider publishableKey={clerkKey} afterSignOutUrl={window.location.origin}>
+      <App />
+    </ClerkProvider>,
+  );
+} else {
+  root.render(<App />);
+}

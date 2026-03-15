@@ -306,3 +306,43 @@ class UserStore:
         )
         self.link_oauth(user.id, provider, provider_id, email, avatar_url)
         return user
+
+    # ------------------------------------------------------------------
+    # Clerk identity (same pattern as OAuth: link by provider='clerk')
+    # ------------------------------------------------------------------
+
+    def find_user_by_clerk_id(self, clerk_user_id: str) -> Optional[User]:
+        """Find a user linked to a Clerk identity (provider='clerk', provider_id=clerk_user_id)."""
+        return self.find_user_by_oauth("clerk", clerk_user_id)
+
+    def get_or_create_user_by_clerk(
+        self,
+        clerk_user_id: str,
+        email: str = "",
+        username: str = "",
+    ) -> User:
+        """Find or create a user for a Clerk sign-in.
+
+        If a user is already linked to this Clerk id, returns that user.
+        Otherwise creates a new user (no password) and links the Clerk identity.
+        """
+        user = self.find_user_by_clerk_id(clerk_user_id)
+        if user is not None:
+            self.update_last_login(user.id)
+            return user
+
+        base_username = username or (email.split("@")[0] if email else f"clerk_{clerk_user_id[:12]}")
+        final_username = base_username
+        suffix = 1
+        while self.get_user_by_username(final_username) is not None:
+            final_username = f"{base_username}{suffix}"
+            suffix += 1
+
+        user = self.create_user(
+            username=final_username,
+            password=os.urandom(32).hex(),
+            email=email,
+            role=Role.viewer,
+        )
+        self.link_oauth(user.id, "clerk", clerk_user_id, email, "")
+        return user

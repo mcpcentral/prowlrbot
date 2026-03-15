@@ -1,11 +1,15 @@
 import { createGlobalStyle } from "antd-style";
 import { ConfigProvider, Spin } from "antd";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 import * as Sentry from "@sentry/react";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import MainLayout from "./layouts/MainLayout";
 import LoginPage from "./pages/Login";
+import ClerkSignInPage from "./pages/ClerkSignIn";
+import ClerkSignUpPage from "./pages/ClerkSignUp";
+
+const useClerk = !!(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined);
 import "./styles/theme.css";
 import "./styles/layout.css";
 import "./styles/form-override.css";
@@ -19,6 +23,7 @@ const GlobalStyle = createGlobalStyle`
 
 function AuthGate() {
   const { isAuthenticated, loading } = useAuth();
+  const { pathname } = useLocation();
 
   if (loading) {
     return (
@@ -28,7 +33,11 @@ function AuthGate() {
     );
   }
 
-  return isAuthenticated ? <MainLayout /> : <LoginPage />;
+  if (isAuthenticated) return <MainLayout />;
+  if (useClerk) {
+    return pathname === "/sign-up" ? <ClerkSignUpPage /> : <ClerkSignInPage />;
+  }
+  return <LoginPage />;
 }
 
 function ThemedApp() {
@@ -42,7 +51,7 @@ function ThemedApp() {
         token: antTokenOverrides,
       }}
     >
-      <AuthProvider>
+      <AuthProvider useClerk={useClerk}>
         <AuthGate />
       </AuthProvider>
     </ConfigProvider>

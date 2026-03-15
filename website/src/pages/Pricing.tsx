@@ -145,7 +145,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
   const navigate = useNavigate();
-  const consoleUrl = config.consoleUrl ?? "https://prowlrbot.fly.dev";
+  const consoleUrl = config.consoleUrl ?? "https://app.prowlrbot.com";
   const creditsUrl = `${consoleUrl.replace(/\/$/, "")}/credits`;
   return (
     <div

@@ -186,9 +186,22 @@ export const HardwareAdvisor: React.FC = () => {
       ].filter(Boolean)
     : [];
 
+  const isHostedApp =
+    typeof window !== "undefined" && window.location.hostname === "app.prowlrbot.com";
+
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: 24 }}>
       <Title level={3}>What can my machine run?</Title>
+
+      {isHostedApp && (
+        <Alert
+          type="warning"
+          showIcon
+          message="Hosted app: server hardware only"
+          description="This page shows the server's hardware, not your computer. For local model recommendations, run ProwlrBot on your own machine (e.g. prowlr app)."
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       {loadError && (
         <Alert

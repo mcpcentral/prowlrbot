@@ -2,7 +2,7 @@ export * from "./types";
 
 export { request } from "./request";
 
-export { getApiUrl, getApiToken } from "./config";
+export { getApiUrl, getApiToken, getApiTokenAsync, setTokenProvider } from "./config";
 
 import { rootApi } from "./modules/root";
 import { consoleApi } from "./modules/console";

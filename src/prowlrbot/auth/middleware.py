@@ -12,6 +12,7 @@ from typing import Callable, Sequence
 
 from fastapi import Depends, HTTPException, Request
 
+from .clerk_verifier import verify_clerk_token
 from .jwt_handler import JWTHandler
 from .models import Permission, Role, ROLE_PERMISSIONS, User
 from .store import UserStore
@@ -62,10 +63,19 @@ def _get_jwt_handler() -> JWTHandler:
     return JWTHandler(secret_key=_JWT_SECRET, expiry_minutes=expiry)
 
 
+def _is_likely_jwt(token: str) -> bool:
+    """Heuristic: token has three base64url parts (header.payload.sig)."""
+    parts = token.split(".")
+    return len(parts) == 3 and all(len(p) > 0 for p in parts)
+
+
 async def get_current_user(request: Request) -> User:
     """Extract and validate the Bearer token, returning the authenticated user.
 
-    Raises :class:`HTTPException` 401 when the token is missing or invalid.
+    Accepts either a Clerk-issued JWT (when CLERK_JWKS_URL is set) or the app's
+    own JWT. Clerk tokens are verified via JWKS and mapped to an app user
+    (created on first sign-in). Raises :class:`HTTPException` 401 when the
+    token is missing or invalid.
     """
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
@@ -73,14 +83,32 @@ async def get_current_user(request: Request) -> User:
             status_code=401, detail="Missing or invalid Authorization header"
         )
 
-    token = auth_header[7:]
+    token = auth_header[7:].strip()
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+
+    store = _get_user_store()
+
+    # 1) Try Clerk JWT if verifier is configured and token looks like a JWT
+    if _is_likely_jwt(token):
+        claims = verify_clerk_token(token)
+        if claims is not None:
+            user = store.get_or_create_user_by_clerk(
+                clerk_user_id=claims.sub,
+                email=claims.email,
+                username="",
+            )
+            if not user.is_active:
+                raise HTTPException(status_code=401, detail="User not found or inactive")
+            return user
+
+    # 2) Legacy app JWT
     handler = _get_jwt_handler()
     try:
         payload = handler.decode_token(token)
     except ValueError as exc:
         raise HTTPException(status_code=401, detail=str(exc)) from exc
 
-    store = _get_user_store()
     user = store.get_user_by_id(payload.sub)
     if user is None or not user.is_active:
         raise HTTPException(status_code=401, detail="User not found or inactive")

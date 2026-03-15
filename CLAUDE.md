@@ -54,18 +54,18 @@ Environment Scan → ProviderDetector (env vars) → HealthChecker (async probes
 
 ### Source Layout (`src/prowlrbot/`)
 
-- **`cli/`** — Click CLI. Entry point: `cli/main.py` → `prowlr` command. Lazy-loaded subcommands.
+- **`cli/`** — Click CLI. Entry point: `cli/main.py` → `prowlr` command. Lazy-loaded subcommands. Full command list: `prowlr agent`, `team`, `market`, `backup`, `export`, `chats`, `migrate`, `acp`, `studio`, `doctor`, `completion`, `clean`, `uninstall`, `swarm`, plus `app`, `init`, `models`, `env`, etc. See `docs/guides/cli-reference.md`.
 - **`app/_app.py`** — FastAPI app with lifespan that wires all subsystems together.
 - **`app/channels/`** — Channel system. `base.py` defines `BaseChannel` (abstract). `manager.py` runs per-channel async queues with 4 workers each. Channels: dingtalk, feishu, discord_, telegram, qq, imessage, console. Custom channels loaded from `~/.prowlrbot/custom_channels/`.
 - **`app/runner/`** — `AgentRunner` wraps query execution. `runner.py` handles agent creation, session management, query processing.
 - **`app/crons/`** — APScheduler-based. `manager.py` schedules cron/interval jobs. `executor.py` runs them. `heartbeat.py` is a special periodic agent check-in.
-- **`app/mcp/`** — MCP client lifecycle. `manager.py` manages stdio/http transports with hot-reload. `watcher.py` polls config for MCP changes.
+- **`app/mcp/`** — MCP client lifecycle. `manager.py` manages MCP transports: `stdio`, `streamable_http`, `sse` (see `config/config.py` MCPClientConfig). `watcher.py` polls config for MCP changes.
 - **`app/routers/`** — FastAPI API routes for agent, channels, skills, MCP, cron, config, providers, etc.
 - **`agents/react_agent.py`** — `ProwlrBotAgent` extends AgentScope's `ReActAgent`. Integrates tools, skills, memory, MCP clients.
-- **`agents/model_factory.py`** — Creates chat models from active provider config. Supports OpenAI-compatible, Anthropic, local (llama.cpp/MLX), Ollama.
+- **`agents/model_factory.py`** — Creates chat models from active provider config. Supports OpenAI-compatible, Anthropic, local (llama.cpp/MLX), Ollama, plus dashscope, modelscope, aliyun-codingplan, zai, azure-openai (see `providers/registry.py`).
 - **`agents/prompt.py`** — Builds system prompt from `AGENTS.md`, `SOUL.md`, `PROFILE.md` in working dir.
 - **`agents/tools/`** — Built-in tools: shell, file I/O, browser, screenshot, send_file, memory_search.
-- **`agents/skills/`** — Built-in skills (cron, pdf, docx, pptx, xlsx, news, file_reader, browser_visible, himalaya, dingtalk_channel). Each has a `SKILL.md` manifest.
+- **`agents/skills/`** — Built-in skills: cron, pdf, docx, pptx, xlsx, news, file_reader, browser_visible, himalaya, dingtalk_channel, github_app, marketing, mac_doctor, wsl_doctor. Each has a `SKILL.md` manifest.
 - **`agents/skills_manager.py`** — Syncs builtin + customized skills to `active_skills/`.
 - **`agents/memory/`** — `ProwlrBotInMemoryMemory` + `MemoryManager` with auto-compaction when token budget exceeded.
 - **`config/`** — Pydantic config models (`config.py`), load/save utils (`utils.py`), hot-reload watcher (`watcher.py`). Main config: `~/.prowlrbot/config.json`.

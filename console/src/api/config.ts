@@ -22,13 +22,33 @@ export function getRoarEventsUrl(): string {
 }
 
 /**
- * Get the API token.
- *
- * Checks for a JWT in localStorage first (set after login), then falls back
- * to the build-time TOKEN constant for legacy API-token auth.
+ * When Clerk is used, the app sets a token provider so API requests send
+ * the Clerk session JWT. Otherwise we use localStorage or build-time TOKEN.
+ */
+let tokenProvider: (() => Promise<string | null>) | null = null;
+
+export function setTokenProvider(fn: () => Promise<string | null>): void {
+  tokenProvider = fn;
+}
+
+/**
+ * Get the API token (sync). Prefer getApiTokenAsync() when Clerk is used.
+ * Returns localStorage JWT or legacy TOKEN; Clerk token is provided via getApiTokenAsync.
  */
 export function getApiToken(): string {
   const jwt = localStorage.getItem("prowlrbot-jwt");
   if (jwt) return jwt;
   return typeof TOKEN !== "undefined" ? TOKEN : "";
+}
+
+/**
+ * Get the API token, resolving Clerk session token when a provider is set.
+ * Use this in request builders so Clerk JWTs are sent to the backend.
+ */
+export async function getApiTokenAsync(): Promise<string> {
+  if (tokenProvider) {
+    const clerkToken = await tokenProvider();
+    if (clerkToken) return clerkToken;
+  }
+  return getApiToken();
 }

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import type { ReactNode } from "react";
+import { useAuth as useClerkAuth } from "@clerk/react";
 import {
   fetchMe,
   getStoredToken,
@@ -7,12 +8,13 @@ import {
   setStoredToken,
   type AuthUser,
 } from "../api/modules/auth";
+import { setTokenProvider } from "../api/config";
 
 interface AuthContextValue {
   user: AuthUser | null;
   loading: boolean;
   isAuthenticated: boolean;
-  /** Call after a successful login/register to refresh user state. */
+  /** Call after a successful login/register to refresh user state (legacy auth only). */
   onLogin: (token: string) => void;
   /** Clear token and user state. */
   onLogout: () => void;
@@ -20,7 +22,58 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+/** When Clerk is enabled, wire token provider and derive state from Clerk + /auth/me. */
+function ClerkAuthProvider({ children }: { children: ReactNode }) {
+  const { getToken, isSignedIn, signOut } = useClerkAuth();
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTokenProvider(() => getToken({ template: "default" }));
+  }, [getToken]);
+
+  const loadUser = useCallback(async () => {
+    if (!isSignedIn) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+    try {
+      const me = await fetchMe();
+      setUser(me);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [isSignedIn]);
+
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
+
+  const onLogout = useCallback(() => {
+    signOut();
+    setUser(null);
+  }, [signOut]);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAuthenticated: !!isSignedIn,
+        onLogin: () => {},
+        onLogout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+/** Legacy auth: localStorage token + /auth/me. */
+function LegacyAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -35,7 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const me = await fetchMe();
       setUser(me);
     } catch {
-      // Token expired or invalid — clear it
       clearStoredToken();
       setUser(null);
     } finally {
@@ -43,19 +95,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Load user on mount
   useEffect(() => {
     loadUser();
   }, [loadUser]);
 
-  // Handle OAuth callback — token arrives in URL hash
   useEffect(() => {
     const hash = window.location.hash;
     const match = hash.match(/[?&]token=([^&]+)/);
     if (match) {
       const token = decodeURIComponent(match[1]);
       setStoredToken(token);
-      // Clean URL
       window.history.replaceState(null, "", window.location.pathname);
       loadUser();
     }
@@ -87,6 +136,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
+}
+
+interface AuthProviderProps {
+  children: ReactNode;
+  /** When true, use Clerk for auth (must be wrapped in ClerkProvider). */
+  useClerk?: boolean;
+}
+
+export function AuthProvider({ children, useClerk = false }: AuthProviderProps) {
+  if (useClerk) {
+    return <ClerkAuthProvider>{children}</ClerkAuthProvider>;
+  }
+  return <LegacyAuthProvider>{children}</LegacyAuthProvider>;
 }
 
 export function useAuth(): AuthContextValue {

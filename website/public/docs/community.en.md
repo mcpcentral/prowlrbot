@@ -23,6 +23,7 @@ For security issues, please see our [Security Policy](https://github.com/ProwlrB
 
 | Channel | Link |
 |:--------|:-----|
+| **Discord** | [Join the server](https://discord.gg/Mx4ptu2s5J) — chat, support, and announcements |
 | GitHub Issues | [ProwlrBot/prowlrbot/issues](https://github.com/ProwlrBot/prowlrbot/issues) |
 | GitHub Discussions | [ProwlrBot/prowlrbot/discussions](https://github.com/ProwlrBot/prowlrbot/discussions) |
 | Contributing Guide | [CONTRIBUTING.md](https://github.com/ProwlrBot/prowlrbot/blob/main/CONTRIBUTING.md) |

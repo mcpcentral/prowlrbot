@@ -2,6 +2,8 @@
 
 ProwlrBot supports 11 built-in providers and unlimited custom OpenAI-compatible providers. The SmartRouter automatically scores and selects the best available provider.
 
+**Hosted app vs self-hosted:** On **app.prowlrbot.com** (the hosted app), only **cloud providers** (OpenAI, Anthropic, Groq, Azure, etc.) are used. Local models (Ollama, llama.cpp, MLX) and the **Hardware Advisor** are not available there—they apply when you run ProwlrBot yourself (e.g. `prowlr app` on your own machine). The Hardware Advisor on the hosted app shows the server’s hardware, not your PC; for local model recommendations, run ProwlrBot locally.
+
 ---
 
 ## Built-in providers

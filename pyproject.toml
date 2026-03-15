@@ -32,7 +32,9 @@ dependencies = [
     "python-multipart>=0.0.22",
     "sentry-sdk[fastapi]>=2.0",
     "stripe>=11.0.0",
-    "jmespath>=1.0.0",
+    # 0.9.3..<1.0 required by aliyun-python-sdk-core (oss2 from agentscope-runtime)
+    "jmespath>=0.9.3",
+    "pyjwt[crypto]>=2.10",
 ]
 
 [tool.setuptools.dynamic]

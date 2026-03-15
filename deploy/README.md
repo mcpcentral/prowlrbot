@@ -82,9 +82,9 @@ wrangler login
 cd website
 wrangler pages project create prowlrbot
 
-# 4. Build and deploy
+# 4. Build and deploy (use --branch=production so prowlrbot.com updates)
 npm ci && npm run build
-wrangler pages deploy dist --project-name=prowlrbot
+wrangler pages deploy dist --project-name=prowlrbot --branch=production
 ```
 
 ### Required GitHub secrets
@@ -94,12 +94,14 @@ Add these to your repo secrets for CI/CD:
 - `CLOUDFLARE_API_TOKEN` — Create at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) with "Cloudflare Pages: Edit" permission
 - `CLOUDFLARE_ACCOUNT_ID` — Found on your Cloudflare dashboard overview page
 
-### Custom domain
+### Custom domain (e.g. prowlrbot.com)
 
 1. Go to **Cloudflare Dashboard > Pages > prowlrbot > Custom domains**
 2. Add your domain (e.g., `prowlrbot.com` or `www.prowlrbot.com`)
 3. If domain is already on Cloudflare, DNS records are auto-configured
 4. If not, add the CNAME record shown
+
+**Important:** Custom domains serve the **production** deployment. When deploying with wrangler (Direct Upload), use `--branch=production` so the deploy updates production and thus prowlrbot.com. Without it, each deploy gets a preview URL only (e.g. `2e8e98b3.prowlrbot.pages.dev`).
 
 ---
 

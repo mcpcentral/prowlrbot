@@ -293,16 +293,13 @@ export default function WarRoomPage() {
 
   useEffect(() => {
     refresh();
-
-    const disconnect = connectWarRoomWS(
-      appendLiveEvent,
-      (status) => setConnected(status),
-    );
-
+    let disconnect: (() => void) | undefined;
+    connectWarRoomWS(appendLiveEvent, (status) => setConnected(status)).then((d) => {
+      disconnect = d;
+    });
     pollRef.current = setInterval(refresh, 10000);
-
     return () => {
-      disconnect();
+      disconnect?.();
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, [refresh, appendLiveEvent]);

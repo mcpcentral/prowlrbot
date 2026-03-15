@@ -27,6 +27,7 @@ class SubscribeRequest(PydanticBaseModel):
     cancel_url: str = ""
 
 
+from ...marketplace.install_helper import materialize_install
 from ...marketplace.models import (
     Bundle,
     CreditBalance,
@@ -150,6 +151,10 @@ async def install_bundle(bundle_id: str, _user=Depends(get_current_user)) -> dic
             )
             store.record_install(record)
             installed.append(lid)
+            try:
+                materialize_install(listing)
+            except Exception:
+                pass  # already recorded; materialize is best-effort
         except ValueError as e:
             failed.append({"slug": lid, "error": str(e)})
         except Exception as e:
@@ -364,7 +369,12 @@ async def record_install(
                 },
             )
 
-    return store.record_install(record)
+    record = store.record_install(record)
+    try:
+        materialize_install(listing)
+    except Exception:
+        pass  # already recorded; materialize is best-effort
+    return record
 
 
 # ------------------------------------------------------------------
@@ -666,6 +676,9 @@ async def tip_author(
             ],
             success_url=f"/marketplace/listings/{listing_id}?tipped=true",
             cancel_url=f"/marketplace/listings/{listing_id}",
+            payment_intent_data={
+                "statement_descriptor": (os.environ.get("STRIPE_STATEMENT_DESCRIPTOR") or "ProwlrBot")[:22],
+            },
             metadata={
                 "listing_id": listing_id,
                 "author_id": listing.author_id,

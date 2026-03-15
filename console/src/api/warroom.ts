@@ -1,4 +1,4 @@
-import { getApiToken } from "./config";
+import { getApiTokenAsync } from "./config";
 import { request } from "./request";
 
 export interface Agent {
@@ -63,14 +63,13 @@ export const warroom = {
 };
 
 /** Bridge may send flat { type, timestamp, agent_id?, task_id?, ... } without event_id or nested payload. */
-export function connectWarRoomWS(
+export async function connectWarRoomWS(
   onEvent: (event: WarRoomEvent | Record<string, unknown>) => void,
   onStatus: (connected: boolean) => void,
-): () => void {
-  // Connect to same origin — no CORS issues. Use same auth as API (JWT from login or VITE_WARROOM_TOKEN).
+): Promise<() => void> {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   const token =
-    (import.meta.env.VITE_WARROOM_TOKEN as string | undefined) || getApiToken();
+    (import.meta.env.VITE_WARROOM_TOKEN as string | undefined) || (await getApiTokenAsync());
   const wsUrl = `${protocol}//${window.location.host}/ws/warroom${
     token ? `?token=${encodeURIComponent(token)}` : ""
   }`;
