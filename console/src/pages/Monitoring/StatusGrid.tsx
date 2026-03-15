@@ -51,7 +51,7 @@ export default function StatusGrid({ monitors, onSelect, onDelete }: Props) {
             </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {m.type.toUpperCase()} · Every {m.interval_minutes}m ·{" "}
-              {m.last_checked || "never checked"}
+              {m.last_checked ?? "never checked"}
             </Typography.Text>
           </Card>
         </Col>

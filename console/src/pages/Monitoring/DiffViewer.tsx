@@ -36,29 +36,16 @@ export default function DiffViewer({ monitorId, onClose }: Props) {
       ) : (
         <Timeline
           items={history.map((check) => ({
-            color: check.status === "ok" ? "green" : check.status === "changed" ? "orange" : "red",
+            color: "blue",
             children: (
               <div>
-                <Typography.Text strong>
-                  {check.status.toUpperCase()}
+                <Typography.Text type="secondary">
+                  Checked at {check.checked_at}
                 </Typography.Text>
-                <Typography.Text type="secondary" style={{ marginLeft: 8 }}>
-                  {check.checked_at}
-                </Typography.Text>
-                {check.diff && (
-                  <pre
-                    style={{
-                      marginTop: 8,
-                      padding: 8,
-                      background: "var(--pb-bg-sunken)",
-                      borderRadius: 4,
-                      fontSize: 12,
-                      maxHeight: 200,
-                      overflow: "auto",
-                    }}
-                  >
-                    {check.diff}
-                  </pre>
+                {check.content_length != null && (
+                  <Typography.Text type="secondary" style={{ display: "block", marginTop: 4 }}>
+                    Content length: {check.content_length} chars
+                  </Typography.Text>
                 )}
               </div>
             ),

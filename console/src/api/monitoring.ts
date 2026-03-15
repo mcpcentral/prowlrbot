@@ -5,17 +5,17 @@ export interface Monitor {
   type: "web" | "api";
   url: string;
   interval_minutes: number;
-  last_checked: string;
+  enabled?: boolean;
+  last_checked: string | null;
   status: "ok" | "changed" | "error" | "unknown";
   last_diff?: string;
 }
 
+/** Backend returns { monitor_name?, checked_at, content_length? } per check. */
 export interface MonitorCheck {
-  id: string;
-  monitor_id: string;
-  status: string;
+  monitor_name?: string;
   checked_at: string;
-  diff?: string;
+  content_length?: number;
 }
 
 export interface CreateMonitorRequest {

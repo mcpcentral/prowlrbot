@@ -32,8 +32,10 @@ export default function MonitoringPage() {
     setLoading(true);
     try {
       setMonitors(await getMonitors());
-    } catch {
+    } catch (e) {
       setMonitors([]);
+      const msg = e instanceof Error ? e.message : "Failed to load monitors";
+      message.error(msg);
     }
     setLoading(false);
   }, []);
@@ -50,8 +52,10 @@ export default function MonitoringPage() {
       form.resetFields();
       message.success("Monitor created");
       fetchMonitors();
-    } catch {
-      message.error("Failed to create monitor");
+    } catch (e) {
+      if (e && typeof e === "object" && "errorFields" in e) return;
+      const msg = e instanceof Error ? e.message : "Failed to create monitor";
+      message.error(msg);
     }
   };
 
@@ -60,8 +64,9 @@ export default function MonitoringPage() {
       await deleteMonitor(id);
       message.success("Monitor deleted");
       fetchMonitors();
-    } catch {
-      message.error("Failed to delete monitor");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Failed to delete monitor";
+      message.error(msg);
     }
   };
 

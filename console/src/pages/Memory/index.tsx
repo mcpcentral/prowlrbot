@@ -8,6 +8,7 @@ import {
   Space,
   Empty,
   Spin,
+  message,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { getAgentMemory, searchMemory } from "../../api/memory";
@@ -81,8 +82,10 @@ export default function MemoryPage() {
       } else {
         setEntries(await getAgentMemory(agentId, tier || undefined));
       }
-    } catch {
+    } catch (e) {
       setEntries([]);
+      const msg = e instanceof Error ? e.message : "Failed to load memory";
+      message.error(msg);
     }
     setLoading(false);
   };
