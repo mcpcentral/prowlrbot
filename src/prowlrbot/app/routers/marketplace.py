@@ -63,7 +63,8 @@ def _get_store() -> MarketplaceStore:
 
 @router.post("/listings", response_model=MarketplaceListing)
 async def publish_listing(
-    listing: MarketplaceListing, _user=Depends(get_current_user)
+    listing: MarketplaceListing,
+    _user=Depends(get_current_user),
 ) -> MarketplaceListing:
     """Publish a new listing to the marketplace."""
     return _get_store().publish_listing(listing)
@@ -120,7 +121,10 @@ async def get_bundle(bundle_id: str) -> dict:
 
 
 @router.post("/bundles/{bundle_id}/install")
-async def install_bundle(bundle_id: str, _user=Depends(get_current_user)) -> dict:
+async def install_bundle(
+    bundle_id: str,
+    _user=Depends(get_current_user),
+) -> dict:
     """Install all listings in a bundle. Continues on failure. Paid listings cost credits."""
     store = _get_store()
     bundle = store.get_bundle(bundle_id)
@@ -161,7 +165,11 @@ async def install_bundle(bundle_id: str, _user=Depends(get_current_user)) -> dic
             failed.append({"slug": lid, "error": str(e)})
 
     store.increment_bundle_installs(bundle_id)
-    return {"installed": installed, "failed": failed, "total": len(bundle.listing_ids)}
+    return {
+        "installed": installed,
+        "failed": failed,
+        "total": len(bundle.listing_ids),
+    }
 
 
 @router.get("/listings/{listing_id}", response_model=MarketplaceListing)
@@ -230,7 +238,10 @@ async def scan_listing_content(
         raise HTTPException(status_code=404, detail="Listing not found")
 
     with tempfile.NamedTemporaryFile(
-        suffix=".md", mode="w", delete=False, encoding="utf-8"
+        suffix=".md",
+        mode="w",
+        delete=False,
+        encoding="utf-8",
     ) as tf:
         tf.write(body.content)
         tmp_path = Path(tf.name)
@@ -258,12 +269,18 @@ async def scan_listing_content(
     # Persist scan result to listing
     _get_store().update_listing(listing_id, {"skill_scan": scan_data})
 
-    return {"listing_id": listing_id, "scan": scan_data, "summary": result.summary()}
+    return {
+        "listing_id": listing_id,
+        "scan": scan_data,
+        "summary": result.summary(),
+    }
 
 
 @router.put("/listings/{listing_id}", response_model=MarketplaceListing)
 async def update_listing(
-    listing_id: str, updates: dict, _user=Depends(get_current_user)
+    listing_id: str,
+    updates: dict,
+    _user=Depends(get_current_user),
 ) -> MarketplaceListing:
     """Partially update a listing."""
     listing = _get_store().update_listing(listing_id, updates)
@@ -272,7 +289,10 @@ async def update_listing(
     return listing
 
 
-@router.get("/listings/author/{author_id}", response_model=list[MarketplaceListing])
+@router.get(
+    "/listings/author/{author_id}",
+    response_model=list[MarketplaceListing],
+)
 async def list_by_author(author_id: str) -> list[MarketplaceListing]:
     """Get all listings by a specific author."""
     return _get_store().list_by_author(author_id)
@@ -285,7 +305,9 @@ async def list_by_author(author_id: str) -> list[MarketplaceListing]:
 
 @router.post("/listings/{listing_id}/reviews", response_model=ReviewEntry)
 async def add_review(
-    listing_id: str, review: ReviewEntry, _user=Depends(get_current_user)
+    listing_id: str,
+    review: ReviewEntry,
+    _user=Depends(get_current_user),
 ) -> ReviewEntry:
     """Add a review to a listing."""
     listing = _get_store().get_listing(listing_id)
@@ -516,7 +538,10 @@ async def subscribe(
     import os
 
     if tier_id not in _TIER_CONFIG:
-        raise HTTPException(status_code=400, detail=f"Unknown tier: {tier_id!r}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown tier: {tier_id!r}",
+        )
 
     stripe_key = os.environ.get("STRIPE_SECRET_KEY")
     if not stripe_key:
@@ -610,7 +635,8 @@ async def list_personas() -> list[dict]:
 
 @router.get("/for/{persona}", response_model=list[MarketplaceListing])
 async def get_listings_for_persona(
-    persona: str, limit: int = 20
+    persona: str,
+    limit: int = 20,
 ) -> list[MarketplaceListing]:
     """Get curated listings for a specific persona."""
     return _get_store().search_listings(persona=persona, limit=min(limit, 100))
@@ -623,7 +649,9 @@ async def get_listings_for_persona(
 
 @router.post("/listings/{listing_id}/tip")
 async def tip_author(
-    listing_id: str, tip_req: TipRequest, _user=Depends(get_current_user)
+    listing_id: str,
+    tip_req: TipRequest,
+    _user=Depends(get_current_user),
 ) -> dict:
     """Create a Stripe checkout session for tipping, or record locally."""
     import os
@@ -636,7 +664,8 @@ async def tip_author(
     # Validate amount range
     if tip_req.amount < 1 or tip_req.amount > 100:
         raise HTTPException(
-            status_code=400, detail="Tip amount must be between $1 and $100"
+            status_code=400,
+            detail="Tip amount must be between $1 and $100",
         )
 
     stripe_key = os.environ.get("STRIPE_SECRET_KEY")
@@ -672,12 +701,14 @@ async def tip_author(
                         },
                     },
                     "quantity": 1,
-                }
+                },
             ],
             success_url=f"/marketplace/listings/{listing_id}?tipped=true",
             cancel_url=f"/marketplace/listings/{listing_id}",
             payment_intent_data={
-                "statement_descriptor": (os.environ.get("STRIPE_STATEMENT_DESCRIPTOR") or "ProwlrBot")[:22],
+                "statement_descriptor": (
+                    os.environ.get("STRIPE_STATEMENT_DESCRIPTOR") or "ProwlrBot"
+                )[:22],
             },
             metadata={
                 "listing_id": listing_id,
@@ -718,7 +749,11 @@ async def stripe_webhook(request: Request) -> dict:
     try:
         import stripe
 
-        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            webhook_secret,
+        )
     except ImportError:
         raise HTTPException(status_code=503, detail="Stripe SDK not installed")
     except Exception:
@@ -788,7 +823,9 @@ async def stripe_webhook(request: Request) -> dict:
                         store.add_credits(
                             user_id=user_id,
                             amount=credits,
-                            transaction_type=CreditTransactionType("purchased"),
+                            transaction_type=CreditTransactionType(
+                                "purchased",
+                            ),
                             description=f"{tier_id.title()} subscription — monthly renewal",
                         )
                 except Exception:
@@ -855,7 +892,11 @@ async def grant_monthly_credits(user_id: str) -> CreditBalance:
 async def get_credit_transactions(user_id: str, limit: int = 20) -> list:
     """Get a user's credit transaction history."""
     store = _get_store()
-    transactions = store.get_transactions(user_id, limit=min(limit, 100)) if hasattr(store, "get_transactions") else []
+    transactions = (
+        store.get_transactions(user_id, limit=min(limit, 100))
+        if hasattr(store, "get_transactions")
+        else []
+    )
     return transactions
 
 
@@ -902,13 +943,21 @@ async def spend_credits(
         raise HTTPException(status_code=402, detail=str(e))
 
 
-@router.post("/credits/{user_id}/unlock/{content_key}", response_model=CreditBalance)
+@router.post(
+    "/credits/{user_id}/unlock/{content_key}",
+    response_model=CreditBalance,
+)
 async def unlock_content(
-    user_id: str, content_key: str, _user=Depends(get_current_user)
+    user_id: str,
+    content_key: str,
+    _user=Depends(get_current_user),
 ) -> CreditBalance:
     """Unlock premium content with credits."""
     if content_key not in PREMIUM_CONTENT_PRICES:
-        raise HTTPException(status_code=404, detail=f"Unknown content: {content_key}")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Unknown content: {content_key}",
+        )
 
     cost = PREMIUM_CONTENT_PRICES[content_key]
     try:

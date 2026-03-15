@@ -17,7 +17,9 @@ class RateLimiter:
 
     max_requests: int = 100
     window_seconds: float = 60.0
-    _requests: Dict[str, List[float]] = field(default_factory=lambda: defaultdict(list))
+    _requests: Dict[str, List[float]] = field(
+        default_factory=lambda: defaultdict(list),
+    )
 
     def allow(self, client_id: str) -> bool:
         """Check if a request from client_id is allowed."""
@@ -39,10 +41,16 @@ class RateLimiter:
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """FastAPI middleware for rate limiting API requests."""
 
-    def __init__(self, app, max_requests: int = 100, window_seconds: float = 60.0):
+    def __init__(
+        self,
+        app,
+        max_requests: int = 100,
+        window_seconds: float = 60.0,
+    ):
         super().__init__(app)
         self.limiter = RateLimiter(
-            max_requests=max_requests, window_seconds=window_seconds
+            max_requests=max_requests,
+            window_seconds=window_seconds,
         )
 
     async def dispatch(self, request: Request, call_next):

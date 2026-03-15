@@ -65,9 +65,11 @@ class JWTHandler:
             iss="prowlrbot",
             aud="prowlrbot-api",
         )
-        header_b64 = _b64url_encode(json.dumps(header, separators=(",", ":")).encode())
+        header_b64 = _b64url_encode(
+            json.dumps(header, separators=(",", ":")).encode(),
+        )
         payload_b64 = _b64url_encode(
-            json.dumps(payload.model_dump(), separators=(",", ":")).encode()
+            json.dumps(payload.model_dump(), separators=(",", ":")).encode(),
         )
         signature = self._sign(header_b64, payload_b64)
         return f"{header_b64}.{payload_b64}.{signature}"

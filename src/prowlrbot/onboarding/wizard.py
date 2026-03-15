@@ -96,7 +96,8 @@ class OnboardingManager:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS onboarding (
                 user_id TEXT PRIMARY KEY,
                 current_step TEXT DEFAULT 'welcome',
@@ -105,7 +106,8 @@ class OnboardingManager:
                 started_at REAL NOT NULL,
                 completed_at REAL DEFAULT 0
             );
-        """)
+        """,
+        )
         self._conn.commit()
 
     def start(self, user_id: str) -> OnboardingProgress:
@@ -123,14 +125,17 @@ class OnboardingManager:
 
     def get_progress(self, user_id: str) -> Optional[OnboardingProgress]:
         row = self._conn.execute(
-            "SELECT * FROM onboarding WHERE user_id = ?", (user_id,)
+            "SELECT * FROM onboarding WHERE user_id = ?",
+            (user_id,),
         ).fetchone()
         if not row:
             return None
         return self._row_to_progress(row)
 
     def complete_step(
-        self, user_id: str, step: OnboardingStep
+        self,
+        user_id: str,
+        step: OnboardingStep,
     ) -> Optional[OnboardingProgress]:
         """Mark a step as completed and advance to next."""
         progress = self.get_progress(user_id)
@@ -146,7 +151,10 @@ class OnboardingManager:
         # Advance to next uncompleted step
         current_idx = STEP_ORDER.index(step)
         for next_step in STEP_ORDER[current_idx + 1 :]:
-            step_info = next((s for s in progress.steps if s.step == next_step), None)
+            step_info = next(
+                (s for s in progress.steps if s.step == next_step),
+                None,
+            )
             if step_info and not step_info.completed and not step_info.skipped:
                 progress.current_step = next_step
                 break
@@ -158,7 +166,9 @@ class OnboardingManager:
         return progress
 
     def skip_step(
-        self, user_id: str, step: OnboardingStep
+        self,
+        user_id: str,
+        step: OnboardingStep,
     ) -> Optional[OnboardingProgress]:
         """Skip a step."""
         progress = self.get_progress(user_id)
@@ -173,7 +183,10 @@ class OnboardingManager:
         # Advance to next
         current_idx = STEP_ORDER.index(step)
         for next_step in STEP_ORDER[current_idx + 1 :]:
-            step_info = next((s for s in progress.steps if s.step == next_step), None)
+            step_info = next(
+                (s for s in progress.steps if s.step == next_step),
+                None,
+            )
             if step_info and not step_info.completed and not step_info.skipped:
                 progress.current_step = next_step
                 break
@@ -185,7 +198,9 @@ class OnboardingManager:
         return progress
 
     def set_preferences(
-        self, user_id: str, preferences: Dict[str, Any]
+        self,
+        user_id: str,
+        preferences: Dict[str, Any],
     ) -> Optional[OnboardingProgress]:
         progress = self.get_progress(user_id)
         if not progress:
@@ -196,7 +211,10 @@ class OnboardingManager:
 
     def reset(self, user_id: str) -> OnboardingProgress:
         """Reset onboarding for a user."""
-        self._conn.execute("DELETE FROM onboarding WHERE user_id = ?", (user_id,))
+        self._conn.execute(
+            "DELETE FROM onboarding WHERE user_id = ?",
+            (user_id,),
+        )
         self._conn.commit()
         return self.start(user_id)
 

@@ -23,12 +23,10 @@ export class MCPAdapter {
     fromAgent: AgentIdentity,
   ): ROARMessage {
     const toolIdentity = createIdentity(toolName, { agentType: "tool" });
-    return createMessage(
-      fromAgent,
-      toolIdentity,
-      MessageIntent.EXECUTE,
-      { action: toolName, params },
-    );
+    return createMessage(fromAgent, toolIdentity, MessageIntent.EXECUTE, {
+      action: toolName,
+      params,
+    });
   }
 
   /**
@@ -85,13 +83,9 @@ export class A2AAdapter {
     fromAgent: AgentIdentity,
     toAgent: AgentIdentity,
   ): ROARMessage {
-    return createMessage(
-      fromAgent,
-      toAgent,
-      MessageIntent.DELEGATE,
-      task,
-      { protocol: "a2a" },
-    );
+    return createMessage(fromAgent, toAgent, MessageIntent.DELEGATE, task, {
+      protocol: "a2a",
+    });
   }
 
   /**

@@ -7,7 +7,10 @@ import os
 import secrets
 from typing import Optional
 
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import (
+    BaseHTTPMiddleware,
+    RequestResponseEndpoint,
+)
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
@@ -26,7 +29,7 @@ EXEMPT_PATHS = frozenset(
         "/api/auth/login",
         "/api/auth/register",
         "/api/health",
-    }
+    },
 )
 
 
@@ -108,7 +111,9 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         self._csrf = CSRFProtection()
 
     async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
+        self,
+        request: Request,
+        call_next: RequestResponseEndpoint,
     ) -> Response:
         # Safe methods never need CSRF validation.
         if request.method in SAFE_METHODS:
@@ -135,7 +140,7 @@ class CSRFMiddleware(BaseHTTPMiddleware):
             return JSONResponse(
                 status_code=403,
                 content={
-                    "detail": "CSRF cookie missing. Make a GET request first to obtain the CSRF token."
+                    "detail": "CSRF cookie missing. Make a GET request first to obtain the CSRF token.",
                 },
             )
 

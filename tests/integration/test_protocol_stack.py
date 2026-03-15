@@ -28,14 +28,14 @@ class TestACPFullLifecycle:
 
         # 1. Initialize
         resp = await server.handle_request(
-            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}
+            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}},
         )
         assert resp["result"]["name"] == "ProwlrBot"
         assert resp["result"]["capabilities"]["prompting"] is True
 
         # 2. Create session
         resp = await server.handle_request(
-            {"jsonrpc": "2.0", "id": 2, "method": "session/new", "params": {}}
+            {"jsonrpc": "2.0", "id": 2, "method": "session/new", "params": {}},
         )
         session_id = resp["result"]["session_id"]
         assert session_id.startswith("acp_")
@@ -47,14 +47,14 @@ class TestACPFullLifecycle:
                 "id": 3,
                 "method": "session/prompt",
                 "params": {"prompt": "What is 2+2?"},
-            }
+            },
         )
         assert resp["result"]["session_id"] == session_id
         assert "4" in resp["result"]["response"]
 
         # 4. Shutdown
         resp = await server.handle_request(
-            {"jsonrpc": "2.0", "id": 4, "method": "shutdown", "params": {}}
+            {"jsonrpc": "2.0", "id": 4, "method": "shutdown", "params": {}},
         )
         assert resp["result"]["status"] == "shutdown"
 
@@ -62,7 +62,7 @@ class TestACPFullLifecycle:
         """Sending a prompt without creating a session should fail."""
         server = ACPServer()
         await server.handle_request(
-            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}
+            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}},
         )
 
         resp = await server.handle_request(
@@ -71,7 +71,7 @@ class TestACPFullLifecycle:
                 "id": 2,
                 "method": "session/prompt",
                 "params": {"prompt": "Hello"},
-            }
+            },
         )
         result = resp["result"]
         assert result.get("status") == "error" or "error" in result
@@ -92,10 +92,10 @@ class TestACPFullLifecycle:
 
         server = ACPServer(runner=mock_runner)
         await server.handle_request(
-            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}
+            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}},
         )
         await server.handle_request(
-            {"jsonrpc": "2.0", "id": 2, "method": "session/new", "params": {}}
+            {"jsonrpc": "2.0", "id": 2, "method": "session/new", "params": {}},
         )
 
         for i in range(3):
@@ -105,7 +105,7 @@ class TestACPFullLifecycle:
                     "id": 10 + i,
                     "method": "session/prompt",
                     "params": {"prompt": f"Question {i}"},
-                }
+                },
             )
             assert resp["result"]["status"] == "ok"
 
@@ -127,10 +127,10 @@ class TestACPErrorHandling:
 
         server = ACPServer(runner=mock_runner)
         await server.handle_request(
-            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}
+            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}},
         )
         await server.handle_request(
-            {"jsonrpc": "2.0", "id": 2, "method": "session/new", "params": {}}
+            {"jsonrpc": "2.0", "id": 2, "method": "session/new", "params": {}},
         )
 
         resp = await server.handle_request(
@@ -139,7 +139,7 @@ class TestACPErrorHandling:
                 "id": 3,
                 "method": "session/prompt",
                 "params": {"prompt": "test"},
-            }
+            },
         )
         assert resp["result"]["status"] == "error"
         assert resp["result"][
@@ -150,7 +150,7 @@ class TestACPErrorHandling:
         """Unknown JSON-RPC methods should return error code -32601."""
         server = ACPServer()
         resp = await server.handle_request(
-            {"jsonrpc": "2.0", "id": 1, "method": "bogus/foo", "params": {}}
+            {"jsonrpc": "2.0", "id": 1, "method": "bogus/foo", "params": {}},
         )
         assert "error" in resp
         assert resp["error"]["code"] == -32601

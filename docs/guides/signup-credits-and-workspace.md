@@ -11,8 +11,8 @@ How “anybody” can get an account, where credits live, and the difference bet
 | **Website** | prowlrbot.com | Clerk (Sign in / Sign up) | Marketing, docs, pricing. When Clerk is also used on the app, the same account works everywhere. |
 | **App (console)** | app.prowlrbot.com | Clerk (if configured) or app login (username/password or OAuth) | Dashboard, chat, workspace, credits, War Room. **Credits and workspace live here.** With Clerk on all three, one sign-in covers site + app. |
 
-So: **can anybody go to my site and sign up and gain credits?**  
-- If **Clerk is on all three**: signing up on the website or the app gives one account; the backend creates an app user on first sign-in and grants **welcome credits** (if `PROWLR_FREE_TIER_WELCOME_CREDITS` is set).  
+So: **can anybody go to my site and sign up and gain credits?**
+- If **Clerk is on all three**: signing up on the website or the app gives one account; the backend creates an app user on first sign-in and grants **welcome credits** (if `PROWLR_FREE_TIER_WELCOME_CREDITS` is set).
 - If only **legacy app login** is used: they must sign up on **app.prowlrbot.com** to get an app account and credits.
 
 To let “anybody” sign up and get credits, they need to use the **app** (e.g. “Log in” / “Sign up” on app.prowlrbot.com), not only the website. You can add a clear “Open console” or “Sign in to app” link on the website that points to `https://app.prowlrbot.com` (or your app URL).

@@ -80,12 +80,16 @@ async def get_current_user(request: Request) -> User:
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
         raise HTTPException(
-            status_code=401, detail="Missing or invalid Authorization header"
+            status_code=401,
+            detail="Missing or invalid Authorization header",
         )
 
     token = auth_header[7:].strip()
     if not token:
-        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid Authorization header",
+        )
 
     store = _get_user_store()
 
@@ -99,7 +103,10 @@ async def get_current_user(request: Request) -> User:
                 username="",
             )
             if not user.is_active:
-                raise HTTPException(status_code=401, detail="User not found or inactive")
+                raise HTTPException(
+                    status_code=401,
+                    detail="User not found or inactive",
+                )
             return user
 
     # 2) Legacy app JWT
@@ -111,7 +118,10 @@ async def get_current_user(request: Request) -> User:
 
     user = store.get_user_by_id(payload.sub)
     if user is None or not user.is_active:
-        raise HTTPException(status_code=401, detail="User not found or inactive")
+        raise HTTPException(
+            status_code=401,
+            detail="User not found or inactive",
+        )
 
     return user
 
@@ -135,7 +145,9 @@ def require_permission(*perms: Permission) -> Callable:
 
     async def _checker(user: User = Depends(get_current_user)) -> User:
         # Effective permissions = explicit user perms + role defaults
-        effective = set(user.permissions) | set(ROLE_PERMISSIONS.get(user.role, []))
+        effective = set(user.permissions) | set(
+            ROLE_PERMISSIONS.get(user.role, []),
+        )
         missing = [p for p in perms if p not in effective]
         if missing:
             raise HTTPException(

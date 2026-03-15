@@ -54,7 +54,11 @@ class TestPromotionLifecycle:
         assert len(results) == 1
         assert results[0]["promoted_from"] == "learn-2"
 
-    def test_important_entry_promoted_regardless_of_access(self, manager, archive):
+    def test_important_entry_promoted_regardless_of_access(
+        self,
+        manager,
+        archive,
+    ):
         """Entries marked important should promote regardless of access count."""
         entry = {
             "id": "learn-3",
@@ -110,7 +114,12 @@ class TestArchiveAccess:
 
     def test_access_count_and_retrieval(self, archive):
         """Store, access, verify counts update correctly."""
-        entry_id = archive.store("agent-x", "Topic A", "Summary A", importance=2)
+        entry_id = archive.store(
+            "agent-x",
+            "Topic A",
+            "Summary A",
+            importance=2,
+        )
 
         # Access 5 times
         for _ in range(5):
@@ -122,7 +131,11 @@ class TestArchiveAccess:
 
     def test_fts_search_across_entries(self, archive):
         """FTS5 should find entries across topics and summaries."""
-        archive.store("a1", "Python best practices", "Use type hints for clarity")
+        archive.store(
+            "a1",
+            "Python best practices",
+            "Use type hints for clarity",
+        )
         archive.store("a1", "JavaScript patterns", "Prefer const over let")
         archive.store("a1", "Python testing", "Write unit tests first")
 

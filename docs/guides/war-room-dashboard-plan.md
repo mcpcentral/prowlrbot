@@ -90,13 +90,13 @@ If you later want a dedicated “steps” or “thinking” table (e.g. multiple
 
 ## Tech choices for the new dashboard
 
-- **Option A — Single HTML + JS (like current status page)**  
+- **Option A — Single HTML + JS (like current status page)**
   One big HTML with CSS/JS, fetch `/api/*`, connect to `ws://.../ws/warroom`, render feed + agent list + board; add modals/panels for agent and task detail. Fits the bridge’s “no build” setup; good for a first iteration.
 
-- **Option B — Small app (e.g. React/Vue/Svelte)**  
+- **Option B — Small app (e.g. React/Vue/Svelte)**
   If you prefer components and state management, build a small app that talks to the same REST + WebSocket APIs; host it next to the bridge or from the console. Same backend, richer UI.
 
-- **Option C — Integrate into main ProwlrBot console**  
+- **Option C — Integrate into main ProwlrBot console**
   If the main app already has a “War Room” or “Hub” section, add this dashboard there (same APIs, possibly same WebSocket from the app’s backend proxy). Keeps one place to “watch” the war room.
 
 ---

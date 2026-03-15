@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for /marketplace/tiers endpoint."""
 import pytest
 from fastapi.testclient import TestClient
@@ -7,6 +8,7 @@ from unittest.mock import patch, MagicMock
 def test_tiers_returns_three_items():
     from prowlrbot.app.routers.marketplace import router
     from fastapi import FastAPI
+
     app = FastAPI()
     app.include_router(router)
     client = TestClient(app)
@@ -23,6 +25,7 @@ def test_tiers_returns_three_items():
 def test_tiers_have_required_fields():
     from prowlrbot.app.routers.marketplace import router
     from fastapi import FastAPI
+
     app = FastAPI()
     app.include_router(router)
     client = TestClient(app)
@@ -39,6 +42,7 @@ def test_tiers_have_required_fields():
 def test_tiers_have_color_cta_fields():
     from prowlrbot.app.routers.marketplace import router
     from fastapi import FastAPI
+
     app = FastAPI()
     app.include_router(router)
     client = TestClient(app)
@@ -53,6 +57,7 @@ def test_tiers_have_color_cta_fields():
 def test_credit_transactions_returns_list():
     from prowlrbot.app.routers.marketplace import router
     from fastapi import FastAPI
+
     app = FastAPI()
     app.include_router(router)
     client = TestClient(app)

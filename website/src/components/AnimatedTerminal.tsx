@@ -14,7 +14,11 @@ const TERMINAL_LINES = [
   { output: "│ 🔄 API endpoints  builder-2   │", delay: 150 },
   { output: "│ ⏳ Test suite      unassigned  │", delay: 150 },
   { output: "└────────────────────────────────┘", delay: 300 },
-  { prompt: "prowlr", text: "claim 'Test suite' --agent reviewer-3", delay: 700 },
+  {
+    prompt: "prowlr",
+    text: "claim 'Test suite' --agent reviewer-3",
+    delay: 700,
+  },
   { output: "✓ Task claimed by reviewer-3", delay: 400 },
   { output: "✓ File locks acquired: tests/*", delay: 300 },
 ];
@@ -61,10 +65,7 @@ export function AnimatedTerminal() {
           } else {
             // Typing done, commit line
             setIsTyping(false);
-            setLines((prev) => [
-              ...prev,
-              { type: "prompt", text: line.text },
-            ]);
+            setLines((prev) => [...prev, { type: "prompt", text: line.text }]);
             setCurrentText("");
             lineIndex.current++;
             timeout = setTimeout(processNext, line.delay);

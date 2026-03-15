@@ -6,10 +6,15 @@ from prowlrbot.providers.models import ProviderDefinition
 
 
 def _make(
-    id: str, cost_tier: str = "standard", env_var: str = "X"
+    id: str,
+    cost_tier: str = "standard",
+    env_var: str = "X",
 ) -> ProviderDefinition:
     return ProviderDefinition(
-        id=id, name=id.title(), cost_tier=cost_tier, env_var=env_var
+        id=id,
+        name=id.title(),
+        cost_tier=cost_tier,
+        env_var=env_var,
     )
 
 
@@ -18,7 +23,10 @@ def test_router_selects_best_scored_provider():
         _make("cheap", cost_tier="free"),
         _make("fast", cost_tier="premium"),
     ]
-    router = SmartRouter(providers, health_status={"cheap": True, "fast": True})
+    router = SmartRouter(
+        providers,
+        health_status={"cheap": True, "fast": True},
+    )
     selected = router.select()
     # Free tier scores higher on cost (1.0 vs 0.2), default weights favor cost+avail
     assert selected is not None
@@ -30,7 +38,10 @@ def test_router_excludes_unhealthy():
         _make("healthy", cost_tier="standard"),
         _make("dead", cost_tier="free"),
     ]
-    router = SmartRouter(providers, health_status={"healthy": True, "dead": False})
+    router = SmartRouter(
+        providers,
+        health_status={"healthy": True, "dead": False},
+    )
     selected = router.select()
     assert selected is not None
     assert selected.id == "healthy"

@@ -60,7 +60,8 @@ def _resolve_listing(store: MarketplaceStore, listing_id: str):
 
 
 @click.group(
-    name="market", help="Community marketplace — browse, install, publish, tip"
+    name="market",
+    help="Community marketplace — browse, install, publish, tip",
 )
 def market_group():
     """Manage marketplace packages."""
@@ -90,7 +91,7 @@ def market_search(query: str, category: str, limit: int):
 
     click.echo()
     click.echo(
-        f"  {'ID':<22} {'Title':<25} {'Category':<14} {'Rating':<8} {'Downloads':<10} {'Price'}"
+        f"  {'ID':<22} {'Title':<25} {'Category':<14} {'Rating':<8} {'Downloads':<10} {'Price'}",
     )
     click.echo(f"  {'─'*22} {'─'*25} {'─'*14} {'─'*8} {'─'*10} {'─'*10}")
     for item in results:
@@ -98,10 +99,12 @@ def market_search(query: str, category: str, limit: int):
         lid = (item.id[:19] + "..") if len(item.id) > 21 else item.id
         click.echo(
             f"  {lid:<22} {item.title[:25]:<25} {item.category:<14} {stars:<8} "
-            f"{item.downloads:<10} {_format_price(item)}"
+            f"{item.downloads:<10} {_format_price(item)}",
         )
     click.echo(f"\n  {len(results)} result(s)")
-    click.echo("  Use: prowlr market install <ID>   or   prowlr market detail <ID>")
+    click.echo(
+        "  Use: prowlr market install <ID>   or   prowlr market detail <ID>",
+    )
     store.close()
 
 
@@ -152,7 +155,7 @@ def market_install(listing_id: str):
         # mode='json' so all values are JSON-serializable (enums, etc.)
         manifest = listing.model_dump(mode="json")
         (install_dir / "manifest.json").write_text(
-            json.dumps(manifest, indent=2, default=str)
+            json.dumps(manifest, indent=2, default=str),
         )
     except Exception as e:
         click.echo(f"  Warning: could not write manifest.json: {e}", err=True)
@@ -192,7 +195,7 @@ def market_list():
         )
         click.echo(
             f"  {name:<14} {manifest.get('title', '?'):<25} "
-            f"v{manifest.get('version', '?'):<10} {price}"
+            f"v{manifest.get('version', '?'):<10} {price}",
         )
     click.echo()
 
@@ -202,7 +205,13 @@ def market_list():
 
 @market_group.command(name="publish")
 @click.argument("path", type=click.Path(exists=True))
-@click.option("--price", "-p", type=float, default=0.0, help="Price (0 = free)")
+@click.option(
+    "--price",
+    "-p",
+    type=float,
+    default=0.0,
+    help="Price (0 = free)",
+)
 @click.option(
     "--pricing",
     type=click.Choice(["free", "one_time", "subscription", "usage_based"]),
@@ -224,7 +233,7 @@ def market_publish(path: str, price: float, pricing: str, category: str):
             click.echo("  Detected skill package (SKILL.md found)")
         else:
             click.echo(
-                "Error: No manifest.json or SKILL.md found in package directory."
+                "Error: No manifest.json or SKILL.md found in package directory.",
             )
             raise SystemExit(1)
 
@@ -257,7 +266,7 @@ def market_publish(path: str, price: float, pricing: str, category: str):
     if price > 0:
         author_share = price * published.revenue_split
         click.echo(
-            f"  Revenue:   ${author_share:.2f} per sale ({int(published.revenue_split * 100)}% split)"
+            f"  Revenue:   ${author_share:.2f} per sale ({int(published.revenue_split * 100)}% split)",
         )
 
     click.echo()
@@ -280,14 +289,18 @@ def market_popular(limit: int):
         return
 
     click.echo("\n  Most Popular:")
-    click.echo(f"  {'#':<4} {'ID':<22} {'Title':<25} {'Downloads':<10} {'Price'}")
+    click.echo(
+        f"  {'#':<4} {'ID':<22} {'Title':<25} {'Downloads':<10} {'Price'}",
+    )
     click.echo(f"  {'─'*4} {'─'*22} {'─'*25} {'─'*10} {'─'*10}")
     for i, item in enumerate(results, 1):
         lid = (item.id[:19] + "..") if len(item.id) > 21 else item.id
         click.echo(
-            f"  {i:<4} {lid:<22} {item.title[:25]:<25} {item.downloads:<10} {_format_price(item)}"
+            f"  {i:<4} {lid:<22} {item.title[:25]:<25} {item.downloads:<10} {_format_price(item)}",
         )
-    click.echo("\n  Use: prowlr market install <ID>   or   prowlr market detail <ID>")
+    click.echo(
+        "\n  Use: prowlr market install <ID>   or   prowlr market detail <ID>",
+    )
     store.close()
 
 
@@ -340,7 +353,9 @@ def market_tip(listing_id: str, amount: float, message: str):
         store.close()
         return
 
-    click.echo(f"\n  Tipping ${amount:.2f} to {listing.title} by {listing.author_id}")
+    click.echo(
+        f"\n  Tipping ${amount:.2f} to {listing.title} by {listing.author_id}",
+    )
     if message:
         click.echo(f'  Message: "{message}"')
 
@@ -373,7 +388,11 @@ def market_tip(listing_id: str, amount: float, message: str):
 @market_group.command(name="review")
 @click.argument("listing_id")
 @click.option(
-    "--rating", "-r", type=click.IntRange(1, 5), required=True, help="Rating 1-5"
+    "--rating",
+    "-r",
+    type=click.IntRange(1, 5),
+    required=True,
+    help="Rating 1-5",
 )
 @click.option("--comment", "-c", default="", help="Review comment")
 def market_review(listing_id: str, rating: int, comment: str):
@@ -393,7 +412,7 @@ def market_review(listing_id: str, rating: int, comment: str):
     )
     store.add_review(review)
     click.echo(
-        f"  Review added: {'*' * rating}{'.' * (5 - rating)} for {listing.title}"
+        f"  Review added: {'*' * rating}{'.' * (5 - rating)} for {listing.title}",
     )
     store.close()
 
@@ -416,7 +435,7 @@ def market_bundles():
     click.echo(f"  {'─'*22} {'─'*20} {'─'*6} {'─'*10}")
     for b in bundles:
         click.echo(
-            f"  {b.id:<22} {b.name:<20} {len(b.listing_ids):<6} {b.install_count}"
+            f"  {b.id:<22} {b.name:<20} {len(b.listing_ids):<6} {b.install_count}",
         )
     click.echo()
     store.close()
@@ -430,7 +449,7 @@ def market_install_bundle(bundle_id: str):
     bundle = store.get_bundle(bundle_id)
     if not bundle:
         click.echo(
-            f"Bundle '{bundle_id}' not found. Run 'prowlr market bundles' to see available."
+            f"Bundle '{bundle_id}' not found. Run 'prowlr market bundles' to see available.",
         )
         store.close()
         return
@@ -444,7 +463,11 @@ def market_install_bundle(bundle_id: str):
         if listing is None:
             click.echo(f"    SKIP  {lid} (not found)")
             continue
-        record = InstallRecord(listing_id=lid, user_id="local", version=listing.version)
+        record = InstallRecord(
+            listing_id=lid,
+            user_id="local",
+            version=listing.version,
+        )
         store.record_install(record)
         click.echo(f"    OK    {listing.title}")
         installed += 1
@@ -473,13 +496,15 @@ def market_detail(listing_id: str):
     )
     click.echo(f"\n  {listing.title} [{badge}]")
     click.echo(f"  {'─' * 50}")
-    click.echo(f"  Author:      {getattr(listing, 'author_name', listing.author_id)}")
+    click.echo(
+        f"  Author:      {getattr(listing, 'author_name', listing.author_id)}",
+    )
     click.echo(f"  Version:     {listing.version}")
     click.echo(f"  Category:    {listing.category}")
     click.echo(f"  License:     {getattr(listing, 'license', 'MIT')}")
     click.echo(f"  Downloads:   {listing.downloads}")
     click.echo(
-        f"  Rating:      {'%.1f' % listing.rating}/5 ({listing.ratings_count} reviews)"
+        f"  Rating:      {'%.1f' % listing.rating}/5 ({listing.ratings_count} reviews)",
     )
     click.echo(f"  Install:     prowlr market install {listing.id}")
     if listing.description:
@@ -491,7 +516,7 @@ def market_detail(listing_id: str):
         for r in reviews:
             stars = "*" * r.rating + "." * (5 - r.rating)
             click.echo(
-                f"    {stars}  {r.comment[:60] if r.comment else '(no comment)'}"
+                f"    {stars}  {r.comment[:60] if r.comment else '(no comment)'}",
             )
 
     click.echo()
@@ -565,9 +590,11 @@ def market_credits(user: str):
     click.echo(f"  Balance:      {balance.balance} credits")
     click.echo(f"  Total earned: {balance.total_earned}")
     click.echo(f"  Total spent:  {balance.total_spent}")
-    click.echo(f"  Monthly:      +{tier_limits.get('monthly_credits', 0)} credits/mo")
     click.echo(
-        f"  Earn bonus:   {tier_limits.get('credit_earn_multiplier', 1)}x multiplier"
+        f"  Monthly:      +{tier_limits.get('monthly_credits', 0)} credits/mo",
+    )
+    click.echo(
+        f"  Earn bonus:   {tier_limits.get('credit_earn_multiplier', 1)}x multiplier",
     )
 
     txns = store.get_transactions(user, limit=10)
@@ -576,7 +603,7 @@ def market_credits(user: str):
         for t in txns:
             sign = "+" if t.amount > 0 else ""
             click.echo(
-                f"    {sign}{t.amount:>6}  {t.transaction_type:<22} {t.description}"
+                f"    {sign}{t.amount:>6}  {t.transaction_type:<22} {t.description}",
             )
 
     click.echo()
@@ -597,7 +624,7 @@ def market_buy_credits(user: str):
         price = info["price"]
         per_dollar = base / price
         click.echo(
-            f"  {i}) {name:<8} {base:<10} ${price:<9.2f} {per_dollar:.0f} credits/$"
+            f"  {i}) {name:<8} {base:<10} ${price:<9.2f} {per_dollar:.0f} credits/$",
         )
 
     click.echo()
@@ -649,7 +676,9 @@ def market_unlock(content_key: str, user: str):
     click.echo(f"  Balance: {balance.balance} credits")
 
     if balance.balance < cost:
-        click.echo(f"\n  Insufficient credits! Need {cost - balance.balance} more.")
+        click.echo(
+            f"\n  Insufficient credits! Need {cost - balance.balance} more.",
+        )
         click.echo("  Run 'prowlr market buy-credits' to purchase more.")
         store.close()
         return
@@ -839,7 +868,7 @@ def market_tiers():
     click.echo(f"  {'Quick Comparison':^{w}}")
     click.echo()
     click.echo(
-        f"  {'Feature':<26} {'Free':<8} {'Starter':<10} {'Pro':<10} {'Team':<10}"
+        f"  {'Feature':<26} {'Free':<8} {'Starter':<10} {'Pro':<10} {'Team':<10}",
     )
     click.echo(f"  {'─'*26} {'─'*8} {'─'*10} {'─'*10} {'─'*10}")
     _rows = [
@@ -861,7 +890,9 @@ def market_tiers():
         ("Support", "Community", "Email", "Priority", "Priority+"),
     ]
     for row in _rows:
-        click.echo(f"  {row[0]:<26} {row[1]:<8} {row[2]:<10} {row[3]:<10} {row[4]:<10}")
+        click.echo(
+            f"  {row[0]:<26} {row[1]:<8} {row[2]:<10} {row[3]:<10} {row[4]:<10}",
+        )
 
     click.echo()
     click.echo("  Upgrade: prowlr market upgrade <tier>")
@@ -928,16 +959,20 @@ def market_upgrade(tier: str, user: str, allow_local: bool):
     click.echo(f"  Price:        ${price}/mo")
     click.echo(f"  Credits/mo:   {limits['monthly_credits']}")
     click.echo(
-        f"  Agents:       {'Unlimited' if limits['agents'] >= 999 else limits['agents']}"
+        f"  Agents:       {'Unlimited' if limits['agents'] >= 999 else limits['agents']}",
     )
     click.echo(
-        f"  Teams:        {'Unlimited' if limits['teams'] >= 999 else limits['teams']}"
+        f"  Teams:        {'Unlimited' if limits['teams'] >= 999 else limits['teams']}",
     )
     click.echo(f"  Earn bonus:   {limits['credit_earn_multiplier']}x")
-    click.echo(f"  Publish:      {'Yes' if limits['marketplace_publish'] else 'No'}")
+    click.echo(
+        f"  Publish:      {'Yes' if limits['marketplace_publish'] else 'No'}",
+    )
     click.echo()
 
-    if not click.confirm(f"  Confirm upgrade to {tier.upper()} (${price}/mo)?"):
+    if not click.confirm(
+        f"  Confirm upgrade to {tier.upper()} (${price}/mo)?",
+    ):
         click.echo("  Cancelled.")
         store.close()
         return

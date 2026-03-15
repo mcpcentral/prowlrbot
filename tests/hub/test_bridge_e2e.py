@@ -29,7 +29,12 @@ class TestBridgeE2E(unittest.TestCase):
         env["PROWLR_HUB_DB"] = cls._db_path
         env["PROWLR_BRIDGE_HOST"] = "127.0.0.1"
         env["PROWLR_BRIDGE_PORT"] = str(cls.PORT)
-        env["PYTHONPATH"] = os.path.join(os.path.dirname(__file__), "..", "..", "src")
+        env["PYTHONPATH"] = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "..",
+            "src",
+        )
 
         cls._proc = subprocess.Popen(
             [sys.executable, "-m", "prowlrbot.hub.bridge"],
@@ -54,7 +59,7 @@ class TestBridgeE2E(unittest.TestCase):
             cls._proc.kill()
             out, err = cls._proc.communicate(timeout=3)
             raise RuntimeError(
-                f"Bridge server did not start.\nstdout: {out.decode()[:500]}\nstderr: {err.decode()[:500]}"
+                f"Bridge server did not start.\nstdout: {out.decode()[:500]}\nstderr: {err.decode()[:500]}",
             )
 
     @classmethod

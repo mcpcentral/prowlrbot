@@ -46,7 +46,11 @@ async def record_event(replay_id: str, req: RecordEventRequest) -> ReplayEvent:
     if not session:
         raise HTTPException(404, f"Replay session '{replay_id}' not found")
     return _recorder.record_event(
-        replay_id, req.event_type, req.content, req.metadata, req.agent_id
+        replay_id,
+        req.event_type,
+        req.content,
+        req.metadata,
+        req.agent_id,
     )
 
 
@@ -73,7 +77,9 @@ async def get_session(replay_id: str) -> ReplaySessionDetail:
 
 @router.get("/{replay_id}/events", response_model=List[ReplayEvent])
 async def get_events_in_range(
-    replay_id: str, start_ms: int = 0, end_ms: int = 0
+    replay_id: str,
+    start_ms: int = 0,
+    end_ms: int = 0,
 ) -> List[ReplayEvent]:
     return _recorder.get_events_in_range(replay_id, start_ms, end_ms)
 

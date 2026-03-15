@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # tests/hardware/test_detector.py
 """Tests for HardwareDetector — platform-agnostic unit tests with mocks."""
 import pytest
@@ -32,8 +33,10 @@ def test_detector_returns_profile():
 
 def test_detector_handles_missing_nvidia_smi(monkeypatch):
     """nvidia-smi absent → gpu_vram_gb is None, gpu_vendor is 'unknown'."""
+
     def _raise(*a, **kw):
         raise FileNotFoundError("nvidia-smi not found")
+
     monkeypatch.setattr("subprocess.run", _raise)
     detector = HardwareDetector()
     profile = detector._detect_nvidia()
@@ -50,8 +53,10 @@ def test_detector_apple_silicon(monkeypatch):
 
 def test_detect_returns_valid_profile_when_no_gpu(monkeypatch):
     """All GPU subprocess calls fail → detect() still returns a valid HardwareProfile."""
+
     def _raise(*a, **kw):
         raise FileNotFoundError("not found")
+
     monkeypatch.setattr("subprocess.run", _raise)
     detector = HardwareDetector()
     profile = detector.detect()

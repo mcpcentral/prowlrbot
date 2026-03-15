@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Client for enqueuing jobs to the AI Swarm."""
 
 import json
@@ -12,7 +13,7 @@ from config import Config
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -35,10 +36,12 @@ class JobQueue:
                 host=self.config.REDIS_HOST,
                 port=self.config.REDIS_PORT,
                 db=self.config.REDIS_DB,
-                decode_responses=True
+                decode_responses=True,
             )
             self.redis_client.ping()
-            logger.info(f"Connected to Redis at {self.config.REDIS_HOST}:{self.config.REDIS_PORT}")
+            logger.info(
+                f"Connected to Redis at {self.config.REDIS_HOST}:{self.config.REDIS_PORT}",
+            )
             return True
         except Exception as e:
             logger.error(f"Failed to connect to Redis: {e}")
@@ -48,7 +51,7 @@ class JobQueue:
         self,
         capability: str,
         parameters: dict,
-        job_id: Optional[str] = None
+        job_id: Optional[str] = None,
     ) -> str:
         """Enqueue a job to the swarm.
 
@@ -68,7 +71,7 @@ class JobQueue:
             "job_id": job_id,
             "capability": capability,
             "parameters": parameters,
-            "enqueued_at": time.time()
+            "enqueued_at": time.time(),
         }
 
         try:
@@ -93,6 +96,7 @@ class JobQueue:
             raise RuntimeError("Not connected to Redis")
 
         import time
+
         key = f"{self.REDIS_RESULT_PREFIX}{job_id}"
         start = time.time()
 
@@ -114,7 +118,7 @@ class JobQueue:
         self,
         capability: str,
         parameters: dict,
-        timeout: float = 300.0
+        timeout: float = 300.0,
     ) -> dict:
         """Enqueue a job and wait for the result.
 
@@ -130,6 +134,7 @@ class JobQueue:
             TimeoutError: If result not received within timeout
         """
         import time
+
         job_id = self.enqueue(capability, parameters)
         result = self.get_result(job_id, timeout)
 

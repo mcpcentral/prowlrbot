@@ -82,7 +82,11 @@ def _auto_register() -> Dict[str, str]:
         _agent_id = result.get("agent_id", "")
         _room_id = result.get("room_id", "")
         _agent_name = terminal_id
-        logger.info("Registered (remote) as %s (agent_id=%s)", terminal_id, _agent_id)
+        logger.info(
+            "Registered (remote) as %s (agent_id=%s)",
+            terminal_id,
+            _agent_id,
+        )
     else:
         engine = _get_engine()
         room = engine.get_or_create_default_room()
@@ -201,7 +205,10 @@ TOOLS = {
             "type": "object",
             "properties": {
                 "task_id": {"type": "string"},
-                "reason": {"type": "string", "description": "Why the task failed"},
+                "reason": {
+                    "type": "string",
+                    "description": "Why the task failed",
+                },
             },
             "required": ["task_id", "reason"],
         },
@@ -224,7 +231,10 @@ TOOLS = {
         "inputSchema": {
             "type": "object",
             "properties": {
-                "path": {"type": "string", "description": "File path to unlock"},
+                "path": {
+                    "type": "string",
+                    "description": "File path to unlock",
+                },
             },
             "required": ["path"],
         },
@@ -272,7 +282,10 @@ TOOLS = {
                     "type": "string",
                     "description": "Short key for this finding (e.g. 'auth-vuln-1', 'api-pattern')",
                 },
-                "value": {"type": "string", "description": "The finding details"},
+                "value": {
+                    "type": "string",
+                    "description": "The finding details",
+                },
             },
             "required": ["key", "value"],
         },
@@ -311,7 +324,10 @@ TOOLS = {
 }
 
 
-def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+def handle_tool_call(
+    tool_name: str,
+    arguments: Dict[str, Any],
+) -> Dict[str, Any]:
     """Execute a war room tool and return the result."""
     reg = _auto_register()
     agent_id = _agent_id
@@ -333,8 +349,11 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
         if not tasks:
             return {
                 "content": [
-                    {"type": "text", "text": "Mission board is empty. No tasks yet."}
-                ]
+                    {
+                        "type": "text",
+                        "text": "Mission board is empty. No tasks yet.",
+                    },
+                ],
             }
 
         lines = ["# Mission Board\n"]
@@ -356,7 +375,7 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
             files = f" files: {t['file_scopes']}" if t["file_scopes"] else ""
             note = f"\n   Note: {t['progress_note']}" if t.get("progress_note") else ""
             lines.append(
-                f"{status_icon} {t['task_id']} | {t['title']}{prio}{owner}{blocked}{files}{note}"
+                f"{status_icon} {t['task_id']} | {t['title']}{prio}{owner}{blocked}{files}{note}",
             )
 
         return {"content": [{"type": "text", "text": "\n".join(lines)}]}
@@ -370,7 +389,10 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
                 title=arguments["title"],
                 description=arguments.get("description", ""),
                 file_scopes=arguments.get("file_scopes", []),
-                required_capabilities=arguments.get("required_capabilities", []),
+                required_capabilities=arguments.get(
+                    "required_capabilities",
+                    [],
+                ),
                 priority=arguments.get("priority", "normal"),
             )
             task_id = task["task_id"]
@@ -382,8 +404,8 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
                     {
                         "type": "text",
                         "text": f"Claimed task {task_id}. Lock token: {result.lock_token}. You own the file scopes — proceed with your work.",
-                    }
-                ]
+                    },
+                ],
             }
         else:
             conflict_info = ""
@@ -397,24 +419,30 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
                     {
                         "type": "text",
                         "text": f"Claim FAILED: {result.reason}.{conflict_info}\nPick a different task or wait.",
-                    }
-                ]
+                    },
+                ],
             }
 
     elif tool_name == "update_task":
-        engine.update_task(arguments["task_id"], agent_id, arguments["progress_note"])
+        engine.update_task(
+            arguments["task_id"],
+            agent_id,
+            arguments["progress_note"],
+        )
         return {
             "content": [
                 {
                     "type": "text",
                     "text": f"Updated task {arguments['task_id']}: {arguments['progress_note']}",
-                }
-            ]
+                },
+            ],
         }
 
     elif tool_name == "complete_task":
         ok = engine.complete_task(
-            arguments["task_id"], agent_id, arguments.get("summary", "")
+            arguments["task_id"],
+            agent_id,
+            arguments.get("summary", ""),
         )
         if ok:
             return {
@@ -422,21 +450,23 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
                     {
                         "type": "text",
                         "text": f"Task {arguments['task_id']} completed. All file locks released.",
-                    }
-                ]
+                    },
+                ],
             }
         return {
             "content": [
                 {
                     "type": "text",
                     "text": "Failed to complete task — you may not own it.",
-                }
-            ]
+                },
+            ],
         }
 
     elif tool_name == "fail_task":
         ok = engine.fail_task(
-            arguments["task_id"], agent_id, arguments.get("reason", "")
+            arguments["task_id"],
+            agent_id,
+            arguments.get("reason", ""),
         )
         if ok:
             return {
@@ -444,13 +474,16 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
                     {
                         "type": "text",
                         "text": f"Task {arguments['task_id']} marked as failed. Locks released.",
-                    }
-                ]
+                    },
+                ],
             }
         return {
             "content": [
-                {"type": "text", "text": "Failed to mark task — you may not own it."}
-            ]
+                {
+                    "type": "text",
+                    "text": "Failed to mark task — you may not own it.",
+                },
+            ],
         }
 
     elif tool_name == "lock_file":
@@ -461,16 +494,16 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
                     {
                         "type": "text",
                         "text": f"Locked {arguments['path']}. Token: {result.lock_token}",
-                    }
-                ]
+                    },
+                ],
             }
         return {
             "content": [
                 {
                     "type": "text",
                     "text": f"Lock failed: {result.reason}. Owner: {result.owner}",
-                }
-            ]
+                },
+            ],
         }
 
     elif tool_name == "unlock_file":
@@ -480,8 +513,8 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
                 {
                     "type": "text",
                     "text": f"{'Unlocked' if ok else 'Not found:'} {arguments['path']}",
-                }
-            ]
+                },
+            ],
         }
 
     elif tool_name == "check_conflicts":
@@ -489,24 +522,34 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
         if not conflicts:
             return {
                 "content": [
-                    {"type": "text", "text": "All files are free — safe to edit."}
-                ]
+                    {
+                        "type": "text",
+                        "text": "All files are free — safe to edit.",
+                    },
+                ],
             }
         lines = ["File conflicts found:"]
         for c in conflicts:
             lines.append(
-                f"  {c['file']} → locked by {c['agent_name']} ({c['agent_id']})"
+                f"  {c['file']} → locked by {c['agent_name']} ({c['agent_id']})",
             )
         return {"content": [{"type": "text", "text": "\n".join(lines)}]}
 
     elif tool_name == "get_agents":
         agents = engine.get_agents(room_id)
         if not agents:
-            return {"content": [{"type": "text", "text": "No agents connected."}]}
+            return {
+                "content": [{"type": "text", "text": "No agents connected."}],
+            }
         lines = ["# War Room Agents\n"]
         for a in agents:
-            status_icon = {"idle": "🟢", "working": "🔵", "disconnected": "⚪"}.get(
-                a["status"], "❓"
+            status_icon = {
+                "idle": "🟢",
+                "working": "🔵",
+                "disconnected": "⚪",
+            }.get(
+                a["status"],
+                "❓",
             )
             task_info = (
                 f" → task {a['current_task_id']}" if a.get("current_task_id") else ""
@@ -514,34 +557,47 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
             caps = ", ".join(a["capabilities"]) if a["capabilities"] else "general"
             me = " (you)" if a["agent_id"] == agent_id else ""
             lines.append(
-                f"{status_icon} {a['name']}{me} | caps: [{caps}] | {a['status']}{task_info}"
+                f"{status_icon} {a['name']}{me} | caps: [{caps}] | {a['status']}{task_info}",
             )
         return {"content": [{"type": "text", "text": "\n".join(lines)}]}
 
     elif tool_name == "broadcast_status":
         engine.broadcast_status(room_id, agent_id, arguments["message"])
         return {
-            "content": [{"type": "text", "text": f"Broadcast: {arguments['message']}"}]
+            "content": [
+                {"type": "text", "text": f"Broadcast: {arguments['message']}"},
+            ],
         }
 
     elif tool_name == "share_finding":
-        engine.set_context(room_id, agent_id, arguments["key"], arguments["value"])
+        engine.set_context(
+            room_id,
+            agent_id,
+            arguments["key"],
+            arguments["value"],
+        )
         return {
             "content": [
                 {
                     "type": "text",
                     "text": f"Shared finding '{arguments['key']}' with the room.",
-                }
-            ]
+                },
+            ],
         }
 
     elif tool_name == "get_shared_context":
         ctx = engine.get_context(room_id, arguments.get("key", ""))
         if not ctx:
-            return {"content": [{"type": "text", "text": "No shared context found."}]}
+            return {
+                "content": [
+                    {"type": "text", "text": "No shared context found."},
+                ],
+            }
         lines = ["# Shared Findings\n"]
         for c in ctx:
-            lines.append(f"**{c['key']}** (by {c['agent_id']}, {c['updated_at']}):")
+            lines.append(
+                f"**{c['key']}** (by {c['agent_id']}, {c['updated_at']}):",
+            )
             lines.append(f"  {c['value']}\n")
         return {"content": [{"type": "text", "text": "\n".join(lines)}]}
 
@@ -559,7 +615,7 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
             task = f" task={e['task_id']}" if e.get("task_id") else ""
             payload_str = json.dumps(e["payload"]) if e["payload"] else ""
             lines.append(
-                f"[{e['timestamp']}] {e['type']} | {agent}{task} {payload_str}"
+                f"[{e['timestamp']}] {e['type']} | {agent}{task} {payload_str}",
             )
         return {"content": [{"type": "text", "text": "\n".join(lines)}]}
 
@@ -569,7 +625,10 @@ def handle_tool_call(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any
     }
 
 
-def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+def _handle_remote_tool(
+    tool_name: str,
+    arguments: Dict[str, Any],
+) -> Dict[str, Any]:
     """Handle tool calls via the HTTP bridge (remote mode)."""
     remote = _get_remote()
 
@@ -607,7 +666,7 @@ def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, 
                 f"\n   Note: {t.get('progress_note')}" if t.get("progress_note") else ""
             )
             lines.append(
-                f"{status_icon} {t.get('task_id', '?')} | {t.get('title', '?')}{prio}{owner}{blocked}{files}{note}"
+                f"{status_icon} {t.get('task_id', '?')} | {t.get('title', '?')}{prio}{owner}{blocked}{files}{note}",
             )
         return _text("\n".join(lines))
 
@@ -621,10 +680,10 @@ def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, 
         )
         if result.get("success"):
             return _text(
-                f"Claimed task. Lock token: {result.get('lock_token', '')}. Proceed with your work."
+                f"Claimed task. Lock token: {result.get('lock_token', '')}. Proceed with your work.",
             )
         return _text(
-            f"Claim FAILED: {result.get('reason', 'unknown')}. Pick a different task."
+            f"Claim FAILED: {result.get('reason', 'unknown')}. Pick a different task.",
         )
 
     elif tool_name == "update_task":
@@ -633,34 +692,38 @@ def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, 
 
     elif tool_name == "complete_task":
         result = remote.complete_task(
-            arguments["task_id"], arguments.get("summary", "")
+            arguments["task_id"],
+            arguments.get("summary", ""),
         )
         return _text(
             f"Task {arguments['task_id']} completed."
             if result.get("ok")
-            else "Failed to complete."
+            else "Failed to complete.",
         )
 
     elif tool_name == "fail_task":
-        result = remote.fail_task(arguments["task_id"], arguments.get("reason", ""))
+        result = remote.fail_task(
+            arguments["task_id"],
+            arguments.get("reason", ""),
+        )
         return _text(
             f"Task {arguments['task_id']} failed."
             if result.get("ok")
-            else "Failed to mark task."
+            else "Failed to mark task.",
         )
 
     elif tool_name == "lock_file":
         result = remote.lock_file(arguments["path"])
         if result.get("success"):
             return _text(
-                f"Locked {arguments['path']}. Token: {result.get('lock_token', '')}"
+                f"Locked {arguments['path']}. Token: {result.get('lock_token', '')}",
             )
         return _text(f"Lock failed: {result.get('reason', 'unknown')}")
 
     elif tool_name == "unlock_file":
         result = remote.unlock_file(arguments["path"])
         return _text(
-            f"{'Unlocked' if result.get('ok') else 'Not found:'} {arguments['path']}"
+            f"{'Unlocked' if result.get('ok') else 'Not found:'} {arguments['path']}",
         )
 
     elif tool_name == "check_conflicts":
@@ -679,8 +742,13 @@ def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, 
             return _text("No agents connected.")
         lines = ["# War Room Agents\n"]
         for a in agents:
-            status_icon = {"idle": "🟢", "working": "🔵", "disconnected": "⚪"}.get(
-                a.get("status", ""), "❓"
+            status_icon = {
+                "idle": "🟢",
+                "working": "🔵",
+                "disconnected": "⚪",
+            }.get(
+                a.get("status", ""),
+                "❓",
             )
             task_info = (
                 f" → task {a['current_task_id']}" if a.get("current_task_id") else ""
@@ -692,7 +760,7 @@ def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, 
             )
             me = " (you)" if a.get("agent_id") == _agent_id else ""
             lines.append(
-                f"{status_icon} {a.get('name', '?')}{me} | caps: [{caps}] | {a.get('status', '?')}{task_info}"
+                f"{status_icon} {a.get('name', '?')}{me} | caps: [{caps}] | {a.get('status', '?')}{task_info}",
             )
         return _text("\n".join(lines))
 
@@ -711,14 +779,15 @@ def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, 
         lines = ["# Shared Findings\n"]
         for c in ctx:
             lines.append(
-                f"**{c.get('key', '?')}** (by {c.get('agent_id', '?')}, {c.get('updated_at', '?')}):"
+                f"**{c.get('key', '?')}** (by {c.get('agent_id', '?')}, {c.get('updated_at', '?')}):",
             )
             lines.append(f"  {c.get('value', '')}\n")
         return _text("\n".join(lines))
 
     elif tool_name == "get_events":
         events = remote.get_events(
-            arguments.get("limit", 20), arguments.get("event_type", "")
+            arguments.get("limit", 20),
+            arguments.get("event_type", ""),
         )
         if not events:
             return _text("No events yet.")
@@ -728,7 +797,7 @@ def _handle_remote_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, 
             task = f" task={e['task_id']}" if e.get("task_id") else ""
             payload_str = json.dumps(e.get("payload", {}))
             lines.append(
-                f"[{e.get('timestamp', '?')}] {e.get('type', '?')} | {agent}{task} {payload_str}"
+                f"[{e.get('timestamp', '?')}] {e.get('type', '?')} | {agent}{task} {payload_str}",
             )
         return _text("\n".join(lines))
 
@@ -788,7 +857,7 @@ def run_mcp_server():
                         "name": name,
                         "description": spec["description"],
                         "inputSchema": spec["inputSchema"],
-                    }
+                    },
                 )
             response["result"] = {"tools": tool_list}
 

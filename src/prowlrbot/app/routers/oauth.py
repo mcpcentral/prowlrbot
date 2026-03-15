@@ -51,7 +51,10 @@ async def oauth_providers() -> dict:
     "/{provider_name}",
     summary="Start OAuth login flow",
 )
-async def oauth_start(provider_name: str, request: Request) -> RedirectResponse:
+async def oauth_start(
+    provider_name: str,
+    request: Request,
+) -> RedirectResponse:
     """Redirect the user to the OAuth provider's authorization page."""
     provider = get_provider(provider_name)
     if provider is None:
@@ -93,19 +96,24 @@ async def oauth_callback(
         return RedirectResponse(url=f"/?oauth_error={error}")
 
     if not code or not state:
-        raise HTTPException(status_code=400, detail="Missing code or state parameter")
+        raise HTTPException(
+            status_code=400,
+            detail="Missing code or state parameter",
+        )
 
     # Verify CSRF state
     expected_provider = _pending_states.pop(state, None)
     if expected_provider is None or expected_provider != provider_name:
         raise HTTPException(
-            status_code=400, detail="Invalid or expired state parameter"
+            status_code=400,
+            detail="Invalid or expired state parameter",
         )
 
     provider = get_provider(provider_name)
     if provider is None:
         raise HTTPException(
-            status_code=404, detail=f"Unknown provider: {provider_name}"
+            status_code=404,
+            detail=f"Unknown provider: {provider_name}",
         )
 
     # Build callback URL (must match what we sent to the provider)
@@ -119,7 +127,11 @@ async def oauth_callback(
         access_token = await provider.exchange_code(code, redirect_uri)
         user_info = await provider.get_user_info(access_token)
     except Exception as exc:
-        logger.error("OAuth token exchange failed for %s: %s", provider_name, exc)
+        logger.error(
+            "OAuth token exchange failed for %s: %s",
+            provider_name,
+            exc,
+        )
         return RedirectResponse(url="/?oauth_error=token_exchange_failed")
 
     # Create or link user

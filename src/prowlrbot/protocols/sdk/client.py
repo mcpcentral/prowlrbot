@@ -77,7 +77,7 @@ class ROARClient:
         if not signing_secret:
             logger.warning(
                 "ROARClient created without signing_secret — messages will not be signed. "
-                "Set a shared secret for production use."
+                "Set a shared secret for production use.",
             )
         self._directory = AgentDirectory()
         self._card: Optional[AgentCard] = None
@@ -106,7 +106,10 @@ class ROARClient:
         self._card = card
         return self._directory.register(card)
 
-    def discover(self, capability: Optional[str] = None) -> List[DiscoveryEntry]:
+    def discover(
+        self,
+        capability: Optional[str] = None,
+    ) -> List[DiscoveryEntry]:
         """Find agents, optionally filtered by capability.
 
         Args:
@@ -193,7 +196,7 @@ class ROARClient:
         if not config.url:
             raise ConnectionError(
                 f"No endpoint found for agent {to_agent_id}. "
-                "Register the agent or provide a transport override."
+                "Register the agent or provide a transport override.",
             )
 
         # Dispatch over the wire

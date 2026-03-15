@@ -94,13 +94,16 @@ class TestPublishListing:
         assert fetched.difficulty == "advanced"
         assert fetched.setup_time_minutes == 25
         assert fetched.persona_tags == ["developer", "freelancer"]
-        assert fetched.before_after == {"before": "Manual", "after": "Automated"}
+        assert fetched.before_after == {
+            "before": "Manual",
+            "after": "Automated",
+        }
         assert fetched.skill_scan == {"complexity": 4, "tools": ["shell"]}
         assert fetched.works_with == ["github", "slack"]
         assert fetched.demo_url == "https://demo.example.com"
         assert fetched.setup_steps == [{"order": 1, "label": "Install"}]
         assert fetched.user_stories == [
-            {"persona": "dev", "story": "I want fast deploys"}
+            {"persona": "dev", "story": "I want fast deploys"},
         ]
         assert fetched.hero_animation == "deploy.lottie"
 
@@ -152,10 +155,13 @@ class TestPublishListing:
 class TestSearchListings:
     def test_search_by_query(self, store: MarketplaceStore):
         store.publish_listing(
-            _make_listing(title="Deploy Bot", description="Automated deployments")
+            _make_listing(
+                title="Deploy Bot",
+                description="Automated deployments",
+            ),
         )
         store.publish_listing(
-            _make_listing(title="Chat Bot", description="Chat interface")
+            _make_listing(title="Chat Bot", description="Chat interface"),
         )
 
         results = store.search_listings(query="Deploy")
@@ -163,8 +169,12 @@ class TestSearchListings:
         assert results[0].title == "Deploy Bot"
 
     def test_search_by_category(self, store: MarketplaceStore):
-        store.publish_listing(_make_listing(category=MarketplaceCategory.skills))
-        store.publish_listing(_make_listing(category=MarketplaceCategory.agents))
+        store.publish_listing(
+            _make_listing(category=MarketplaceCategory.skills),
+        )
+        store.publish_listing(
+            _make_listing(category=MarketplaceCategory.agents),
+        )
 
         results = store.search_listings(category="skills")
         assert len(results) == 1
@@ -172,17 +182,23 @@ class TestSearchListings:
 
     def test_search_by_persona(self, store: MarketplaceStore):
         store.publish_listing(
-            _make_listing(title="Dev Tool", persona_tags=["developer"])
+            _make_listing(title="Dev Tool", persona_tags=["developer"]),
         )
-        store.publish_listing(_make_listing(title="Mom Tool", persona_tags=["parent"]))
+        store.publish_listing(
+            _make_listing(title="Mom Tool", persona_tags=["parent"]),
+        )
 
         results = store.search_listings(persona="developer")
         assert len(results) == 1
         assert results[0].title == "Dev Tool"
 
     def test_search_by_difficulty(self, store: MarketplaceStore):
-        store.publish_listing(_make_listing(title="Easy", difficulty="beginner"))
-        store.publish_listing(_make_listing(title="Hard", difficulty="advanced"))
+        store.publish_listing(
+            _make_listing(title="Easy", difficulty="beginner"),
+        )
+        store.publish_listing(
+            _make_listing(title="Hard", difficulty="advanced"),
+        )
 
         results = store.search_listings(difficulty="advanced")
         assert len(results) == 1
@@ -195,7 +211,7 @@ class TestSearchListings:
                 category=MarketplaceCategory.workflows,
                 persona_tags=["developer"],
                 difficulty="intermediate",
-            )
+            ),
         )
         store.publish_listing(
             _make_listing(
@@ -203,7 +219,7 @@ class TestSearchListings:
                 category=MarketplaceCategory.skills,
                 persona_tags=["developer"],
                 difficulty="intermediate",
-            )
+            ),
         )
         store.publish_listing(
             _make_listing(
@@ -211,7 +227,7 @@ class TestSearchListings:
                 category=MarketplaceCategory.workflows,
                 persona_tags=["parent"],
                 difficulty="beginner",
-            )
+            ),
         )
 
         results = store.search_listings(
@@ -223,7 +239,9 @@ class TestSearchListings:
         assert results[0].title == "Dev Workflow"
 
     def test_search_by_tags(self, store: MarketplaceStore):
-        store.publish_listing(_make_listing(title="Tagged", tags=["deploy", "ci"]))
+        store.publish_listing(
+            _make_listing(title="Tagged", tags=["deploy", "ci"]),
+        )
         store.publish_listing(_make_listing(title="Other", tags=["chat"]))
 
         results = store.search_listings(tags=["deploy"])
@@ -263,7 +281,10 @@ class TestUpdateListing:
         listing = _make_listing(title="Original")
         store.publish_listing(listing)
 
-        updated = store.update_listing(listing.id, {"title": "Updated", "price": 9.99})
+        updated = store.update_listing(
+            listing.id,
+            {"title": "Updated", "price": 9.99},
+        )
         assert updated.title == "Updated"
         assert updated.price == 9.99
 
@@ -305,7 +326,8 @@ class TestUpdateListing:
         store.publish_listing(listing)
 
         updated = store.update_listing(
-            listing.id, {"id": "new-id", "author_id": "hacker"}
+            listing.id,
+            {"id": "new-id", "author_id": "hacker"},
         )
         assert updated.id == listing.id
         assert updated.author_id == listing.author_id
@@ -337,7 +359,8 @@ class TestUpdateListing:
         store.publish_listing(listing)
 
         updated = store.update_listing(
-            listing.id, {"category": MarketplaceCategory.workflows}
+            listing.id,
+            {"category": MarketplaceCategory.workflows},
         )
         assert updated.category == MarketplaceCategory.workflows
 
@@ -350,7 +373,8 @@ class TestMigrateV2:
         """Simulate a v1 database that lacks v2 columns."""
         db_path = tmp_path / "v1.db"
         conn = sqlite3.connect(str(db_path))
-        conn.execute("""
+        conn.execute(
+            """
             CREATE TABLE listings (
                 id TEXT PRIMARY KEY,
                 author_id TEXT NOT NULL,
@@ -369,7 +393,8 @@ class TestMigrateV2:
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             )
-        """)
+        """,
+        )
         # Insert a v1 row
         conn.execute(
             "INSERT INTO listings (id, author_id, title, description, category, created_at, updated_at) "
@@ -431,8 +456,12 @@ class TestReviews:
         listing = _make_listing()
         store.publish_listing(listing)
 
-        store.add_review(ReviewEntry(listing_id=listing.id, reviewer_id="r1", rating=5))
-        store.add_review(ReviewEntry(listing_id=listing.id, reviewer_id="r2", rating=3))
+        store.add_review(
+            ReviewEntry(listing_id=listing.id, reviewer_id="r1", rating=5),
+        )
+        store.add_review(
+            ReviewEntry(listing_id=listing.id, reviewer_id="r2", rating=3),
+        )
 
         fetched = store.get_listing(listing.id)
         assert fetched.ratings_count == 2
@@ -444,8 +473,11 @@ class TestReviews:
 
         store.add_review(
             ReviewEntry(
-                listing_id=listing.id, reviewer_id="r1", rating=4, comment="Good"
-            )
+                listing_id=listing.id,
+                reviewer_id="r1",
+                rating=4,
+                comment="Good",
+            ),
         )
         reviews = store.get_reviews(listing.id)
         assert len(reviews) == 1
@@ -460,8 +492,12 @@ class TestInstalls:
         listing = _make_listing()
         store.publish_listing(listing)
 
-        store.record_install(InstallRecord(listing_id=listing.id, user_id="u1"))
-        store.record_install(InstallRecord(listing_id=listing.id, user_id="u2"))
+        store.record_install(
+            InstallRecord(listing_id=listing.id, user_id="u1"),
+        )
+        store.record_install(
+            InstallRecord(listing_id=listing.id, user_id="u2"),
+        )
 
         fetched = store.get_listing(listing.id)
         assert fetched.downloads == 2
@@ -477,10 +513,14 @@ class TestTips:
         store.publish_listing(listing)
 
         store.add_tip(
-            TipRecord(listing_id=listing.id, author_id="author-1", amount=5.0)
+            TipRecord(listing_id=listing.id, author_id="author-1", amount=5.0),
         )
         store.add_tip(
-            TipRecord(listing_id=listing.id, author_id="author-1", amount=10.0)
+            TipRecord(
+                listing_id=listing.id,
+                author_id="author-1",
+                amount=10.0,
+            ),
         )
 
         tips = store.get_tips_for_author("author-1")
@@ -494,7 +534,11 @@ class TestTips:
 
 
 class TestCredits:
-    def test_get_balance_auto_creates(self, store: MarketplaceStore, monkeypatch):
+    def test_get_balance_auto_creates(
+        self,
+        store: MarketplaceStore,
+        monkeypatch,
+    ):
         monkeypatch.setenv("PROWLR_FREE_TIER_WELCOME_CREDITS", "0")
         balance = store.get_balance("new-user")
         assert balance.user_id == "new-user"
@@ -522,7 +566,11 @@ class TestCredits:
     def test_spend_insufficient_raises(self, store: MarketplaceStore):
         store.add_credits("u1", 10, CreditTransactionType.monthly_grant)
         with pytest.raises(ValueError, match="Insufficient credits"):
-            store.spend_credits("u1", 100, CreditTransactionType.listing_purchase)
+            store.spend_credits(
+                "u1",
+                100,
+                CreditTransactionType.listing_purchase,
+            )
 
     def test_transactions_recorded(self, store: MarketplaceStore):
         store.add_credits("u1", 100, CreditTransactionType.monthly_grant)
@@ -555,14 +603,14 @@ class TestDiscoveryQueries:
                 title="Popular",
                 downloads=100,
                 status=ListingStatus.approved,
-            )
+            ),
         )
         store.publish_listing(
             _make_listing(
                 title="Draft",
                 downloads=200,
                 status=ListingStatus.draft,
-            )
+            ),
         )
 
         results = store.get_popular()
@@ -577,6 +625,8 @@ class TestDiscoveryQueries:
         assert store.get_top_rated() == []
 
         # Add a review
-        store.add_review(ReviewEntry(listing_id=listing.id, reviewer_id="r1", rating=5))
+        store.add_review(
+            ReviewEntry(listing_id=listing.id, reviewer_id="r1", rating=5),
+        )
         results = store.get_top_rated()
         assert len(results) == 1

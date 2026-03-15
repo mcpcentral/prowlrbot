@@ -69,7 +69,7 @@ class WarRoomEngine:
                         "type": event_type,
                         "timestamp": datetime.now(tz=timezone.utc).isoformat(),
                         **payload,
-                    }
+                    },
                 )
             except Exception:
                 pass  # Don't let notification errors break the engine
@@ -93,7 +93,11 @@ class WarRoomEngine:
                 (room_id, name, host_node_id, mode),
             )
             self._conn.commit()
-            self._emit_event(room_id, "room.created", payload={"name": name, "mode": mode})
+            self._emit_event(
+                room_id,
+                "room.created",
+                payload={"name": name, "mode": mode},
+            )
             return {
                 "room_id": room_id,
                 "name": name,
@@ -105,7 +109,8 @@ class WarRoomEngine:
         """Get room details."""
         with self._lock:
             row = self._conn.execute(
-                "SELECT * FROM rooms WHERE room_id=?", (room_id,)
+                "SELECT * FROM rooms WHERE room_id=?",
+                (room_id,),
             ).fetchone()
             return dict(row) if row else None
 
@@ -113,7 +118,7 @@ class WarRoomEngine:
         """Get the first room, or create a default one."""
         with self._lock:
             row = self._conn.execute(
-                "SELECT * FROM rooms ORDER BY created_at ASC LIMIT 1"
+                "SELECT * FROM rooms ORDER BY created_at ASC LIMIT 1",
             ).fetchone()
             if row:
                 return dict(row)
@@ -138,7 +143,8 @@ class WarRoomEngine:
 
             # Ensure node exists
             existing = self._conn.execute(
-                "SELECT node_id FROM nodes WHERE node_id=?", (node_id,)
+                "SELECT node_id FROM nodes WHERE node_id=?",
+                (node_id,),
             ).fetchone()
             if not existing:
                 self._conn.execute(
@@ -159,7 +165,10 @@ class WarRoomEngine:
                 agent_id=agent_id,
                 payload={"name": name, "capabilities": capabilities or []},
             )
-            self._notify("agent.connected", {"agent_id": agent_id, "name": name})
+            self._notify(
+                "agent.connected",
+                {"agent_id": agent_id, "name": name},
+            )
 
             return {
                 "agent_id": agent_id,
@@ -197,7 +206,8 @@ class WarRoomEngine:
         """Mark an agent as disconnected and release its resources."""
         with self._lock:
             agent = self._conn.execute(
-                "SELECT * FROM agents WHERE agent_id=?", (agent_id,)
+                "SELECT * FROM agents WHERE agent_id=?",
+                (agent_id,),
             ).fetchone()
             if not agent:
                 return
@@ -205,7 +215,10 @@ class WarRoomEngine:
             room_id = agent["room_id"]
 
             # Release all file locks
-            self._conn.execute("DELETE FROM file_locks WHERE agent_id=?", (agent_id,))
+            self._conn.execute(
+                "DELETE FROM file_locks WHERE agent_id=?",
+                (agent_id,),
+            )
 
             # Release owned tasks back to pending
             self._conn.execute(
@@ -225,8 +238,10 @@ class WarRoomEngine:
         from datetime import timezone
 
         with self._lock:
-            cutoff = (datetime.now(timezone.utc) - timedelta(minutes=ttl_minutes)).strftime(
-                "%Y-%m-%d %H:%M:%S"
+            cutoff = (
+                datetime.now(timezone.utc) - timedelta(minutes=ttl_minutes)
+            ).strftime(
+                "%Y-%m-%d %H:%M:%S",
             )
             stale = self._conn.execute(
                 "SELECT agent_id FROM agents WHERE last_heartbeat < ? AND status != 'disconnected'",
@@ -318,14 +333,18 @@ class WarRoomEngine:
             tasks = []
             for row in rows:
                 d = dict(row)
-                d["required_capabilities"] = json.loads(d["required_capabilities"])
+                d["required_capabilities"] = json.loads(
+                    d["required_capabilities"],
+                )
                 d["file_scopes"] = json.loads(d["file_scopes"])
                 d["collaborators"] = json.loads(d["collaborators"])
                 d["blocked_by"] = json.loads(d["blocked_by"])
 
                 # Filter by capability if specified
                 if agent_capabilities and d["required_capabilities"]:
-                    if not any(c in agent_capabilities for c in d["required_capabilities"]):
+                    if not any(
+                        c in agent_capabilities for c in d["required_capabilities"]
+                    ):
                         continue
 
                 # Check if blocked
@@ -333,9 +352,13 @@ class WarRoomEngine:
                     blockers_done = True
                     for blocker_id in d["blocked_by"]:
                         blocker = self._conn.execute(
-                            "SELECT status FROM tasks WHERE task_id=?", (blocker_id,)
+                            "SELECT status FROM tasks WHERE task_id=?",
+                            (blocker_id,),
                         ).fetchone()
-                        if blocker and blocker["status"] not in ("done", "failed"):
+                        if blocker and blocker["status"] not in (
+                            "done",
+                            "failed",
+                        ):
                             blockers_done = False
                             break
                     d["is_blocked"] = not blockers_done
@@ -385,12 +408,14 @@ class WarRoomEngine:
                                 "file": fp,
                                 "owner_agent_id": lock["agent_id"],
                                 "lock_token": lock["lock_token"],
-                            }
+                            },
                         )
 
                 if conflicts:
                     return ClaimResult(
-                        success=False, reason="files_locked", conflicts=conflicts
+                        success=False,
+                        reason="files_locked",
+                        conflicts=conflicts,
                     )
 
                 # Atomic claim
@@ -424,11 +449,18 @@ class WarRoomEngine:
                 task_id=task_id,
                 payload={"lock_token": lock_token, "file_scopes": file_scopes},
             )
-            self._notify("task.claimed", {"task_id": task_id, "agent_id": agent_id})
+            self._notify(
+                "task.claimed",
+                {"task_id": task_id, "agent_id": agent_id},
+            )
             return ClaimResult(success=True, lock_token=lock_token)
 
         except sqlite3.IntegrityError:
-            logger.warning("Claim conflict for task %s by agent %s", task_id, agent_id)
+            logger.warning(
+                "Claim conflict for task %s by agent %s",
+                task_id,
+                agent_id,
+            )
             return ClaimResult(success=False, reason="conflict")
 
     def update_task(
@@ -447,7 +479,8 @@ class WarRoomEngine:
             self._conn.commit()
 
             task = self._conn.execute(
-                "SELECT room_id FROM tasks WHERE task_id=?", (task_id,)
+                "SELECT room_id FROM tasks WHERE task_id=?",
+                (task_id,),
             ).fetchone()
             if task:
                 self._emit_event(
@@ -501,7 +534,10 @@ class WarRoomEngine:
                 task_id=task_id,
                 payload={"summary": summary},
             )
-            self._notify("task.completed", {"task_id": task_id, "agent_id": agent_id})
+            self._notify(
+                "task.completed",
+                {"task_id": task_id, "agent_id": agent_id},
+            )
         return True
 
     def fail_task(
@@ -542,7 +578,10 @@ class WarRoomEngine:
                 task_id=task_id,
                 payload={"reason": reason},
             )
-            self._notify("task.failed", {"task_id": task_id, "agent_id": agent_id})
+            self._notify(
+                "task.failed",
+                {"task_id": task_id, "agent_id": agent_id},
+            )
         return True
 
     # -- File Locking --
@@ -585,7 +624,8 @@ class WarRoomEngine:
                 payload={"file": file_path, "branch": branch},
             )
             self._notify(
-                "lock.acquired", {"file_path": file_path, "agent_id": agent_id}
+                "lock.acquired",
+                {"file_path": file_path, "agent_id": agent_id},
             )
             return LockResult(success=True, lock_token=lock_token)
         except sqlite3.IntegrityError:
@@ -606,10 +646,14 @@ class WarRoomEngine:
             self._conn.commit()
             if result.rowcount > 0:
                 self._emit_event(
-                    room_id, "lock.released", agent_id=agent_id, payload={"file": file_path}
+                    room_id,
+                    "lock.released",
+                    agent_id=agent_id,
+                    payload={"file": file_path},
                 )
                 self._notify(
-                    "lock.released", {"file_path": file_path, "agent_id": agent_id}
+                    "lock.released",
+                    {"file_path": file_path, "agent_id": agent_id},
                 )
                 return True
         return False
@@ -640,13 +684,19 @@ class WarRoomEngine:
                             "agent_name": lock["agent_name"],
                             "task_id": lock["task_id"],
                             "branch": lock["branch"],
-                        }
+                        },
                     )
         return conflicts
 
     # -- Shared Context --
 
-    def set_context(self, room_id: str, agent_id: str, key: str, value: Any) -> None:
+    def set_context(
+        self,
+        room_id: str,
+        agent_id: str,
+        key: str,
+        value: Any,
+    ) -> None:
         """Publish a finding or context to the shared store."""
         with self._lock:
             self._conn.execute(
@@ -719,7 +769,10 @@ class WarRoomEngine:
             agent_id=agent_id,
             payload={"message": message},
         )
-        self._notify("agent.broadcast", {"agent_id": agent_id, "message": message})
+        self._notify(
+            "agent.broadcast",
+            {"agent_id": agent_id, "message": message},
+        )
 
     # -- Internal --
 

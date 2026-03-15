@@ -55,7 +55,12 @@ def _hash_password(password: str, salt: Optional[bytes] = None) -> str:
     """
     if salt is None:
         salt = os.urandom(16)
-    dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, iterations=260_000)
+    dk = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode(),
+        salt,
+        iterations=260_000,
+    )
     return f"{salt.hex()}:{dk.hex()}"
 
 
@@ -77,7 +82,10 @@ class UserStore:
     def __init__(self, db_path: Optional[Path] = None) -> None:
         self._db_path = db_path or _DB_PATH
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn = sqlite3.connect(str(self._db_path), check_same_thread=False)
+        self._conn = sqlite3.connect(
+            str(self._db_path),
+            check_same_thread=False,
+        )
         self._conn.row_factory = sqlite3.Row
         self._conn.execute("PRAGMA journal_mode=WAL")
         self._conn.executescript(_SCHEMA)
@@ -141,19 +149,21 @@ class UserStore:
 
     def get_user_by_id(self, user_id: str) -> Optional[User]:
         row = self._conn.execute(
-            "SELECT * FROM users WHERE id = ?", (user_id,)
+            "SELECT * FROM users WHERE id = ?",
+            (user_id,),
         ).fetchone()
         return self._row_to_user(row) if row else None
 
     def get_user_by_username(self, username: str) -> Optional[User]:
         row = self._conn.execute(
-            "SELECT * FROM users WHERE username = ?", (username,)
+            "SELECT * FROM users WHERE username = ?",
+            (username,),
         ).fetchone()
         return self._row_to_user(row) if row else None
 
     def list_users(self) -> list[User]:
         rows = self._conn.execute(
-            "SELECT * FROM users ORDER BY created_at DESC"
+            "SELECT * FROM users ORDER BY created_at DESC",
         ).fetchall()
         return [self._row_to_user(r) for r in rows]
 
@@ -187,13 +197,17 @@ class UserStore:
         set_clause = ", ".join(f"{k} = ?" for k in updates)
         values = list(updates.values()) + [user_id]
         self._conn.execute(
-            f"UPDATE users SET {set_clause} WHERE id = ?", values  # noqa: S608
+            f"UPDATE users SET {set_clause} WHERE id = ?",
+            values,  # noqa: S608
         )
         self._conn.commit()
         return self.get_user_by_id(user_id)
 
     def delete_user(self, user_id: str) -> bool:
-        cursor = self._conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        cursor = self._conn.execute(
+            "DELETE FROM users WHERE id = ?",
+            (user_id,),
+        )
         self._conn.commit()
         return cursor.rowcount > 0
 
@@ -231,7 +245,11 @@ class UserStore:
     # OAuth identity linking
     # ------------------------------------------------------------------
 
-    def find_user_by_oauth(self, provider: str, provider_id: str) -> Optional[User]:
+    def find_user_by_oauth(
+        self,
+        provider: str,
+        provider_id: str,
+    ) -> Optional[User]:
         """Find a user linked to an OAuth identity."""
         row = self._conn.execute(
             "SELECT user_id FROM oauth_identities WHERE provider = ? AND provider_id = ?",
@@ -281,11 +299,18 @@ class UserStore:
         # 2. Check if a user with this email already exists
         if email:
             row = self._conn.execute(
-                "SELECT * FROM users WHERE email = ?", (email,)
+                "SELECT * FROM users WHERE email = ?",
+                (email,),
             ).fetchone()
             if row:
                 user = self._row_to_user(row)
-                self.link_oauth(user.id, provider, provider_id, email, avatar_url)
+                self.link_oauth(
+                    user.id,
+                    provider,
+                    provider_id,
+                    email,
+                    avatar_url,
+                )
                 self.update_last_login(user.id)
                 return user
 
@@ -300,7 +325,9 @@ class UserStore:
 
         user = self.create_user(
             username=final_username,
-            password=os.urandom(32).hex(),  # random password (OAuth users don't use it)
+            password=os.urandom(
+                32,
+            ).hex(),  # random password (OAuth users don't use it)
             email=email,
             role=Role.viewer,
         )
@@ -331,7 +358,9 @@ class UserStore:
             self.update_last_login(user.id)
             return user
 
-        base_username = username or (email.split("@")[0] if email else f"clerk_{clerk_user_id[:12]}")
+        base_username = username or (
+            email.split("@")[0] if email else f"clerk_{clerk_user_id[:12]}"
+        )
         final_username = base_username
         suffix = 1
         while self.get_user_by_username(final_username) is not None:

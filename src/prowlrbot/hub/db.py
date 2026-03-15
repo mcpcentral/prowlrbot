@@ -143,5 +143,8 @@ def init_db(db_path: Optional[str] = None) -> sqlite3.Connection:
     conn = get_connection(db_path)
     conn.executescript(SCHEMA)
     conn.commit()
-    logger.info("ProwlrHub database initialized at %s", db_path or DEFAULT_DB_PATH)
+    logger.info(
+        "ProwlrHub database initialized at %s",
+        db_path or DEFAULT_DB_PATH,
+    )
     return conn

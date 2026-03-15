@@ -26,7 +26,12 @@ async def get_audit_logs(
     action: Optional[str] = Query(None, description="Filter by action"),
     target: Optional[str] = Query(None, description="Filter by target"),
     result: Optional[str] = Query(None, description="Filter by result"),
-    limit: int = Query(100, ge=1, le=1000, description="Max entries to return"),
+    limit: int = Query(
+        100,
+        ge=1,
+        le=1000,
+        description="Max entries to return",
+    ),
 ):
     """Query the audit trail with optional filters."""
     audit = _get_audit_log()
@@ -54,7 +59,9 @@ async def export_audit_log(
         return Response(
             content=data,
             media_type="application/json",
-            headers={"Content-Disposition": "attachment; filename=audit_log.json"},
+            headers={
+                "Content-Disposition": "attachment; filename=audit_log.json",
+            },
         )
     finally:
         audit.close()

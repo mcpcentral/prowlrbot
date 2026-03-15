@@ -62,8 +62,9 @@ export function BrandStory({ lang }: BrandStoryProps) {
         <button
           type="button"
           onClick={() => {
-            const cta = document.querySelector('.waitlist-cta-section');
-            if (cta) cta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const cta = document.querySelector(".waitlist-cta-section");
+            if (cta)
+              cta.scrollIntoView({ behavior: "smooth", block: "center" });
           }}
           style={{
             display: "inline-block",

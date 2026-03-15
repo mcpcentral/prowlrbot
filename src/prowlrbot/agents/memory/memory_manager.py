@@ -680,7 +680,7 @@ class MemoryManager(ReMeFb):
                 "marked_important": False,
             }
             if self._tier_manager is not None and self._tier_manager.should_promote(
-                entry
+                entry,
             ):
                 archive_id = self._tier_manager.promote(entry)
                 logger.debug(

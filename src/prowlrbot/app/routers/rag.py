@@ -40,7 +40,10 @@ class IngestRequest(BaseModel):
 
 class SearchRequest(BaseModel):
     query: str = Field(..., description="Search query")
-    max_results: Optional[int] = Field(None, description="Maximum results to return")
+    max_results: Optional[int] = Field(
+        None,
+        description="Maximum results to return",
+    )
 
 
 # ------------------------------------------------------------------

@@ -7,7 +7,11 @@ from prowlrbot.replay.recorder import SessionRecorder, EventType
 
 def test_start_and_stop_recording(tmp_path):
     recorder = SessionRecorder(db_path=tmp_path / "test_replay.db")
-    sess = recorder.start_recording("test_session", agent_id="agent1", title="Test")
+    sess = recorder.start_recording(
+        "test_session",
+        agent_id="agent1",
+        title="Test",
+    )
     assert sess.session_id == "test_session"
     assert sess.id.startswith("replay_")
     recorder.record_event(sess.id, EventType.USER_MESSAGE, content="hello")
@@ -34,4 +38,5 @@ def test_list_sessions_returns_recorded(tmp_path):
 def test_module_level_recorder_importable():
     """The _replay_recorder module singleton is importable from runner."""
     from prowlrbot.app.runner.runner import _replay_recorder
+
     assert _replay_recorder is not None

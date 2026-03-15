@@ -34,7 +34,12 @@ class RemoteWarRoom:
             os.environ.get("PROWLR_HUB_SECRET", "") or None
         )
 
-    def _request(self, method: str, path: str, data: Optional[Dict] = None) -> Dict:
+    def _request(
+        self,
+        method: str,
+        path: str,
+        data: Optional[Dict] = None,
+    ) -> Dict:
         """Make an HTTP request to the bridge."""
         url = f"{self._base_url}{path}"
         body = json.dumps(data).encode() if data else None
@@ -45,7 +50,12 @@ class RemoteWarRoom:
             headers["Authorization"] = f"Bearer {self._auth_token}"
         if self._session_id:
             headers["X-Session-Token"] = self._session_id
-        req = urllib.request.Request(url, data=body, method=method, headers=headers)
+        req = urllib.request.Request(
+            url,
+            data=body,
+            method=method,
+            headers=headers,
+        )
         try:
             with urllib.request.urlopen(req, timeout=10) as resp:
                 return json.loads(resp.read())
@@ -62,7 +72,10 @@ class RemoteWarRoom:
     # --- Agent lifecycle ---
 
     def register(self, name: str, capabilities: List[str]) -> Dict:
-        result = self._post("/register", {"name": name, "capabilities": capabilities})
+        result = self._post(
+            "/register",
+            {"name": name, "capabilities": capabilities},
+        )
         if "agent_id" in result:
             self._agent_id = result["agent_id"]
         if "session_id" in result:

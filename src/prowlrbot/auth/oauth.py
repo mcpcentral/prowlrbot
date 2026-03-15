@@ -112,7 +112,8 @@ class GitHubOAuth(OAuthProvider):
             if not email:
                 # GitHub may not return email in profile — fetch from emails API
                 emails_resp = await client.get(
-                    "https://api.github.com/user/emails", headers=headers
+                    "https://api.github.com/user/emails",
+                    headers=headers,
                 )
                 if emails_resp.status_code == 200:
                     emails = emails_resp.json()

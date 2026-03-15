@@ -42,7 +42,9 @@ class ACPServer:
         method = request.get("method", "")
         if not isinstance(method, str) or not method:
             return self._error_response(
-                request.get("id"), -32600, "Invalid Request: missing or invalid method"
+                request.get("id"),
+                -32600,
+                "Invalid Request: missing or invalid method",
             )
 
         params = request.get("params", {})
@@ -67,7 +69,10 @@ class ACPServer:
             logger.exception("ACP handler error for method %s", method)
             return self._error_response(req_id, -32603, "Internal error")
 
-    async def _handle_initialize(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_initialize(
+        self,
+        params: Dict[str, Any],
+    ) -> Dict[str, Any]:
         """Handle ACP initialize handshake."""
         self._initialized = True
         return {
@@ -80,14 +85,20 @@ class ACPServer:
             },
         }
 
-    async def _handle_session_new(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_session_new(
+        self,
+        params: Dict[str, Any],
+    ) -> Dict[str, Any]:
         """Create a new ACP session."""
         import uuid
 
         self._session_id = f"acp_{uuid.uuid4().hex[:8]}"
         return {"session_id": self._session_id}
 
-    async def _handle_session_prompt(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_session_prompt(
+        self,
+        params: Dict[str, Any],
+    ) -> Dict[str, Any]:
         """Process a prompt in the current session."""
         prompt = params.get("prompt", "")
         if not self._session_id:
@@ -111,13 +122,20 @@ class ACPServer:
             )
 
             request = AgentRequest(
-                input=[Message(role="user", content=[TextContent(text=str(prompt))])],
+                input=[
+                    Message(
+                        role="user",
+                        content=[TextContent(text=str(prompt))],
+                    ),
+                ],
                 session_id=self._session_id,
                 user_id="acp_user",
             )
 
             last_text = ""
-            async for agent_msg, _is_last in self._runner.stream_query(request):
+            async for agent_msg, _is_last in self._runner.stream_query(
+                request,
+            ):
                 text = getattr(agent_msg, "content", None)
                 if isinstance(text, str):
                     last_text = text
@@ -137,7 +155,10 @@ class ACPServer:
                 "status": "error",
             }
 
-    async def _handle_session_cancel(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_session_cancel(
+        self,
+        params: Dict[str, Any],
+    ) -> Dict[str, Any]:
         """Cancel the current session."""
         self._session_id = None
         return {"status": "cancelled"}
@@ -148,7 +169,11 @@ class ACPServer:
         return {"status": "shutdown"}
 
     @staticmethod
-    def _error_response(req_id: Any, code: int, message: str) -> Dict[str, Any]:
+    def _error_response(
+        req_id: Any,
+        code: int,
+        message: str,
+    ) -> Dict[str, Any]:
         return {
             "jsonrpc": "2.0",
             "id": req_id,

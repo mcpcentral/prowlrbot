@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Bridge API server that receives authenticated job requests from workers."""
 
 import hashlib
@@ -18,7 +19,7 @@ from capabilities import CapabilityExecutor
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ executor: Optional[CapabilityExecutor] = None
 
 class ExecuteRequest(BaseModel):
     """Request to execute a capability."""
+
     job_id: str
     capability: str
     parameters: dict = {}
@@ -35,6 +37,7 @@ class ExecuteRequest(BaseModel):
 
 class ExecuteResponse(BaseModel):
     """Response from capability execution."""
+
     job_id: str
     status: str
     result: Optional[dict] = None
@@ -59,7 +62,7 @@ app = FastAPI(
     title="AI Swarm Bridge API",
     description="Secure bridge for executing capabilities on macOS",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 
@@ -70,7 +73,7 @@ def verify_hmac_signature(request_body: bytes, signature: str) -> bool:
     expected = hmac.new(
         Config.HMAC_SECRET.encode(),
         request_body,
-        hashlib.sha256
+        hashlib.sha256,
     ).hexdigest()
     return hmac.compare_digest(expected, signature)
 
@@ -89,7 +92,7 @@ async def hmac_auth_middleware(request: Request, call_next):
         logger.warning(f"Request from unauthorized IP: {client_ip}")
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
-            content={"error": "IP not authorized"}
+            content={"error": "IP not authorized"},
         )
 
     # Read and verify signature
@@ -100,7 +103,7 @@ async def hmac_auth_middleware(request: Request, call_next):
         logger.warning(f"Invalid signature from {client_ip}")
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"error": "Invalid signature"}
+            content={"error": "Invalid signature"},
         )
 
     # Store body for route handler
@@ -127,7 +130,7 @@ async def execute_capability(request: Request):
     if not executor:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Executor not initialized"
+            detail="Executor not initialized",
         )
 
     try:
@@ -136,32 +139,34 @@ async def execute_capability(request: Request):
         data = json.loads(body)
         exec_request = ExecuteRequest(**data)
 
-        logger.info(f"Executing {exec_request.capability} for job {exec_request.job_id}")
+        logger.info(
+            f"Executing {exec_request.capability} for job {exec_request.job_id}",
+        )
 
         # Execute the capability
         result = await executor.execute(
             exec_request.capability,
-            exec_request.parameters
+            exec_request.parameters,
         )
 
         return ExecuteResponse(
             job_id=exec_request.job_id,
             status="success",
             result=result,
-            executed_at=time.time()
+            executed_at=time.time(),
         )
 
     except json.JSONDecodeError:
         logger.error("Invalid JSON in request body")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid JSON"
+            detail="Invalid JSON",
         )
     except ValueError as e:
         logger.error(f"Invalid request: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail=str(e),
         )
     except Exception as e:
         logger.error(f"Execution failed: {e}")
@@ -169,10 +174,11 @@ async def execute_capability(request: Request):
             job_id=data.get("job_id", "unknown"),
             status="error",
             error=str(e),
-            executed_at=time.time()
+            executed_at=time.time(),
         )
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host=Config.HOST, port=Config.PORT)

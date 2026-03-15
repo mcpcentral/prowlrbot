@@ -31,7 +31,13 @@ def test_xp_tracker_leaderboard_has_entry_after_award(tmp_path):
     from prowlrbot.gamification.xp_tracker import XPTracker
 
     tracker = XPTracker(db_path=tmp_path / "test.db")
-    tracker.award_xp("agent-abc", 25, "task_complete", "did something", entity_type="agent")
+    tracker.award_xp(
+        "agent-abc",
+        25,
+        "task_complete",
+        "did something",
+        entity_type="agent",
+    )
 
     leaderboard = tracker.get_leaderboard(entity_type="agent", limit=10)
     entity_ids = [e.entity_id for e in leaderboard]
@@ -64,12 +70,20 @@ async def test_xp_award_broadcasts_leaderboard_update(tmp_path):
 
     try:
         tracker = XPTracker(db_path=tmp_path / "test.db")
-        tracker.award_xp("agent-xyz", 50, "task_complete", "pushed task", entity_type="agent")
+        tracker.award_xp(
+            "agent-xyz",
+            50,
+            "task_complete",
+            "pushed task",
+            entity_type="agent",
+        )
 
         # Give the event loop a moment to process the create_task
         await asyncio.sleep(0.05)
 
-        assert len(received_events) == 1, f"Expected 1 event, got {len(received_events)}"
+        assert (
+            len(received_events) == 1
+        ), f"Expected 1 event, got {len(received_events)}"
         evt = received_events[0]
         assert evt.type == EventType.LEADERBOARD_UPDATE
         assert evt.data["entity_id"] == "agent-xyz"

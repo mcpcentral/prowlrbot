@@ -29,12 +29,16 @@ class AgentVerseWorld:
     def __init__(self, db_path: Path):
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
+        self._conn = sqlite3.connect(
+            str(self.db_path),
+            check_same_thread=False,
+        )
         self._conn.row_factory = sqlite3.Row
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS agents (
                 agent_id TEXT PRIMARY KEY,
                 display_name TEXT DEFAULT '',
@@ -76,7 +80,8 @@ class AgentVerseWorld:
                 winner_id TEXT DEFAULT '',
                 created_at REAL NOT NULL
             );
-        """)
+        """,
+        )
         self._conn.commit()
 
     # ------------------------------------------------------------------
@@ -106,7 +111,8 @@ class AgentVerseWorld:
 
     def get_agent(self, agent_id: str) -> Optional[AgentPresence]:
         row = self._conn.execute(
-            "SELECT * FROM agents WHERE agent_id = ?", (agent_id,)
+            "SELECT * FROM agents WHERE agent_id = ?",
+            (agent_id,),
         ).fetchone()
         if not row:
             return None
@@ -114,12 +120,15 @@ class AgentVerseWorld:
 
     def list_agents_in_zone(self, zone: Zone) -> List[AgentPresence]:
         rows = self._conn.execute(
-            "SELECT * FROM agents WHERE current_zone = ? AND online = 1", (zone,)
+            "SELECT * FROM agents WHERE current_zone = ? AND online = 1",
+            (zone,),
         ).fetchall()
         return [self._row_to_presence(r) for r in rows]
 
     def list_online_agents(self) -> List[AgentPresence]:
-        rows = self._conn.execute("SELECT * FROM agents WHERE online = 1").fetchall()
+        rows = self._conn.execute(
+            "SELECT * FROM agents WHERE online = 1",
+        ).fetchall()
         return [self._row_to_presence(r) for r in rows]
 
     def move_agent(self, agent_id: str, zone: Zone) -> bool:
@@ -169,7 +178,7 @@ class AgentVerseWorld:
                     description=z.description,
                     agents_online=count["c"] if count else 0,
                     is_premium=z.is_premium,
-                )
+                ),
             )
         return zones
 
@@ -197,7 +206,7 @@ class AgentVerseWorld:
 
     def list_guilds(self) -> List[Guild]:
         rows = self._conn.execute(
-            "SELECT * FROM guilds ORDER BY combined_xp DESC"
+            "SELECT * FROM guilds ORDER BY combined_xp DESC",
         ).fetchall()
         return [
             Guild(
@@ -286,11 +295,15 @@ class AgentVerseWorld:
         return battle
 
     def complete_battle(
-        self, battle_id: str, challenger_score: float, defender_score: float
+        self,
+        battle_id: str,
+        challenger_score: float,
+        defender_score: float,
     ) -> Optional[ArenaBattle]:
         winner = ""
         row = self._conn.execute(
-            "SELECT * FROM battles WHERE id = ?", (battle_id,)
+            "SELECT * FROM battles WHERE id = ?",
+            (battle_id,),
         ).fetchone()
         if not row:
             return None

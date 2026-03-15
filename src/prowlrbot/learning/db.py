@@ -33,7 +33,10 @@ _MAX_LIMIT = 200
 _DECAY_HALF_LIFE_DAYS = 30.0
 
 # Default DB location
-DEFAULT_DB_PATH = os.path.join(os.path.expanduser("~/.prowlrbot"), "learnings.db")
+DEFAULT_DB_PATH = os.path.join(
+    os.path.expanduser("~/.prowlrbot"),
+    "learnings.db",
+)
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS learnings (
@@ -120,7 +123,8 @@ def _clamp_limit(limit: int) -> int:
 
 
 def _decay_score(
-    created_iso: str, half_life_days: float = _DECAY_HALF_LIFE_DAYS
+    created_iso: str,
+    half_life_days: float = _DECAY_HALF_LIFE_DAYS,
 ) -> float:
     """Compute an exponential decay factor in [0, 1] based on age.
 
@@ -378,7 +382,11 @@ class LearningDB:
         ).fetchall()
         return [dict(r) for r in rows]
 
-    def get_by_source(self, source: str, limit: int = 20) -> List[Dict[str, Any]]:
+    def get_by_source(
+        self,
+        source: str,
+        limit: int = 20,
+    ) -> List[Dict[str, Any]]:
         """Get learnings from a specific agent or user."""
         limit = _clamp_limit(limit)
         rows = self._conn.execute(
@@ -426,7 +434,11 @@ class LearningDB:
         with self._lock:
             self._conn.execute(
                 "UPDATE learnings SET confidence = ?, updated_at = ? WHERE learning_id = ?",
-                (confidence, datetime.now(tz=timezone.utc).isoformat(), learning_id),
+                (
+                    confidence,
+                    datetime.now(tz=timezone.utc).isoformat(),
+                    learning_id,
+                ),
             )
             self._conn.commit()
 
@@ -434,7 +446,8 @@ class LearningDB:
         """Remove a learning."""
         with self._lock:
             cur = self._conn.execute(
-                "DELETE FROM learnings WHERE learning_id = ?", (learning_id,)
+                "DELETE FROM learnings WHERE learning_id = ?",
+                (learning_id,),
             )
             self._conn.commit()
         return cur.rowcount > 0
@@ -556,13 +569,20 @@ class LearningDB:
         with self._lock:
             self._conn.execute(
                 "INSERT INTO sessions (session_id, agent_id, started_at) VALUES (?, ?, ?)",
-                (session_id, agent_id, datetime.now(tz=timezone.utc).isoformat()),
+                (
+                    session_id,
+                    agent_id,
+                    datetime.now(tz=timezone.utc).isoformat(),
+                ),
             )
             self._conn.commit()
         return session_id
 
     def end_session(
-        self, session_id: str, summary: str = "", learnings_captured: int = 0
+        self,
+        session_id: str,
+        summary: str = "",
+        learnings_captured: int = 0,
     ) -> None:
         """Record session end with summary."""
         with self._lock:
@@ -583,15 +603,21 @@ class LearningDB:
 
     def stats(self) -> Dict[str, Any]:
         """Return learning engine statistics."""
-        total = self._conn.execute("SELECT COUNT(*) FROM learnings").fetchone()[0]
+        total = self._conn.execute(
+            "SELECT COUNT(*) FROM learnings",
+        ).fetchone()[0]
         by_cat = self._conn.execute(
-            "SELECT category, COUNT(*) as cnt FROM learnings GROUP BY category"
+            "SELECT category, COUNT(*) as cnt FROM learnings GROUP BY category",
         ).fetchall()
         by_project = self._conn.execute(
-            "SELECT project, COUNT(*) as cnt FROM learnings WHERE project != '' GROUP BY project"
+            "SELECT project, COUNT(*) as cnt FROM learnings WHERE project != '' GROUP BY project",
         ).fetchall()
-        sessions = self._conn.execute("SELECT COUNT(*) FROM sessions").fetchone()[0]
-        prefs = self._conn.execute("SELECT COUNT(*) FROM preferences").fetchone()[0]
+        sessions = self._conn.execute(
+            "SELECT COUNT(*) FROM sessions",
+        ).fetchone()[0]
+        prefs = self._conn.execute(
+            "SELECT COUNT(*) FROM preferences",
+        ).fetchone()[0]
         return {
             "total_learnings": total,
             "by_category": {r["category"]: r["cnt"] for r in by_cat},
@@ -614,11 +640,13 @@ class LearningDB:
         if not learnings:
             return "No learnings recorded yet."
 
-        lines = [f"Top {len(learnings)} learnings (project={project or 'global'}):"]
+        lines = [
+            f"Top {len(learnings)} learnings (project={project or 'global'}):",
+        ]
         for i, l in enumerate(learnings, 1):
             lines.append(
                 f"  {i}. [{l['category']}] {l['title']} "
-                f"(confidence={l['confidence']:.2f}, relevance={l['relevance']:.3f})"
+                f"(confidence={l['confidence']:.2f}, relevance={l['relevance']:.3f})",
             )
         return "\n".join(lines)
 

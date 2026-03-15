@@ -25,7 +25,7 @@ def start_cmd(host: str, port: int, dev: bool) -> None:
     studio_dir = _find_studio_dir()
     if not studio_dir:
         click.echo(
-            "Error: Prowlr-Studio not found. Install with: prowlr studio install"
+            "Error: Prowlr-Studio not found. Install with: prowlr studio install",
         )
         sys.exit(1)
 
@@ -51,7 +51,11 @@ def start_cmd(host: str, port: int, dev: bool) -> None:
     try:
         import os
 
-        subprocess.run(cmd, cwd=str(studio_dir), env={**dict(os.environ), **env})
+        subprocess.run(
+            cmd,
+            cwd=str(studio_dir),
+            env={**dict(os.environ), **env},
+        )
     except FileNotFoundError:
         click.echo("Error: 'bun' not found. Install Bun: https://bun.sh")
         sys.exit(1)
@@ -70,14 +74,22 @@ def status_cmd() -> None:
     import urllib.request
 
     try:
-        urllib.request.urlopen("http://127.0.0.1:3211/api/v1/health", timeout=2)
+        urllib.request.urlopen(
+            "http://127.0.0.1:3211/api/v1/health",
+            timeout=2,
+        )
         click.echo("Studio backend: running (port 3211)")
     except Exception:
         click.echo("Studio backend: not running")
 
 
 @studio_cmd.command("install")
-@click.option("--dir", "install_dir", default=None, help="Installation directory")
+@click.option(
+    "--dir",
+    "install_dir",
+    default=None,
+    help="Installation directory",
+)
 def install_cmd(install_dir: str | None) -> None:
     """Install Prowlr-Studio from GitHub."""
     target = Path(install_dir) if install_dir else Path.home() / ".prowlrbot" / "studio"

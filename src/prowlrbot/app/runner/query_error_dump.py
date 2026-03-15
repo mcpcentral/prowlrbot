@@ -105,12 +105,18 @@ def write_query_error_dump(
         return None
 
 
-def cleanup_old_error_dumps(max_age_hours: int = 72, max_files: int = 100) -> int:
+def cleanup_old_error_dumps(
+    max_age_hours: int = 72,
+    max_files: int = 100,
+) -> int:
     """Remove stale error dump files to prevent disk accumulation.
 
     Returns the number of files deleted.
     """
-    pattern = os.path.join(tempfile.gettempdir(), "prowlrbot_query_error_*.json")
+    pattern = os.path.join(
+        tempfile.gettempdir(),
+        "prowlrbot_query_error_*.json",
+    )
     files = sorted(glob.glob(pattern), key=os.path.getmtime)
     cutoff = time.time() - (max_age_hours * 3600)
     deleted = 0

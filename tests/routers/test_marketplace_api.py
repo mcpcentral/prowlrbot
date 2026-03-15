@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for marketplace API endpoint fixes."""
 
 import importlib.util
@@ -9,7 +10,10 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing
+from prowlrbot.marketplace.models import (
+    MarketplaceCategory,
+    MarketplaceListing,
+)
 from prowlrbot.marketplace.store import MarketplaceStore
 
 
@@ -45,7 +49,7 @@ def store():
                 rating=4.0 + i * 0.3,
                 ratings_count=i + 1,
                 status="approved",
-            )
+            ),
         )
     yield s
     s.close()

@@ -43,7 +43,8 @@ class TimelineManager:
         self._create_tables()
 
     def _create_tables(self):
-        self._conn.execute("""
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS checkpoints (
                 id TEXT PRIMARY KEY,
                 session_id TEXT NOT NULL,
@@ -52,12 +53,16 @@ class TimelineManager:
                 parent_id TEXT,
                 created_at REAL NOT NULL
             )
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_checkpoints_session
             ON checkpoints(session_id, created_at DESC)
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS timeline_entries (
                 id TEXT PRIMARY KEY,
                 session_id TEXT NOT NULL,
@@ -65,11 +70,14 @@ class TimelineManager:
                 event_data TEXT NOT NULL DEFAULT '{}',
                 timestamp REAL NOT NULL
             )
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_timeline_session
             ON timeline_entries(session_id, timestamp DESC)
-        """)
+        """,
+        )
         self._conn.commit()
 
     def create_checkpoint(
@@ -120,7 +128,9 @@ class TimelineManager:
         return self._row_to_checkpoint(row)
 
     def fork_from_checkpoint(
-        self, checkpoint_id: str, new_label: str
+        self,
+        checkpoint_id: str,
+        new_label: str,
     ) -> Optional[Checkpoint]:
         """Create a new checkpoint branching from an existing one.
 
@@ -172,7 +182,11 @@ class TimelineManager:
         self._conn.commit()
         return entry
 
-    def list_events(self, session_id: str, limit: int = 200) -> List[TimelineEntry]:
+    def list_events(
+        self,
+        session_id: str,
+        limit: int = 200,
+    ) -> List[TimelineEntry]:
         """List timeline events for a session, newest first."""
         rows = self._conn.execute(
             "SELECT * FROM timeline_entries WHERE session_id = ? "

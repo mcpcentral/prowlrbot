@@ -42,7 +42,12 @@ def diff_text(old: Optional[str], new: Optional[str]) -> DiffResult:
     old_lines = old.splitlines(keepends=True)
     new_lines = (new or "").splitlines(keepends=True)
     unified = "".join(
-        difflib.unified_diff(old_lines, new_lines, fromfile="before", tofile="after")
+        difflib.unified_diff(
+            old_lines,
+            new_lines,
+            fromfile="before",
+            tofile="after",
+        ),
     )
 
     # Build a short human-readable summary.

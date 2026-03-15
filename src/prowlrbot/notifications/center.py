@@ -68,7 +68,8 @@ class NotificationCenter:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS notifications (
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
@@ -87,7 +88,8 @@ class NotificationCenter:
             CREATE INDEX IF NOT EXISTS idx_notif_read ON notifications(read);
             CREATE INDEX IF NOT EXISTS idx_notif_type ON notifications(notification_type);
             CREATE INDEX IF NOT EXISTS idx_notif_created ON notifications(created_at);
-        """)
+        """,
+        )
         self._conn.commit()
 
     def send(self, notification: Notification) -> Notification:
@@ -120,7 +122,8 @@ class NotificationCenter:
 
     def get(self, notification_id: str) -> Optional[Notification]:
         row = self._conn.execute(
-            "SELECT * FROM notifications WHERE id = ?", (notification_id,)
+            "SELECT * FROM notifications WHERE id = ?",
+            (notification_id,),
         ).fetchone()
         if not row:
             return None
@@ -175,23 +178,23 @@ class NotificationCenter:
 
     def get_stats(self) -> NotificationStats:
         total = self._conn.execute(
-            "SELECT COUNT(*) as c FROM notifications WHERE dismissed = 0"
+            "SELECT COUNT(*) as c FROM notifications WHERE dismissed = 0",
         ).fetchone()["c"]
         unread = self._conn.execute(
-            "SELECT COUNT(*) as c FROM notifications WHERE read = 0 AND dismissed = 0"
+            "SELECT COUNT(*) as c FROM notifications WHERE read = 0 AND dismissed = 0",
         ).fetchone()["c"]
 
         by_type: Dict[str, int] = {}
         for row in self._conn.execute(
             "SELECT notification_type, COUNT(*) as c FROM notifications "
-            "WHERE dismissed = 0 GROUP BY notification_type"
+            "WHERE dismissed = 0 GROUP BY notification_type",
         ).fetchall():
             by_type[row["notification_type"]] = row["c"]
 
         by_priority: Dict[str, int] = {}
         for row in self._conn.execute(
             "SELECT priority, COUNT(*) as c FROM notifications "
-            "WHERE dismissed = 0 GROUP BY priority"
+            "WHERE dismissed = 0 GROUP BY priority",
         ).fetchall():
             by_priority[row["priority"]] = row["c"]
 

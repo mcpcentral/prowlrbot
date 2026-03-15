@@ -45,7 +45,7 @@ class TestMonitorEngine:
     @pytest.mark.asyncio
     async def test_run_once_first_check(self, engine):
         transport = httpx.MockTransport(
-            lambda req: httpx.Response(200, text="<h1>Hello</h1>")
+            lambda req: httpx.Response(200, text="<h1>Hello</h1>"),
         )
         config = WebMonitorConfig(
             name="web1",
@@ -81,7 +81,7 @@ class TestMonitorEngine:
     @pytest.mark.asyncio
     async def test_run_once_no_change(self, engine):
         transport = httpx.MockTransport(
-            lambda req: httpx.Response(200, text="<h1>Hello</h1>")
+            lambda req: httpx.Response(200, text="<h1>Hello</h1>"),
         )
         config = WebMonitorConfig(
             name="web1",
@@ -126,7 +126,7 @@ class TestMonitorEngine:
         engine = MonitorEngine(storage=storage, notifiers=[FakeNotifier()])
 
         transport = httpx.MockTransport(
-            lambda req: httpx.Response(200, text="<h1>Changed</h1>")
+            lambda req: httpx.Response(200, text="<h1>Changed</h1>"),
         )
         config = WebMonitorConfig(
             name="web1",
@@ -191,7 +191,9 @@ class TestMonitorEngineAPI:
 
         engine = MonitorEngine(storage=storage)
         payload = json.dumps({"data": {"status": "up"}})
-        transport = httpx.MockTransport(lambda req: httpx.Response(200, text=payload))
+        transport = httpx.MockTransport(
+            lambda req: httpx.Response(200, text=payload),
+        )
         config = APIMonitorConfig(
             name="api1",
             url="https://api.example.com/status",

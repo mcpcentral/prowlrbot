@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # tests/hardware/test_scorer.py
 import pytest
 from prowlrbot.hardware.detector import HardwareProfile
@@ -6,21 +7,42 @@ from prowlrbot.hardware.scorer import ModelScorer, ModelScore, Grade
 
 
 RTX_3060_12GB = HardwareProfile(
-    ram_gb=32.0, cpu_cores=8, cpu_arch="x86_64", platform="linux",
-    gpu_name="NVIDIA RTX 3060", gpu_vram_gb=12.0, gpu_vendor="nvidia",
-    estimated_bandwidth_gbps=360.0, is_apple_silicon=False, unified_memory=False,
+    ram_gb=32.0,
+    cpu_cores=8,
+    cpu_arch="x86_64",
+    platform="linux",
+    gpu_name="NVIDIA RTX 3060",
+    gpu_vram_gb=12.0,
+    gpu_vendor="nvidia",
+    estimated_bandwidth_gbps=360.0,
+    is_apple_silicon=False,
+    unified_memory=False,
 )
 
 M2_8GB = HardwareProfile(
-    ram_gb=8.0, cpu_cores=8, cpu_arch="arm64", platform="darwin",
-    gpu_name="Apple M2", gpu_vram_gb=8.0, gpu_vendor="apple",
-    estimated_bandwidth_gbps=100.0, is_apple_silicon=True, unified_memory=True,
+    ram_gb=8.0,
+    cpu_cores=8,
+    cpu_arch="arm64",
+    platform="darwin",
+    gpu_name="Apple M2",
+    gpu_vram_gb=8.0,
+    gpu_vendor="apple",
+    estimated_bandwidth_gbps=100.0,
+    is_apple_silicon=True,
+    unified_memory=True,
 )
 
 LOW_END = HardwareProfile(
-    ram_gb=8.0, cpu_cores=4, cpu_arch="x86_64", platform="linux",
-    gpu_name=None, gpu_vram_gb=None, gpu_vendor="unknown",
-    estimated_bandwidth_gbps=0.0, is_apple_silicon=False, unified_memory=False,
+    ram_gb=8.0,
+    cpu_cores=4,
+    cpu_arch="x86_64",
+    platform="linux",
+    gpu_name=None,
+    gpu_vram_gb=None,
+    gpu_vendor="unknown",
+    estimated_bandwidth_gbps=0.0,
+    is_apple_silicon=False,
+    unified_memory=False,
 )
 
 
@@ -58,6 +80,7 @@ def test_quant_selection_picks_best_fitting():
 
 def test_all_models_scored_no_exception():
     from prowlrbot.hardware.catalog import MODEL_CATALOG
+
     scorer = ModelScorer(RTX_3060_12GB)
     for model in MODEL_CATALOG:
         score = scorer.score_model(model)

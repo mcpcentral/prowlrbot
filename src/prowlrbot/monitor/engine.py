@@ -116,7 +116,11 @@ class MonitorEngine:
         if result.changed and not result.error:
             for notifier in self.notifiers:
                 try:
-                    await notifier.notify(name, result.diff_summary, result.content)
+                    await notifier.notify(
+                        name,
+                        result.diff_summary,
+                        result.content,
+                    )
                 except Exception:
                     logger.exception("Notifier failed for %s", name)
 
@@ -169,7 +173,7 @@ class MonitorEngine:
         if not _HAS_APSCHEDULER:
             raise RuntimeError(
                 "APScheduler is required for schedule_monitor(). "
-                "Install it with: pip install apscheduler"
+                "Install it with: pip install apscheduler",
             )
         if self._scheduler is None:
             self._scheduler = AsyncIOScheduler()

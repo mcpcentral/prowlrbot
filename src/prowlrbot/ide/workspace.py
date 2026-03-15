@@ -34,7 +34,8 @@ class IDEWorkspace:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS ide_sessions (
                 id TEXT PRIMARY KEY,
                 workspace_root TEXT NOT NULL,
@@ -57,7 +58,8 @@ class IDEWorkspace:
             );
             CREATE INDEX IF NOT EXISTS idx_edits_session ON edit_history(session_id);
             CREATE INDEX IF NOT EXISTS idx_edits_path ON edit_history(path);
-        """)
+        """,
+        )
         self._conn.commit()
 
     # ------------------------------------------------------------------
@@ -65,7 +67,10 @@ class IDEWorkspace:
     # ------------------------------------------------------------------
 
     def list_files(
-        self, root: str, max_depth: int = 3, include_hidden: bool = False
+        self,
+        root: str,
+        max_depth: int = 3,
+        include_hidden: bool = False,
     ) -> FileEntry:
         """List files in a directory tree."""
         root_path = Path(root)
@@ -73,7 +78,10 @@ class IDEWorkspace:
             return FileEntry(path=root, name=root_path.name, is_directory=True)
 
         return self._scan_dir(
-            root_path, depth=0, max_depth=max_depth, include_hidden=include_hidden
+            root_path,
+            depth=0,
+            max_depth=max_depth,
+            include_hidden=include_hidden,
         )
 
     def read_file(self, path: str) -> FileContent:
@@ -125,7 +133,7 @@ class IDEWorkspace:
                         end_line=i2,
                         original_lines=list(orig_lines[i1:i2]),
                         modified_lines=list(mod_lines[j1:j2]),
-                    )
+                    ),
                 )
 
         return FileDiff(
@@ -187,7 +195,8 @@ class IDEWorkspace:
 
     def get_session(self, session_id: str) -> Optional[IDESession]:
         row = self._conn.execute(
-            "SELECT * FROM ide_sessions WHERE id = ?", (session_id,)
+            "SELECT * FROM ide_sessions WHERE id = ?",
+            (session_id,),
         ).fetchone()
         if not row:
             return None
@@ -227,7 +236,11 @@ class IDEWorkspace:
         self._conn.commit()
         return session
 
-    def record_edit(self, session_id: str, edit: EditOperation) -> EditOperation:
+    def record_edit(
+        self,
+        session_id: str,
+        edit: EditOperation,
+    ) -> EditOperation:
         """Record an edit in the history."""
         edit.created_at = time.time()
         self._conn.execute(
@@ -285,7 +298,11 @@ class IDEWorkspace:
     # ------------------------------------------------------------------
 
     def _scan_dir(
-        self, path: Path, depth: int, max_depth: int, include_hidden: bool
+        self,
+        path: Path,
+        depth: int,
+        max_depth: int,
+        include_hidden: bool,
     ) -> FileEntry:
         entry = FileEntry(
             path=str(path),
@@ -308,7 +325,12 @@ class IDEWorkspace:
                 if child.name in ("__pycache__", "node_modules", ".git"):
                     continue
                 entry.children.append(
-                    self._scan_dir(child, depth + 1, max_depth, include_hidden)
+                    self._scan_dir(
+                        child,
+                        depth + 1,
+                        max_depth,
+                        include_hidden,
+                    ),
                 )
         except PermissionError:
             pass

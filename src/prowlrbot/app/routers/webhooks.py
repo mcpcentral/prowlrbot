@@ -46,7 +46,11 @@ class TriggerResponse(BaseModel):
 
 def _get_store(request: Request) -> WebhookStore:
     """Return the WebhookStore, creating one lazily on app state."""
-    store: Optional[WebhookStore] = getattr(request.app.state, "webhook_store", None)
+    store: Optional[WebhookStore] = getattr(
+        request.app.state,
+        "webhook_store",
+        None,
+    )
     if store is None:
         store = WebhookStore(WORKING_DIR)
         request.app.state.webhook_store = store
@@ -56,7 +60,9 @@ def _get_store(request: Request) -> WebhookStore:
 def _get_executor(request: Request) -> WebhookExecutor:
     """Return the WebhookExecutor, creating one lazily on app state."""
     executor: Optional[WebhookExecutor] = getattr(
-        request.app.state, "webhook_executor", None
+        request.app.state,
+        "webhook_executor",
+        None,
     )
     if executor is None:
         store = _get_store(request)
@@ -89,7 +95,9 @@ async def get_rule(rule_id: str, request: Request):
 
 @router.post("/rules", response_model=WebhookRule, status_code=201)
 async def create_rule(
-    rule: WebhookRule, request: Request, _user=Depends(get_current_user)
+    rule: WebhookRule,
+    request: Request,
+    _user=Depends(get_current_user),
 ):
     """Create a new webhook rule (server generates id)."""
     store = _get_store(request)
@@ -99,7 +107,10 @@ async def create_rule(
 
 @router.put("/rules/{rule_id}", response_model=WebhookRule)
 async def update_rule(
-    rule_id: str, rule: WebhookRule, request: Request, _user=Depends(get_current_user)
+    rule_id: str,
+    rule: WebhookRule,
+    request: Request,
+    _user=Depends(get_current_user),
 ):
     """Replace a webhook rule by id."""
     store = _get_store(request)
@@ -113,7 +124,11 @@ async def update_rule(
 
 
 @router.delete("/rules/{rule_id}")
-async def delete_rule(rule_id: str, request: Request, _user=Depends(get_current_user)):
+async def delete_rule(
+    rule_id: str,
+    request: Request,
+    _user=Depends(get_current_user),
+):
     """Delete a webhook rule by id."""
     store = _get_store(request)
     ok = await store.delete_rule(rule_id)
@@ -124,7 +139,10 @@ async def delete_rule(rule_id: str, request: Request, _user=Depends(get_current_
 
 @router.post("/rules/{rule_id}/toggle", response_model=WebhookRule)
 async def toggle_rule(
-    rule_id: str, body: ToggleRequest, request: Request, _user=Depends(get_current_user)
+    rule_id: str,
+    body: ToggleRequest,
+    request: Request,
+    _user=Depends(get_current_user),
 ):
     """Enable or disable a webhook rule."""
     store = _get_store(request)
@@ -141,7 +159,9 @@ async def toggle_rule(
 
 @router.post("/trigger", response_model=TriggerResponse)
 async def receive_trigger(
-    body: TriggerRequest, request: Request, _user=Depends(get_current_user)
+    body: TriggerRequest,
+    request: Request,
+    _user=Depends(get_current_user),
 ):
     """Receive an incoming trigger and execute all matching rules."""
     executor = _get_executor(request)

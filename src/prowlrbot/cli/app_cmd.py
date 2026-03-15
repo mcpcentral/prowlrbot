@@ -9,7 +9,10 @@ from pathlib import Path
 # Suppress known deprecation noise from dependencies (uvicorn/websockets, nacos/pydantic)
 # before uvicorn is imported so the filters apply when those modules load.
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-warnings.filterwarnings("ignore", message=".*Support for class-based `config`.*")
+warnings.filterwarnings(
+    "ignore",
+    message=".*Support for class-based `config`.*",
+)
 warnings.filterwarnings("ignore", message=".*deprecated.*Pydantic.*")
 
 import click
@@ -24,6 +27,7 @@ def _load_dotenv_if_present() -> None:
     """Load .env from current working directory so PROWLRBOT_ADMIN_* etc. are set."""
     try:
         from dotenv import load_dotenv
+
         env_path = Path.cwd() / ".env"
         if env_path.exists():
             load_dotenv(env_path)
@@ -81,7 +85,11 @@ def app_cmd(
     """Run ProwlrBot FastAPI app."""
     _load_dotenv_if_present()
     if host is None:
-        host = "0.0.0.0" if (RUNNING_IN_CONTAINER or "").lower() in ("1", "true", "yes") else "127.0.0.1"
+        host = (
+            "0.0.0.0"
+            if (RUNNING_IN_CONTAINER or "").lower() in ("1", "true", "yes")
+            else "127.0.0.1"
+        )
     # Persist last used host/port for other terminals
     write_last_api(host, port)
     os.environ[LOG_LEVEL_ENV] = log_level

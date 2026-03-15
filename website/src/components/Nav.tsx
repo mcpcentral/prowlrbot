@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, BookOpen, Github, Newspaper, Sun, Moon, Store, DollarSign } from "lucide-react";
+import {
+  Menu,
+  X,
+  BookOpen,
+  Github,
+  Newspaper,
+  Sun,
+  Moon,
+  Store,
+  DollarSign,
+} from "lucide-react";
 import { UserButton, useUser } from "@clerk/react";
 import { useAuthEnabled } from "../contexts/AuthContext";
 import { t, type Lang } from "../i18n";
@@ -194,19 +204,11 @@ export function Nav({
             <Store size={18} strokeWidth={1.5} aria-hidden />
             <span>Marketplace</span>
           </Link>
-          <Link
-            to="/blog"
-            className={linkClass}
-            title="ProwlrBot Blog"
-          >
+          <Link to="/blog" className={linkClass} title="ProwlrBot Blog">
             <Newspaper size={18} strokeWidth={1.5} aria-hidden />
             <span>Blog</span>
           </Link>
-          <Link
-            to="/pricing"
-            className={linkClass}
-            title="ProwlrBot Pricing"
-          >
+          <Link to="/pricing" className={linkClass} title="ProwlrBot Pricing">
             <DollarSign size={18} strokeWidth={1.5} aria-hidden />
             <span>Pricing</span>
           </Link>
@@ -239,7 +241,9 @@ export function Nav({
             type="button"
             onClick={onThemeToggle}
             className={linkClass}
-            title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+            title={
+              theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+            }
             style={{
               background: "none",
               border: "none",
@@ -260,9 +264,9 @@ export function Nav({
             <button
               type="button"
               onClick={() => {
-                const hero = document.querySelector('.hero-section');
+                const hero = document.querySelector(".hero-section");
                 if (hero) {
-                  hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  hero.scrollIntoView({ behavior: "smooth", block: "start" });
                   setTimeout(() => {
                     const input = hero.querySelector('input[type="email"]');
                     if (input) (input as HTMLElement).focus();
@@ -411,7 +415,9 @@ export function Nav({
             setOpen(false);
           }}
           className={linkClass}
-          title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+          title={
+            theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+          }
           style={{
             background: "none",
             border: "none",
@@ -422,13 +428,24 @@ export function Nav({
           }}
         >
           {theme === "light" ? (
-            <><Moon size={18} /> Dark mode</>
+            <>
+              <Moon size={18} /> Dark mode
+            </>
           ) : (
-            <><Sun size={18} /> Light mode</>
+            <>
+              <Sun size={18} /> Light mode
+            </>
           )}
         </button>
         {authEnabled ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", marginTop: "var(--space-1)" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "var(--space-2)",
+              marginTop: "var(--space-1)",
+            }}
+          >
             <NavAuthClerk onNavigate={() => setOpen(false)} />
           </div>
         ) : (
@@ -436,9 +453,9 @@ export function Nav({
             type="button"
             onClick={() => {
               setOpen(false);
-              const hero = document.querySelector('.hero-section');
+              const hero = document.querySelector(".hero-section");
               if (hero) {
-                hero.scrollIntoView({ behavior: 'smooth' });
+                hero.scrollIntoView({ behavior: "smooth" });
                 setTimeout(() => {
                   const form = hero.querySelector('input[type="email"]');
                   if (form) (form as HTMLElement).focus();

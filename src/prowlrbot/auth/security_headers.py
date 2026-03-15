@@ -5,7 +5,10 @@ from __future__ import annotations
 
 from typing import Optional
 
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import (
+    BaseHTTPMiddleware,
+    RequestResponseEndpoint,
+)
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -74,7 +77,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         self._allowed_origins = allowed_origins or []
 
     async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
+        self,
+        request: Request,
+        call_next: RequestResponseEndpoint,
     ) -> Response:
         response = await call_next(request)
 
@@ -84,15 +89,15 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # X-XSS-Protection omitted — deprecated by modern browsers and can
         # introduce vulnerabilities in IE. CSP provides better protection.
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Permissions-Policy"] = (
-            "camera=(), microphone=(self), geolocation=()"
-        )
+        response.headers[
+            "Permissions-Policy"
+        ] = "camera=(), microphone=(self), geolocation=()"
 
         # HSTS — only meaningful over TLS.
         if request.url.scheme == "https":
-            response.headers["Strict-Transport-Security"] = (
-                "max-age=31536000; includeSubDomains"
-            )
+            response.headers[
+                "Strict-Transport-Security"
+            ] = "max-age=31536000; includeSubDomains"
 
         # CSP is irrelevant for JSON API responses and can interfere with
         # clients that inspect headers, so skip it for /api/ routes.

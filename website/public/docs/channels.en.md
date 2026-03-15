@@ -127,7 +127,7 @@ The Feishu channel receives messages via **WebSocket long connection** (no publi
 
 
 8. Select **Add Events**, search for **Message reveived**, and subscribe to **Message received v2.0**
-9. 
+9.
 10. Under **App Versions** → **Version Management & Release**, **Create a version**, fill in basic info, **Save** and **Publish**
 
 ### Fill config.json
@@ -274,7 +274,7 @@ If you need a proxy (e.g. for network restrictions):
 
 
 4. In **Sandbox config** → **Message list**, click **Add member** and add **yourself**
-  
+
 6. In **Developer settings**, get **AppID** and **AppSecret** (ClientSecret) and fill them into config (see below). Add your server’s **IP to the whitelist** — only whitelisted IPs can call the Open API outside sandbox.
 
 6. In sandbox config, scan the QR code with QQ to add the bot to your message list

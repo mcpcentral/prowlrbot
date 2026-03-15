@@ -157,7 +157,7 @@ The marketplace repo only defines **what** the listing is (price, console_plugin
 
 Users can send **tips** to the author of a listing. The app supports this out of the box:
 
-- **`POST /api/marketplace/listings/{listing_id}/tip`** — body: `{ "amount": 5.00, "message": "Thanks for the skill!" }`.  
+- **`POST /api/marketplace/listings/{listing_id}/tip`** — body: `{ "amount": 5.00, "message": "Thanks for the skill!" }`.
   - If Stripe is configured: returns a `checkout_url`; after payment, the webhook records the tip and the author’s listing stats reflect it.
   - If Stripe is not configured: the tip is recorded locally and no payment is taken.
 

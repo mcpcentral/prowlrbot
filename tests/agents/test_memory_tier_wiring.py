@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test that MemoryManager promotes compacted memories via MemoryTierManager."""
 
 import pytest
@@ -55,7 +56,10 @@ def test_archive_db_fts_search(tmp_path):
     """ArchiveDB stores and retrieves via FTS5."""
     db = ArchiveDB(str(tmp_path / "archive.db"))
     db.store(
-        "agent-1", "Python best practices", "Use type hints for clarity", importance=3
+        "agent-1",
+        "Python best practices",
+        "Use type hints for clarity",
+        importance=3,
     )
     results = db.search("agent-1", "type hints")
     assert len(results) >= 1

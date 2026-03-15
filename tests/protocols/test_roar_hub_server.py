@@ -44,7 +44,10 @@ class TestHubServerRegistration(unittest.TestCase):
 
     def test_register_agent(self):
         client = _make_app()
-        resp = client.post("/agents", json=_agent_payload(display_name="planner"))
+        resp = client.post(
+            "/agents",
+            json=_agent_payload(display_name="planner"),
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert data["display_name"] == "planner"
@@ -55,7 +58,10 @@ class TestHubServerRegistration(unittest.TestCase):
         client = _make_app()
         resp = client.post(
             "/agents",
-            json=_agent_payload(did="did:roar:agent:custom-123", display_name="custom"),
+            json=_agent_payload(
+                did="did:roar:agent:custom-123",
+                display_name="custom",
+            ),
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -85,7 +91,8 @@ class TestHubServerLookup(unittest.TestCase):
         reg = client.post(
             "/agents",
             json=_agent_payload(
-                did="did:roar:agent:lookup-test", display_name="lookup"
+                did="did:roar:agent:lookup-test",
+                display_name="lookup",
             ),
         )
         did = reg.json()["did"]
@@ -138,10 +145,12 @@ class TestHubServerSearch(unittest.TestCase):
     def test_list_all_agents(self):
         client = _make_app()
         client.post(
-            "/agents", json=_agent_payload(did="did:roar:agent:a-1", display_name="a")
+            "/agents",
+            json=_agent_payload(did="did:roar:agent:a-1", display_name="a"),
         )
         client.post(
-            "/agents", json=_agent_payload(did="did:roar:agent:b-1", display_name="b")
+            "/agents",
+            json=_agent_payload(did="did:roar:agent:b-1", display_name="b"),
         )
 
         resp = client.get("/agents")
@@ -158,7 +167,8 @@ class TestHubServerUnregister(unittest.TestCase):
         client.post(
             "/agents",
             json=_agent_payload(
-                did="did:roar:agent:removable-1", display_name="removable"
+                did="did:roar:agent:removable-1",
+                display_name="removable",
             ),
         )
 
@@ -190,7 +200,10 @@ class TestHubServerAuth(unittest.TestCase):
 
     def test_missing_api_key_returns_401(self):
         client = _make_app(api_key="secret-key-123")
-        resp = client.post("/agents", json=_agent_payload(display_name="noauth"))
+        resp = client.post(
+            "/agents",
+            json=_agent_payload(display_name="noauth"),
+        )
         assert resp.status_code == 401
 
     def test_wrong_api_key_returns_401(self):
@@ -205,7 +218,10 @@ class TestHubServerAuth(unittest.TestCase):
     def test_no_auth_when_key_empty(self):
         """No API key requirement when api_key is empty string."""
         client = _make_app(api_key="")
-        resp = client.post("/agents", json=_agent_payload(display_name="nokeyrequired"))
+        resp = client.post(
+            "/agents",
+            json=_agent_payload(display_name="nokeyrequired"),
+        )
         assert resp.status_code == 200
 
     def test_auth_on_all_endpoints(self):

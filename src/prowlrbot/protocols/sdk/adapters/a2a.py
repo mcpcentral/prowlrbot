@@ -61,10 +61,12 @@ class A2AFullAdapter:
         session_id = params.get("sessionId", "")
 
         from_id = source_identity or AgentIdentity(
-            display_name="a2a-client", agent_type="agent"
+            display_name="a2a-client",
+            agent_type="agent",
         )
         to_id = target_identity or AgentIdentity(
-            display_name="a2a-server", agent_type="agent"
+            display_name="a2a-server",
+            agent_type="agent",
         )
 
         return ROARMessage(
@@ -107,11 +109,15 @@ class A2AFullAdapter:
                 "message": {
                     "role": "user",
                     "parts": [
-                        {"type": "text", "text": _extract_text(roar_message.payload)}
+                        {
+                            "type": "text",
+                            "text": _extract_text(roar_message.payload),
+                        },
                     ],
                 },
                 "sessionId": roar_message.payload.get(
-                    "a2a_session_id", roar_message.id
+                    "a2a_session_id",
+                    roar_message.id,
                 ),
             },
         }
@@ -133,7 +139,8 @@ class A2AFullAdapter:
             A ROARMessage with RESPOND intent.
         """
         from_id = server_identity or AgentIdentity(
-            display_name="a2a-server", agent_type="agent"
+            display_name="a2a-server",
+            agent_type="agent",
         )
         to_id = (
             original_request.from_identity
@@ -152,7 +159,10 @@ class A2AFullAdapter:
             **{"from": from_id, "to": to_id},
             intent=MessageIntent.RESPOND,
             payload={
-                "a2a_status": A2AFullAdapter.TASK_STATE_MAP.get(status, status),
+                "a2a_status": A2AFullAdapter.TASK_STATE_MAP.get(
+                    status,
+                    status,
+                ),
                 "a2a_artifacts": artifacts,
                 "a2a_task_id": a2a_task.get("id", ""),
             },

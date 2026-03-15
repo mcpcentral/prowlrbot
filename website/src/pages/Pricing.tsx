@@ -122,9 +122,15 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       >
         <span>{q}</span>
         {open ? (
-          <ChevronUp size={18} style={{ flexShrink: 0, color: "var(--text-muted)" }} />
+          <ChevronUp
+            size={18}
+            style={{ flexShrink: 0, color: "var(--text-muted)" }}
+          />
         ) : (
-          <ChevronDown size={18} style={{ flexShrink: 0, color: "var(--text-muted)" }} />
+          <ChevronDown
+            size={18}
+            style={{ flexShrink: 0, color: "var(--text-muted)" }}
+          />
         )}
       </button>
       {open && (
@@ -211,7 +217,8 @@ export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
               lineHeight: 1.5,
             }}
           >
-            Sign up on the app to get free credits. You&apos;ll sign in to the app when upgrading.
+            Sign up on the app to get free credits. You&apos;ll sign in to the
+            app when upgrading.
           </p>
         </div>
 
@@ -222,13 +229,17 @@ export function Pricing({ config, lang, theme, onThemeToggle }: PricingProps) {
             return (
               <div
                 key={tier.name}
-                className={`pricing-card${tier.featured ? " pricing-card--featured" : ""}`}
+                className={`pricing-card${
+                  tier.featured ? " pricing-card--featured" : ""
+                }`}
                 style={{
                   position: "relative",
                   display: "flex",
                   flexDirection: "column",
                   padding: "var(--space-4)",
-                  background: tier.featured ? "var(--surface)" : "var(--bg-card, var(--surface))",
+                  background: tier.featured
+                    ? "var(--surface)"
+                    : "var(--bg-card, var(--surface))",
                   border: tier.featured
                     ? "2px solid var(--accent)"
                     : "1px solid var(--border)",

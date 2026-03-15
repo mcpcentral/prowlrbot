@@ -23,10 +23,14 @@ _leaderboard = ModelLeaderboard(db_path=WORKING_DIR / "leaderboard.db")
 
 @router.get("/rankings", response_model=List[ModelRanking])
 async def get_rankings(
-    benchmark: Optional[str] = None, limit: int = 20
+    benchmark: Optional[str] = None,
+    limit: int = 20,
 ) -> List[ModelRanking]:
     """Get model rankings, optionally filtered by benchmark category."""
-    return _leaderboard.get_leaderboard(benchmark=benchmark, limit=min(limit, 100))
+    return _leaderboard.get_leaderboard(
+        benchmark=benchmark,
+        limit=min(limit, 100),
+    )
 
 
 @router.get("/categories", response_model=List[str])
@@ -36,7 +40,10 @@ async def get_categories() -> List[str]:
 
 
 @router.get("/model/{model}/history", response_model=List[BenchmarkResult])
-async def get_model_history(model: str, limit: int = 50) -> List[BenchmarkResult]:
+async def get_model_history(
+    model: str,
+    limit: int = 50,
+) -> List[BenchmarkResult]:
     """Get benchmark history for a model."""
     return _leaderboard.get_model_history(model, limit=min(limit, 200))
 

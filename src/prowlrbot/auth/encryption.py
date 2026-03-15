@@ -57,7 +57,9 @@ class SecretEncryptor:
 
     def __init__(self, key: bytes | None = None) -> None:
         if key is not None and len(key) != _KEY_LEN:
-            raise ValueError(f"Key must be exactly {_KEY_LEN} bytes, got {len(key)}")
+            raise ValueError(
+                f"Key must be exactly {_KEY_LEN} bytes, got {len(key)}",
+            )
         self._key: bytes | None = key
 
     # ------------------------------------------------------------------
@@ -97,7 +99,7 @@ class SecretEncryptor:
     def _require_key(self) -> bytes:
         if self._key is None:
             raise RuntimeError(
-                "No encryption key set. Call derive_key() or " "load_key_file() first."
+                "No encryption key set. Call derive_key() or " "load_key_file() first.",
             )
         return self._key
 
@@ -175,13 +177,15 @@ class SecretEncryptor:
         ciphertext = raw[_IV_LEN:-_TAG_LEN]
 
         if len(ciphertext) % _BLOCK_LEN != 0:
-            raise ValueError("Ciphertext length is not a multiple of block size")
+            raise ValueError(
+                "Ciphertext length is not a multiple of block size",
+            )
 
         # Verify auth tag first (constant-time comparison).
         expected_tag = hmac.new(key, iv + ciphertext, hashlib.sha256).digest()
         if not hmac.compare_digest(tag, expected_tag):
             raise ValueError(
-                "Authentication failed: ciphertext may have been tampered with"
+                "Authentication failed: ciphertext may have been tampered with",
             )
 
         # Decrypt
@@ -232,7 +236,7 @@ class SecretEncryptor:
         if len(salt) != _SALT_LEN:
             raise ValueError(
                 f"Invalid key file: expected {_SALT_LEN} bytes of salt, "
-                f"got {len(salt)}"
+                f"got {len(salt)}",
             )
 
         key, _ = self.derive_key(password, salt=salt)

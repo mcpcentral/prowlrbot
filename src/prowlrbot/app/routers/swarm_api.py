@@ -95,7 +95,7 @@ def _get_docker_workers() -> list[dict[str, Any]]:
                         "capabilities": ["code", "review"],
                         "last_heartbeat": "",
                         "image": w.get("image", ""),
-                    }
+                    },
                 )
             except Exception:
                 continue

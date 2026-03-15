@@ -64,10 +64,14 @@ class SessionRecorder:
         self._conn = sqlite3.connect(str(self.db_path))
         self._conn.row_factory = sqlite3.Row
         self._create_tables()
-        self._active_sessions: Dict[str, float] = {}  # session_id -> start_time
+        self._active_sessions: Dict[
+            str,
+            float,
+        ] = {}  # session_id -> start_time
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS replay_sessions (
                 id TEXT PRIMARY KEY,
                 session_id TEXT NOT NULL,
@@ -92,11 +96,15 @@ class SessionRecorder:
                 ON replay_events(replay_session_id);
             CREATE INDEX IF NOT EXISTS idx_replay_sessions_session
                 ON replay_sessions(session_id);
-        """)
+        """,
+        )
         self._conn.commit()
 
     def start_recording(
-        self, session_id: str, agent_id: str = "", title: str = ""
+        self,
+        session_id: str,
+        agent_id: str = "",
+        title: str = "",
     ) -> ReplaySession:
         """Start recording a new session."""
         now = time.time()
@@ -169,14 +177,18 @@ class SessionRecorder:
         self._conn.commit()
         return event
 
-    def stop_recording(self, replay_session_id: str) -> Optional[ReplaySession]:
+    def stop_recording(
+        self,
+        replay_session_id: str,
+    ) -> Optional[ReplaySession]:
         """Stop recording a session."""
         self._active_sessions.pop(replay_session_id, None)
         return self.get_session(replay_session_id)
 
     def get_session(self, replay_session_id: str) -> Optional[ReplaySession]:
         row = self._conn.execute(
-            "SELECT * FROM replay_sessions WHERE id = ?", (replay_session_id,)
+            "SELECT * FROM replay_sessions WHERE id = ?",
+            (replay_session_id,),
         ).fetchone()
         if not row:
             return None
@@ -191,7 +203,8 @@ class SessionRecorder:
         )
 
     def get_session_detail(
-        self, replay_session_id: str
+        self,
+        replay_session_id: str,
     ) -> Optional[ReplaySessionDetail]:
         """Get session with all events for playback."""
         session = self.get_session(replay_session_id)
@@ -220,7 +233,10 @@ class SessionRecorder:
         return ReplaySessionDetail(**session.model_dump(), events=events)
 
     def get_events_in_range(
-        self, replay_session_id: str, start_ms: int = 0, end_ms: int = 0
+        self,
+        replay_session_id: str,
+        start_ms: int = 0,
+        end_ms: int = 0,
     ) -> List[ReplayEvent]:
         """Get events within a time range (for timeline scrubbing)."""
         query = (
@@ -271,7 +287,8 @@ class SessionRecorder:
             (replay_session_id,),
         )
         cursor = self._conn.execute(
-            "DELETE FROM replay_sessions WHERE id = ?", (replay_session_id,)
+            "DELETE FROM replay_sessions WHERE id = ?",
+            (replay_session_id,),
         )
         self._conn.commit()
         return cursor.rowcount > 0

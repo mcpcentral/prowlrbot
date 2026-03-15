@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Capability executor for macOS Bridge API."""
 
 import logging
@@ -17,36 +18,36 @@ class CapabilityExecutor:
                 "action": "str",  # navigate, click, type, screenshot
                 "url": "str",
                 "selector": "str",
-                "text": "str"
-            }
+                "text": "str",
+            },
         },
         "code_execution": {
             "description": "Execute Python code safely",
             "parameters": {
                 "code": "str",
-                "timeout": "int"
-            }
+                "timeout": "int",
+            },
         },
         "file_operations": {
             "description": "Read/write files on the system",
             "parameters": {
                 "action": "str",  # read, write, append
                 "path": "str",
-                "content": "str"
-            }
+                "content": "str",
+            },
         },
         "shell_command": {
             "description": "Execute shell commands",
             "parameters": {
                 "command": "str",
                 "cwd": "str",
-                "timeout": "int"
-            }
+                "timeout": "int",
+            },
         },
         "system_info": {
             "description": "Get system information",
-            "parameters": {}
-        }
+            "parameters": {},
+        },
     }
 
     def __init__(self):
@@ -59,7 +60,7 @@ class CapabilityExecutor:
             {
                 "name": name,
                 "description": spec["description"],
-                "parameters": spec["parameters"]
+                "parameters": spec["parameters"],
             }
             for name, spec in self.CAPABILITIES.items()
         ]
@@ -83,12 +84,17 @@ class CapabilityExecutor:
     def _audit_log(self, capability: str, parameters: dict, result: Any):
         """Log capability execution for audit trail."""
         import time
-        self.audit_log.append({
-            "timestamp": time.time(),
-            "capability": capability,
-            "parameters": parameters,
-            "success": result.get("success", False) if isinstance(result, dict) else True
-        })
+
+        self.audit_log.append(
+            {
+                "timestamp": time.time(),
+                "capability": capability,
+                "parameters": parameters,
+                "success": result.get("success", False)
+                if isinstance(result, dict)
+                else True,
+            },
+        )
 
     async def _handle_shell_command(self, parameters: dict) -> dict:
         """Execute a shell command safely."""
@@ -112,13 +118,13 @@ class CapabilityExecutor:
                 cwd=cwd,
                 capture_output=True,
                 text=True,
-                timeout=timeout
+                timeout=timeout,
             )
             return {
                 "success": result.returncode == 0,
                 "stdout": result.stdout,
                 "stderr": result.stderr,
-                "returncode": result.returncode
+                "returncode": result.returncode,
             }
         except subprocess.TimeoutExpired:
             return {"success": False, "error": "Command timed out"}
@@ -136,6 +142,7 @@ class CapabilityExecutor:
 
         # Security: normalize and validate path
         import os
+
         path = os.path.expanduser(path)
         path = os.path.abspath(path)
 
@@ -170,13 +177,13 @@ class CapabilityExecutor:
             "memory": {
                 "total": psutil.virtual_memory().total,
                 "available": psutil.virtual_memory().available,
-                "percent": psutil.virtual_memory().percent
+                "percent": psutil.virtual_memory().percent,
             },
             "disk": {
                 "total": psutil.disk_usage("/").total,
                 "free": psutil.disk_usage("/").free,
-                "percent": psutil.disk_usage("/").percent
-            }
+                "percent": psutil.disk_usage("/").percent,
+            },
         }
 
     async def _handle_code_execution(self, parameters: dict) -> dict:

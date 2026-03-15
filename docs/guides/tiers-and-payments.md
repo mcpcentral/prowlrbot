@@ -8,22 +8,22 @@ How to get **free tier**, **tiers**, and **payments** working in ProwlrBot.
 
 Free tier works out of the box:
 
-1. **Credits**  
-   The first time a user (e.g. `default`) is created, you can give them **welcome credits** so they can try the marketplace.  
-   - Set `PROWLR_FREE_TIER_WELCOME_CREDITS=100` (or any positive number) before starting the app; new users will receive that many credits once.  
-   - Omit it or set to `0` for no welcome grant (balance starts at 0).  
+1. **Credits**
+   The first time a user (e.g. `default`) is created, you can give them **welcome credits** so they can try the marketplace.
+   - Set `PROWLR_FREE_TIER_WELCOME_CREDITS=100` (or any positive number) before starting the app; new users will receive that many credits once.
+   - Omit it or set to `0` for no welcome grant (balance starts at 0).
    - Balance is stored in `~/.prowlrbot/marketplace.db`.
 
-2. **Console**  
+2. **Console**
    Open **Credits** in the console: balance and transaction history load from the API. No login required for read-only; use user id `default` for single-user.
 
-3. **CLI**  
+3. **CLI**
    ```bash
    prowlr market credits --user default   # show balance and tier
    prowlr market tiers                    # list tier features
    ```
 
-4. **Monthly grants (optional)**  
+4. **Monthly grants (optional)**
    Free tier gets **100 credits/month** (see `PRO_TIER_LIMITS` in code). To grant them on a schedule, call the API (e.g. from cron):
 
    ```bash
@@ -38,12 +38,12 @@ Free tier works out of the box:
 
 For **Pro** / **Team** subscriptions and real payments:
 
-1. **Stripe account**  
+1. **Stripe account**
    Create one at [stripe.com](https://stripe.com) and get:
    - **Secret key** (Dashboard → Developers → API keys): `sk_test_...` or `sk_live_...`
    - **Webhook signing secret** (Dashboard → Developers → Webhooks): `whsec_...`
 
-2. **Environment variables**  
+2. **Environment variables**
    Set before starting the app:
 
    ```bash
@@ -53,21 +53,21 @@ For **Pro** / **Team** subscriptions and real payments:
 
    (Or put them in `~/.prowlrbot/.env` if your app loads it.)
 
-3. **Webhook endpoint**  
+3. **Webhook endpoint**
    In Stripe Dashboard → Webhooks, add an endpoint:
-   - **URL**: `https://your-domain.com/api/marketplace/webhook/stripe`  
-     (for local dev you can use [Stripe CLI](https://stripe.com/docs/stripe-cli) to forward:  
+   - **URL**: `https://your-domain.com/api/marketplace/webhook/stripe`
+     (for local dev you can use [Stripe CLI](https://stripe.com/docs/stripe-cli) to forward:
      `stripe listen --forward-to localhost:8088/api/marketplace/webhook/stripe`)
    - **Events**: `checkout.session.completed`, `customer.subscription.created`, `invoice.payment_succeeded`
 
-4. **Dependency**  
+4. **Dependency**
    Install the Stripe SDK:
 
    ```bash
    pip install stripe
    ```
 
-5. **Console upgrade**  
+5. **Console upgrade**
    When Stripe is configured, **Credits → Upgrade to Pro/Team** opens Stripe Checkout. After payment, Stripe sends events to the webhook; the app awards credits and updates tier.
 
 ---

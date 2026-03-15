@@ -54,18 +54,22 @@ class RegisterRequest(BaseModel):
     @classmethod
     def validate_string_length(cls, v: str) -> str:
         if len(v) > _MAX_FIELD_LENGTH:
-            raise ValueError(f"Field exceeds maximum length of {_MAX_FIELD_LENGTH}")
+            raise ValueError(
+                f"Field exceeds maximum length of {_MAX_FIELD_LENGTH}",
+            )
         return v
 
     @field_validator("skills", "channels", "capabilities")
     @classmethod
     def validate_list_length(cls, v: list) -> list:
         if len(v) > _MAX_LIST_LENGTH:
-            raise ValueError(f"List exceeds maximum length of {_MAX_LIST_LENGTH}")
+            raise ValueError(
+                f"List exceeds maximum length of {_MAX_LIST_LENGTH}",
+            )
         for item in v:
             if isinstance(item, str) and len(item) > _MAX_FIELD_LENGTH:
                 raise ValueError(
-                    f"List item exceeds maximum length of {_MAX_FIELD_LENGTH}"
+                    f"List item exceeds maximum length of {_MAX_FIELD_LENGTH}",
                 )
         return v
 
@@ -73,11 +77,13 @@ class RegisterRequest(BaseModel):
     @classmethod
     def validate_endpoints(cls, v: dict) -> dict:
         if len(v) > _MAX_LIST_LENGTH:
-            raise ValueError(f"Endpoints exceeds maximum count of {_MAX_LIST_LENGTH}")
+            raise ValueError(
+                f"Endpoints exceeds maximum count of {_MAX_LIST_LENGTH}",
+            )
         for key, val in v.items():
             if len(key) > _MAX_FIELD_LENGTH or len(val) > _MAX_FIELD_LENGTH:
                 raise ValueError(
-                    f"Endpoint key/value exceeds maximum length of {_MAX_FIELD_LENGTH}"
+                    f"Endpoint key/value exceeds maximum length of {_MAX_FIELD_LENGTH}",
                 )
         return v
 
@@ -114,7 +120,7 @@ def create_hub_router(api_key: str = "") -> APIRouter:
     if not api_key:
         logger.warning(
             "Hub server created WITHOUT an API key — all endpoints are unauthenticated. "
-            "Set an api_key for production deployments."
+            "Set an api_key for production deployments.",
         )
 
     router = APIRouter(tags=["hub"])
@@ -125,7 +131,8 @@ def create_hub_router(api_key: str = "") -> APIRouter:
         if api_key:
             if not key or not _hmac.compare_digest(key, api_key):
                 raise HTTPException(
-                    status_code=401, detail="Invalid or missing API key"
+                    status_code=401,
+                    detail="Invalid or missing API key",
                 )
 
     @router.post("/agents")
@@ -161,7 +168,11 @@ def create_hub_router(api_key: str = "") -> APIRouter:
         )
 
         entry = directory.register(card)
-        logger.info("Hub: registered agent %s (%s)", identity.did, body.display_name)
+        logger.info(
+            "Hub: registered agent %s (%s)",
+            identity.did,
+            body.display_name,
+        )
         return _entry_to_dict(entry)
 
     @router.get("/agents/{did:path}")

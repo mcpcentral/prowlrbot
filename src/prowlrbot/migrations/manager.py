@@ -43,13 +43,15 @@ class MigrationManager:
 
     def _ensure_table(self) -> None:
         with self._connect() as conn:
-            conn.execute("""
+            conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS _migrations (
                     version  INTEGER PRIMARY KEY,
                     name     TEXT    NOT NULL,
                     applied_at REAL NOT NULL
                 )
-                """)
+                """,
+            )
 
     # ------------------------------------------------------------------
     # Public API
@@ -73,7 +75,9 @@ class MigrationManager:
     def get_current_version(self) -> int:
         """Return the highest applied migration version, or 0."""
         with self._connect() as conn:
-            row = conn.execute("SELECT MAX(version) AS v FROM _migrations").fetchone()
+            row = conn.execute(
+                "SELECT MAX(version) AS v FROM _migrations",
+            ).fetchone()
             return row["v"] if row and row["v"] is not None else 0
 
     def get_pending(self) -> list[Migration]:
@@ -95,7 +99,11 @@ class MigrationManager:
 
         applied: list[Migration] = []
         for migration in pending:
-            logger.info("Applying migration v%d: %s", migration.version, migration.name)
+            logger.info(
+                "Applying migration v%d: %s",
+                migration.version,
+                migration.name,
+            )
             with self._connect() as conn:
                 conn.executescript(migration.up_sql)
                 conn.execute(
@@ -135,7 +143,9 @@ class MigrationManager:
                 continue
 
             logger.info(
-                "Rolling back migration v%d: %s", migration.version, migration.name
+                "Rolling back migration v%d: %s",
+                migration.version,
+                migration.name,
             )
             with self._connect() as conn:
                 conn.executescript(migration.down_sql)
@@ -153,7 +163,7 @@ class MigrationManager:
         with self._connect() as conn:
             rows = conn.execute(
                 "SELECT version, name, applied_at FROM _migrations "
-                "ORDER BY version ASC"
+                "ORDER BY version ASC",
             ).fetchall()
 
         result: list[Migration] = []
@@ -167,7 +177,7 @@ class MigrationManager:
                     up_sql=registered.up_sql if registered else "",
                     down_sql=registered.down_sql if registered else "",
                     applied_at=row["applied_at"],
-                )
+                ),
             )
         return result
 

@@ -22,7 +22,8 @@ def _get_manager() -> ExternalAgentManager:
 
 
 @click.group(
-    name="agent", help="Manage external agents — install, remove, list, health"
+    name="agent",
+    help="Manage external agents — install, remove, list, health",
 )
 def agent_group():
     """External agent management."""
@@ -43,7 +44,9 @@ def agent_group():
 @click.option(
     "--type",
     "backend",
-    type=click.Choice(["claude_code", "codex", "custom_cli", "http_api", "docker"]),
+    type=click.Choice(
+        ["claude_code", "codex", "custom_cli", "http_api", "docker"],
+    ),
     help="Agent backend type",
 )
 @click.option("--command", default="", help="CLI command or Docker image")
@@ -127,8 +130,13 @@ def agent_install(
         )
         and not command
     ):
-        default_cmd = {"claude_code": "claude", "codex": "codex", "custom_cli": ""}.get(
-            backend, ""
+        default_cmd = {
+            "claude_code": "claude",
+            "codex": "codex",
+            "custom_cli": "",
+        }.get(
+            backend,
+            "",
         )
         command = click.prompt("  Command", default=default_cmd)
 
@@ -140,7 +148,9 @@ def agent_install(
             api_url = click.prompt("  API URL", type=str)
         if not api_key:
             api_key = click.prompt(
-                "  API Key (optional)", default="", show_default=False
+                "  API Key (optional)",
+                default="",
+                show_default=False,
             )
 
     config = ExternalAgentConfig(
@@ -163,7 +173,9 @@ def agent_install(
         if status.available:
             click.echo("  Health: OK")
         else:
-            click.echo(f"  Health: UNAVAILABLE — {status.error or 'check failed'}")
+            click.echo(
+                f"  Health: UNAVAILABLE — {status.error or 'check failed'}",
+            )
 
     click.echo()
     mgr.close()
@@ -179,7 +191,7 @@ def _install_from_config(mgr: ExternalAgentManager, path: Path) -> None:
             data = yaml.safe_load(text)
         except ImportError:
             click.echo(
-                "Error: PyYAML required for YAML configs. Install with: pip install pyyaml"
+                "Error: PyYAML required for YAML configs. Install with: pip install pyyaml",
             )
             return
     else:
@@ -199,14 +211,21 @@ def _install_from_config(mgr: ExternalAgentManager, path: Path) -> None:
 
 
 @agent_group.command(name="list")
-@click.option("--all", "show_all", is_flag=True, help="Include disabled agents")
+@click.option(
+    "--all",
+    "show_all",
+    is_flag=True,
+    help="Include disabled agents",
+)
 def agent_list(show_all: bool):
     """List installed external agents."""
     mgr = _get_manager()
     agents = mgr.list_agents(enabled_only=not show_all)
 
     if not agents:
-        click.echo("No agents installed. Run 'prowlr agent install' to add one.")
+        click.echo(
+            "No agents installed. Run 'prowlr agent install' to add one.",
+        )
         mgr.close()
         return
 
@@ -215,7 +234,9 @@ def agent_list(show_all: bool):
     click.echo(f"  {'─'*16} {'─'*20} {'─'*14} {'─'*9}")
     for a in agents:
         enabled = "yes" if a.enabled else "no"
-        click.echo(f"  {a.id:<16} {a.name:<20} {a.backend_type:<14} {enabled:<9}")
+        click.echo(
+            f"  {a.id:<16} {a.name:<20} {a.backend_type:<14} {enabled:<9}",
+        )
     click.echo()
     mgr.close()
 
@@ -236,7 +257,9 @@ def agent_remove(agent_id: str, force: bool):
         mgr.close()
         return
 
-    if not force and not click.confirm(f"Remove agent '{agent.name}' ({agent.id})?"):
+    if not force and not click.confirm(
+        f"Remove agent '{agent.name}' ({agent.id})?",
+    ):
         click.echo("Cancelled.")
         mgr.close()
         return

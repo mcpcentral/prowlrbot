@@ -303,7 +303,10 @@ def is_running_in_container() -> bool:
     Prefer env PROWLRBOT_RUNNING_IN_CONTAINER (1/true/yes) at call time so
     supervisord child gets correct value; else check /.dockerenv and cgroup.
     """
-    if os.environ.get("PROWLRBOT_RUNNING_IN_CONTAINER", "").strip().lower() in (
+    if os.environ.get(
+        "PROWLRBOT_RUNNING_IN_CONTAINER",
+        "",
+    ).strip().lower() in (
         "1",
         "true",
         "yes",

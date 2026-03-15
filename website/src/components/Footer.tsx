@@ -92,7 +92,13 @@ export function Footer({ lang: _lang }: { lang: Lang }) {
             >
               Resources
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--space-1)",
+              }}
+            >
               <a
                 href="https://github.com/prowlrbot/prowlrbot"
                 target="_blank"
@@ -103,11 +109,7 @@ export function Footer({ lang: _lang }: { lang: Lang }) {
                 <Github size={14} strokeWidth={2} aria-hidden />
                 GitHub
               </a>
-              <Link
-                to="/docs"
-                style={linkStyle}
-                className="footer-link"
-              >
+              <Link to="/docs" style={linkStyle} className="footer-link">
                 <BookOpen size={14} strokeWidth={2} aria-hidden />
                 Docs
               </Link>
@@ -148,7 +150,13 @@ export function Footer({ lang: _lang }: { lang: Lang }) {
             >
               Community
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--space-1)",
+              }}
+            >
               <a
                 href={DISCORD_INVITE}
                 target="_blank"
@@ -159,11 +167,7 @@ export function Footer({ lang: _lang }: { lang: Lang }) {
                 <DiscordIcon size={14} />
                 Join Discord
               </a>
-              <Link
-                to="/blog"
-                style={linkStyle}
-                className="footer-link"
-              >
+              <Link to="/blog" style={linkStyle} className="footer-link">
                 Blog
               </Link>
               <a
@@ -205,7 +209,8 @@ export function Footer({ lang: _lang }: { lang: Lang }) {
               opacity: 0.7,
             }}
           >
-            &copy; {new Date().getFullYear()} ProwlrBot. Always watching. Always ready.
+            &copy; {new Date().getFullYear()} ProwlrBot. Always watching. Always
+            ready.
           </div>
           <div
             style={{
@@ -216,9 +221,19 @@ export function Footer({ lang: _lang }: { lang: Lang }) {
               gap: "var(--space-2)",
             }}
           >
-            <Link to="/docs/privacy" style={{ color: "inherit", textDecoration: "none" }}>Privacy</Link>
+            <Link
+              to="/docs/privacy"
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              Privacy
+            </Link>
             <span>&middot;</span>
-            <Link to="/docs/terms" style={{ color: "inherit", textDecoration: "none" }}>Terms</Link>
+            <Link
+              to="/docs/terms"
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              Terms
+            </Link>
           </div>
         </div>
       </div>

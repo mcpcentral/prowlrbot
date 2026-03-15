@@ -186,7 +186,7 @@ _CONFUSABLE_RANGES: list[tuple[int, int]] = [
 _INVISIBLE_CHARS = re.compile(
     r"[\u200b\u200c\u200d\u200e\u200f\u2060\u2061\u2062\u2063\u2064"
     r"\ufeff\u00ad\u034f\u061c\u180e\u2028\u2029\u202a-\u202e"
-    r"\u2066-\u2069\ufff9-\ufffb]"
+    r"\u2066-\u2069\ufff9-\ufffb]",
 )
 
 # Homoglyph mapping — common confusable characters → ASCII equivalents.
@@ -261,7 +261,7 @@ class InputSanitizer:
         #     don't process absurdly long inputs) ---
         if len(text) > self.max_length:
             warnings.append(
-                f"Input truncated from {len(text)} to {self.max_length} characters"
+                f"Input truncated from {len(text)} to {self.max_length} characters",
             )
             text = text[: self.max_length]
 
@@ -307,7 +307,7 @@ class InputSanitizer:
             matches = pattern.findall(text)
             if matches:
                 warnings.append(
-                    f"Injection pattern [{label}] detected ({len(matches)} match(es))"
+                    f"Injection pattern [{label}] detected ({len(matches)} match(es))",
                 )
                 if self.strip_injections:
                     text = pattern.sub("", text)
@@ -320,7 +320,7 @@ class InputSanitizer:
         invisible_count = len(_INVISIBLE_CHARS.findall(text))
         if invisible_count:
             warnings.append(
-                f"Removed {invisible_count} invisible/zero-width character(s)"
+                f"Removed {invisible_count} invisible/zero-width character(s)",
             )
             text = _INVISIBLE_CHARS.sub("", text)
 
@@ -334,7 +334,9 @@ class InputSanitizer:
             else:
                 chars.append(ch)
         if replaced:
-            warnings.append(f"Normalized {replaced} homoglyph character(s) to ASCII")
+            warnings.append(
+                f"Normalized {replaced} homoglyph character(s) to ASCII",
+            )
             text = "".join(chars)
 
         # Apply NFC normalization to collapse combining sequences.
@@ -351,17 +353,21 @@ class InputSanitizer:
             candidate = m.group(1)
             try:
                 decoded = base64.b64decode(candidate, validate=True).decode(
-                    "utf-8", errors="ignore"
+                    "utf-8",
+                    errors="ignore",
                 )
             except Exception:
                 continue
             if _DECODED_INJECTION_KEYWORDS.search(decoded):
                 warnings.append(
                     f"Base64-encoded injection detected (decoded: "
-                    f"{decoded[:80]!r}...)"
+                    f"{decoded[:80]!r}...)",
                 )
                 if self.strip_injections:
-                    text = text.replace(candidate, "[BASE64_INJECTION_REMOVED]")
+                    text = text.replace(
+                        candidate,
+                        "[BASE64_INJECTION_REMOVED]",
+                    )
         return text, warnings
 
     @staticmethod
@@ -409,7 +415,9 @@ _REDACTED_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"xox[bporas]-[A-Za-z0-9-]{10,}"), "slack-token"),
     # Discord bot token
     (
-        re.compile(r"[MN][A-Za-z0-9]{23,}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27,}"),
+        re.compile(
+            r"[MN][A-Za-z0-9]{23,}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27,}",
+        ),
         "discord-token",
     ),
     # Stripe
@@ -419,12 +427,17 @@ _REDACTED_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     # Twilio
     (re.compile(r"SK[a-f0-9]{32}"), "twilio-api-key"),
     # SendGrid
-    (re.compile(r"SG\.[A-Za-z0-9_-]{22,}\.[A-Za-z0-9_-]{20,}"), "sendgrid-key"),
+    (
+        re.compile(r"SG\.[A-Za-z0-9_-]{22,}\.[A-Za-z0-9_-]{20,}"),
+        "sendgrid-key",
+    ),
     # Mailgun
     (re.compile(r"key-[A-Za-z0-9]{32}"), "mailgun-key"),
     # Private keys in PEM format
     (
-        re.compile(r"-----BEGIN\s+(RSA\s+|EC\s+|DSA\s+|OPENSSH\s+)?PRIVATE\s+KEY-----"),
+        re.compile(
+            r"-----BEGIN\s+(RSA\s+|EC\s+|DSA\s+|OPENSSH\s+)?PRIVATE\s+KEY-----",
+        ),
         "private-key",
     ),
     # Bearer tokens in output
@@ -433,10 +446,15 @@ _REDACTED_PATTERNS: list[tuple[re.Pattern[str], str]] = [
         "bearer-token",
     ),
     # Generic long hex secrets (64+ hex chars, like SHA-256 hashes used as keys)
-    (re.compile(r"(?<![A-Fa-f0-9])[A-Fa-f0-9]{64}(?![A-Fa-f0-9])"), "hex-secret"),
+    (
+        re.compile(r"(?<![A-Fa-f0-9])[A-Fa-f0-9]{64}(?![A-Fa-f0-9])"),
+        "hex-secret",
+    ),
     # JWT tokens
     (
-        re.compile(r"eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"),
+        re.compile(
+            r"eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}",
+        ),
         "jwt-token",
     ),
     # HuggingFace
@@ -490,10 +508,12 @@ class OutputFilter:
         ws = os.path.realpath(self.workspace_root)
 
         # Match Unix-style absolute paths.
-        path_pattern = re.compile(r"(?<!\w)(/(?:[\w.+@-]+/)*[\w.+@-]+(?:\.\w+)?)")
+        path_pattern = re.compile(
+            r"(?<!\w)(/(?:[\w.+@-]+/)*[\w.+@-]+(?:\.\w+)?)",
+        )
         # Match Windows-style absolute paths.
         win_pattern = re.compile(
-            r"(?<!\w)([A-Za-z]:\\(?:[\w.+@\s-]+\\)*[\w.+@\s-]+(?:\.\w+)?)"
+            r"(?<!\w)([A-Za-z]:\\(?:[\w.+@\s-]+\\)*[\w.+@\s-]+(?:\.\w+)?)",
         )
 
         def _maybe_redact(m: re.Match[str]) -> str:
@@ -544,11 +564,20 @@ class SecretRedactor:
 
     # Default patterns for env var names that are likely secrets.
     DEFAULT_KEY_PATTERNS: list[re.Pattern[str]] = [
-        re.compile(r"(SECRET|TOKEN|KEY|PASSWORD|PASSWD|PWD|CREDENTIAL)", re.IGNORECASE),
+        re.compile(
+            r"(SECRET|TOKEN|KEY|PASSWORD|PASSWD|PWD|CREDENTIAL)",
+            re.IGNORECASE,
+        ),
         re.compile(r"(API_KEY|ACCESS_KEY|AUTH|PRIVATE)", re.IGNORECASE),
-        re.compile(r"(DATABASE_URL|DB_URL|REDIS_URL|MONGO_URI)", re.IGNORECASE),
+        re.compile(
+            r"(DATABASE_URL|DB_URL|REDIS_URL|MONGO_URI)",
+            re.IGNORECASE,
+        ),
         re.compile(r"(WEBHOOK|SIGNING|ENCRYPTION|HMAC)", re.IGNORECASE),
-        re.compile(r"^(AWS_|OPENAI_|ANTHROPIC_|GROQ_|XAI_|HF_)", re.IGNORECASE),
+        re.compile(
+            r"^(AWS_|OPENAI_|ANTHROPIC_|GROQ_|XAI_|HF_)",
+            re.IGNORECASE,
+        ),
         re.compile(r"^PROWLRBOT_(API_TOKEN|SECRET)", re.IGNORECASE),
     ]
 

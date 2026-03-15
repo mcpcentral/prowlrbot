@@ -9,7 +9,13 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from ...constant import WORKING_DIR
-from ...ide.models import EditOperation, FileContent, FileDiff, FileEntry, IDESession
+from ...ide.models import (
+    EditOperation,
+    FileContent,
+    FileDiff,
+    FileEntry,
+    IDESession,
+)
 from ...ide.workspace import IDEWorkspace
 
 router = APIRouter(prefix="/ide", tags=["ide"])
@@ -22,11 +28,15 @@ _workspace = IDEWorkspace(db_path=WORKING_DIR / "ide.db")
 
 @router.get("/files")
 async def list_files(
-    root: str = "", max_depth: int = 3, include_hidden: bool = False
+    root: str = "",
+    max_depth: int = 3,
+    include_hidden: bool = False,
 ) -> FileEntry:
     path = root or str(WORKING_DIR)
     return _workspace.list_files(
-        path, max_depth=max_depth, include_hidden=include_hidden
+        path,
+        max_depth=max_depth,
+        include_hidden=include_hidden,
     )
 
 
@@ -96,9 +106,14 @@ class UpdateSessionRequest(BaseModel):
 
 
 @router.put("/sessions/{session_id}", response_model=IDESession)
-async def update_session(session_id: str, req: UpdateSessionRequest) -> IDESession:
+async def update_session(
+    session_id: str,
+    req: UpdateSessionRequest,
+) -> IDESession:
     session = _workspace.update_session(
-        session_id, open_files=req.open_files, active_file=req.active_file
+        session_id,
+        open_files=req.open_files,
+        active_file=req.active_file,
     )
     if not session:
         raise HTTPException(404, f"Session '{session_id}' not found")
@@ -118,6 +133,12 @@ async def record_edit(session_id: str, edit: EditOperation) -> EditOperation:
 
 @router.get("/sessions/{session_id}/history")
 async def get_edit_history(
-    session_id: str, path: Optional[str] = None, limit: int = 100
+    session_id: str,
+    path: Optional[str] = None,
+    limit: int = 100,
 ) -> List[EditOperation]:
-    return _workspace.get_edit_history(session_id=session_id, path=path, limit=limit)
+    return _workspace.get_edit_history(
+        session_id=session_id,
+        path=path,
+        limit=limit,
+    )

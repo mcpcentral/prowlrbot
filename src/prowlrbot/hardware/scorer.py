@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ModelScorer — grades every catalog model S/A/B/C/D/F for a given HardwareProfile.
 
 Scoring is quant-aware: the scorer picks the highest-quality quantization variant
@@ -37,14 +38,14 @@ _GRADE_LABELS: dict[Grade, str] = {
 class ModelScore:
     model_id: str
     grade: Grade
-    score: int                    # 0-100
-    best_quant: Optional[str]     # e.g. "Q4_K_M", None if F
+    score: int  # 0-100
+    best_quant: Optional[str]  # e.g. "Q4_K_M", None if F
     required_gb: float
     available_gb: float
-    tok_per_sec: float            # 0 if F
-    memory_ratio: float           # required / available
+    tok_per_sec: float  # 0 if F
+    memory_ratio: float  # required / available
     cpu_offload_possible: bool
-    label: str                    # human-readable grade description
+    label: str  # human-readable grade description
 
 
 def _grade_from_score(score: int) -> Grade:
@@ -80,7 +81,10 @@ class ModelScorer:
         return self.profile.ram_gb * 0.60
 
     def _estimate_tok_per_sec(
-        self, model: ModelEntry, variant: QuantVariant, cpu_offload: bool = False
+        self,
+        model: ModelEntry,
+        variant: QuantVariant,
+        cpu_offload: bool = False,
     ) -> float:
         """Estimate tokens per second for a given variant on this hardware."""
         bw = self.profile.estimated_bandwidth_gbps
@@ -118,7 +122,10 @@ class ModelScorer:
         return int(mem_score * 0.6 + tok_score * 0.4)
 
     def _pick_best_variant(
-        self, variants: list[QuantVariant], model: ModelEntry, available: float
+        self,
+        variants: list[QuantVariant],
+        model: ModelEntry,
+        available: float,
     ) -> QuantVariant:
         """From a list of fitting variants, return the one with the best score."""
         best: Optional[QuantVariant] = None
@@ -137,7 +144,11 @@ class ModelScorer:
         available = self.available_memory_gb()
 
         # Sort variants by ram_gb descending (highest quality first)
-        sorted_desc = sorted(model.quant_variants, key=lambda v: v.ram_gb, reverse=True)
+        sorted_desc = sorted(
+            model.quant_variants,
+            key=lambda v: v.ram_gb,
+            reverse=True,
+        )
 
         # Step 1: find best variant that fits in available GPU/unified memory.
         # Among all fitting variants, pick the one that yields the best score
@@ -148,7 +159,11 @@ class ModelScorer:
         cpu_offload_possible = False
 
         if fitting_variants:
-            best_variant = self._pick_best_variant(fitting_variants, model, available)
+            best_variant = self._pick_best_variant(
+                fitting_variants,
+                model,
+                available,
+            )
 
         # Step 2: if nothing fits in VRAM/unified, try CPU offload
         if best_variant is None:
@@ -180,7 +195,11 @@ class ModelScorer:
         memory_ratio = best_variant.ram_gb / max(available, 0.1)
 
         # Step 5: estimate tok/s
-        tok_per_sec = self._estimate_tok_per_sec(model, best_variant, cpu_offload_possible)
+        tok_per_sec = self._estimate_tok_per_sec(
+            model,
+            best_variant,
+            cpu_offload_possible,
+        )
 
         # Step 6: score formula
         raw_score = self._raw_score(memory_ratio, tok_per_sec)

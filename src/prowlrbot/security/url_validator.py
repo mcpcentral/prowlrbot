@@ -16,7 +16,7 @@ _BLOCKED_HOSTS = frozenset(
     {
         "metadata.google.internal",
         "metadata.gfe.goog",
-    }
+    },
 )
 
 _BLOCKED_PREFIXES = (
@@ -37,7 +37,10 @@ def validate_outbound_url(url: str) -> tuple[bool, str]:
         return False, "Malformed URL"
 
     if parsed.scheme not in ("http", "https"):
-        return False, f"Scheme '{parsed.scheme}' not allowed; use http or https"
+        return (
+            False,
+            f"Scheme '{parsed.scheme}' not allowed; use http or https",
+        )
 
     hostname = parsed.hostname
     if not hostname:
@@ -50,7 +53,9 @@ def validate_outbound_url(url: str) -> tuple[bool, str]:
     # Resolve hostname to IP and validate
     try:
         infos = socket.getaddrinfo(
-            hostname, parsed.port or 443, proto=socket.IPPROTO_TCP
+            hostname,
+            parsed.port or 443,
+            proto=socket.IPPROTO_TCP,
         )
     except socket.gaierror:
         return False, f"DNS resolution failed for {hostname}"

@@ -38,7 +38,9 @@ async def http_send(
     """
     url = config.url.rstrip("/")
     if not url:
-        raise ConnectionError("HTTP transport requires a URL in ConnectionConfig")
+        raise ConnectionError(
+            "HTTP transport requires a URL in ConnectionConfig",
+        )
 
     headers: Dict[str, str] = {
         "Content-Type": "application/json",
@@ -67,11 +69,13 @@ async def http_send(
             data = response.json()
             return ROARMessage.model_validate(data)
         except httpx.ConnectError as exc:
-            raise ConnectionError(f"Failed to connect to {url}: {exc}") from exc
+            raise ConnectionError(
+                f"Failed to connect to {url}: {exc}",
+            ) from exc
         except httpx.HTTPStatusError as exc:
             raise ConnectionError(
                 f"HTTP {exc.response.status_code} from {url}: "
-                f"{exc.response.text[:200]}"
+                f"{exc.response.text[:200]}",
             ) from exc
 
 

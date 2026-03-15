@@ -77,7 +77,7 @@ class KeyPair:
         """
         if not NACL_AVAILABLE:
             raise RuntimeError(
-                "Ed25519 requires PyNaCl. Install with: pip install pynacl"
+                "Ed25519 requires PyNaCl. Install with: pip install pynacl",
             )
 
         signing_key = nacl.signing.SigningKey.generate()
@@ -110,7 +110,7 @@ class KeyPair:
         """
         if not NACL_AVAILABLE:
             raise RuntimeError(
-                "Ed25519 requires PyNaCl. Install with: pip install pynacl"
+                "Ed25519 requires PyNaCl. Install with: pip install pynacl",
             )
 
         # Pad base64url
@@ -151,11 +151,13 @@ class Ed25519Signer:
     def __init__(self, keypair: KeyPair) -> None:
         if not NACL_AVAILABLE:
             raise RuntimeError(
-                "Ed25519 requires PyNaCl. Install with: pip install pynacl"
+                "Ed25519 requires PyNaCl. Install with: pip install pynacl",
             )
         self._keypair = keypair
         padded = keypair.private_key + "=" * (4 - len(keypair.private_key) % 4)
-        self._signing_key = nacl.signing.SigningKey(base64.urlsafe_b64decode(padded))
+        self._signing_key = nacl.signing.SigningKey(
+            base64.urlsafe_b64decode(padded),
+        )
         self._verify_key = self._signing_key.verify_key
 
     def sign(self, message: bytes) -> str:
@@ -216,7 +218,9 @@ class Ed25519Signer:
 
     @staticmethod
     def verify_with_public_key(
-        message: bytes, signature: str, public_key_b64: str
+        message: bytes,
+        signature: str,
+        public_key_b64: str,
     ) -> bool:
         """Verify a signature using only the public key.
 
@@ -236,7 +240,9 @@ class Ed25519Signer:
         try:
             padded_key = public_key_b64 + "=" * (4 - len(public_key_b64) % 4)
             padded_sig = signature + "=" * (4 - len(signature) % 4)
-            verify_key = nacl.signing.VerifyKey(base64.urlsafe_b64decode(padded_key))
+            verify_key = nacl.signing.VerifyKey(
+                base64.urlsafe_b64decode(padded_key),
+            )
             verify_key.verify(message, base64.urlsafe_b64decode(padded_sig))
             return True
         except Exception:

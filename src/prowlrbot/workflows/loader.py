@@ -69,8 +69,16 @@ def load_workflows_from_dir(directory: Path) -> list[WorkflowSpec]:
             try:
                 spec = load_workflow_from_file(path)
                 specs.append(spec)
-                logger.info("Loaded workflow: %s from %s", spec.name, path.name)
+                logger.info(
+                    "Loaded workflow: %s from %s",
+                    spec.name,
+                    path.name,
+                )
             except Exception as exc:
-                logger.warning("Failed to load workflow %s: %s", path.name, exc)
+                logger.warning(
+                    "Failed to load workflow %s: %s",
+                    path.name,
+                    exc,
+                )
 
     return specs

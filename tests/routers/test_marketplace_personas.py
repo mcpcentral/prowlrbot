@@ -77,7 +77,10 @@ class TestPersonaFiltering:
         s.close()
 
     def test_search_by_persona_returns_matching(self, store):
-        from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing
+        from prowlrbot.marketplace.models import (
+            MarketplaceCategory,
+            MarketplaceListing,
+        )
 
         store.publish_listing(
             MarketplaceListing(
@@ -86,7 +89,7 @@ class TestPersonaFiltering:
                 description="For devs",
                 category=MarketplaceCategory.skills,
                 persona_tags=["developer"],
-            )
+            ),
         )
         store.publish_listing(
             MarketplaceListing(
@@ -95,7 +98,7 @@ class TestPersonaFiltering:
                 description="For parents",
                 category=MarketplaceCategory.skills,
                 persona_tags=["parent"],
-            )
+            ),
         )
 
         results = store.search_listings(persona="developer")
@@ -103,7 +106,10 @@ class TestPersonaFiltering:
         assert results[0].title == "Developer Tool"
 
     def test_search_by_persona_multiple_tags(self, store):
-        from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing
+        from prowlrbot.marketplace.models import (
+            MarketplaceCategory,
+            MarketplaceListing,
+        )
 
         store.publish_listing(
             MarketplaceListing(
@@ -112,7 +118,7 @@ class TestPersonaFiltering:
                 description="For everyone",
                 category=MarketplaceCategory.skills,
                 persona_tags=["developer", "freelancer", "everyone"],
-            )
+            ),
         )
 
         # Should match on any of the tags
@@ -121,7 +127,10 @@ class TestPersonaFiltering:
             assert len(results) == 1, f"Should match persona '{persona}'"
 
     def test_search_by_nonexistent_persona(self, store):
-        from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing
+        from prowlrbot.marketplace.models import (
+            MarketplaceCategory,
+            MarketplaceListing,
+        )
 
         store.publish_listing(
             MarketplaceListing(
@@ -130,14 +139,17 @@ class TestPersonaFiltering:
                 description="Only for devs",
                 category=MarketplaceCategory.skills,
                 persona_tags=["developer"],
-            )
+            ),
         )
 
         results = store.search_listings(persona="astronaut")
         assert len(results) == 0
 
     def test_persona_with_difficulty_filter(self, store):
-        from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing
+        from prowlrbot.marketplace.models import (
+            MarketplaceCategory,
+            MarketplaceListing,
+        )
 
         store.publish_listing(
             MarketplaceListing(
@@ -147,7 +159,7 @@ class TestPersonaFiltering:
                 category=MarketplaceCategory.skills,
                 persona_tags=["developer"],
                 difficulty="beginner",
-            )
+            ),
         )
         store.publish_listing(
             MarketplaceListing(
@@ -157,10 +169,13 @@ class TestPersonaFiltering:
                 category=MarketplaceCategory.skills,
                 persona_tags=["developer"],
                 difficulty="advanced",
-            )
+            ),
         )
 
-        results = store.search_listings(persona="developer", difficulty="beginner")
+        results = store.search_listings(
+            persona="developer",
+            difficulty="beginner",
+        )
         assert len(results) == 1
         assert results[0].title == "Easy Dev"
 
@@ -273,7 +288,10 @@ class TestMarketplacePersonaEndpoints:
             }
             client.post("/marketplace/listings", json=listing_data)
 
-        resp = client.get("/marketplace/listings", params={"difficulty": "beginner"})
+        resp = client.get(
+            "/marketplace/listings",
+            params={"difficulty": "beginner"},
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert len(data) == 1

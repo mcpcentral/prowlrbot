@@ -71,7 +71,9 @@ class TextToSpeech:
         elif self.config.backend == "browser":
             return self._synthesize_browser()
         else:
-            raise ValueError(f"Unsupported synthesizer backend: {self.config.backend}")
+            raise ValueError(
+                f"Unsupported synthesizer backend: {self.config.backend}",
+            )
 
     # ------------------------------------------------------------------
     # Backend implementations
@@ -82,7 +84,7 @@ class TextToSpeech:
         if not self.config.api_key:
             raise RuntimeError(
                 "api_key is required for the openai_tts backend. "
-                "Set it in SynthesizerConfig or via the OPENAI_API_KEY env var."
+                "Set it in SynthesizerConfig or via the OPENAI_API_KEY env var.",
             )
 
         headers = {
@@ -105,7 +107,7 @@ class TextToSpeech:
 
         if response.status_code != 200:
             raise RuntimeError(
-                f"OpenAI TTS API returned {response.status_code}: {response.text}"
+                f"OpenAI TTS API returned {response.status_code}: {response.text}",
             )
 
         output_path.parent.mkdir(parents=True, exist_ok=True)

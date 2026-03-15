@@ -28,7 +28,9 @@ from ...roar import AgentCard, AgentIdentity, DiscoveryEntry
 logger = logging.getLogger(__name__)
 
 _DEFAULT_DB_PATH = os.path.join(
-    os.path.expanduser("~"), ".prowlrbot", "roar_directory.db"
+    os.path.expanduser("~"),
+    ".prowlrbot",
+    "roar_directory.db",
 )
 
 
@@ -52,7 +54,8 @@ class SQLiteAgentDirectory:
 
     def _create_tables(self) -> None:
         """Create tables on first use."""
-        self._conn.execute("""
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS agents (
                 did TEXT PRIMARY KEY,
                 card_json TEXT NOT NULL,
@@ -60,7 +63,8 @@ class SQLiteAgentDirectory:
                 last_seen REAL NOT NULL,
                 hub_url TEXT NOT NULL DEFAULT ''
             )
-            """)
+            """,
+        )
         self._conn.commit()
 
     def register(self, card: AgentCard) -> DiscoveryEntry:
@@ -87,7 +91,10 @@ class SQLiteAgentDirectory:
             (card.identity.did, card_json, now, now, ""),
         )
         self._conn.commit()
-        logger.debug("Registered agent %s in SQLite directory", card.identity.did)
+        logger.debug(
+            "Registered agent %s in SQLite directory",
+            card.identity.did,
+        )
         return entry
 
     def unregister(self, did: str) -> bool:
@@ -135,7 +142,7 @@ class SQLiteAgentDirectory:
             List of matching discovery entries.
         """
         rows = self._conn.execute(
-            "SELECT card_json, registered_at, last_seen, hub_url FROM agents"
+            "SELECT card_json, registered_at, last_seen, hub_url FROM agents",
         ).fetchall()
         results = []
         for row in rows:
@@ -151,7 +158,7 @@ class SQLiteAgentDirectory:
             List of all discovery entries.
         """
         rows = self._conn.execute(
-            "SELECT card_json, registered_at, last_seen, hub_url FROM agents"
+            "SELECT card_json, registered_at, last_seen, hub_url FROM agents",
         ).fetchall()
         return [self._row_to_entry(row) for row in rows]
 

@@ -98,7 +98,7 @@ async def list_agents(
                     capabilities=get("skills", []) or [],
                     model=get("model"),
                     provider=get("provider"),
-                )
+                ),
             )
 
     return agents
@@ -117,8 +117,15 @@ async def run_agent(
     run_id = str(uuid.uuid4())
     runner = getattr(request.app.state, "runner", None)
     if not runner:
-        raise HTTPException(status_code=503, detail="Agent runner not available")
-    return AgentRunResponse(run_id=run_id, agent_id=agent_id, status="starting")
+        raise HTTPException(
+            status_code=503,
+            detail="Agent runner not available",
+        )
+    return AgentRunResponse(
+        run_id=run_id,
+        agent_id=agent_id,
+        status="starting",
+    )
 
 
 @router.post("/agents/{agent_id}/stop")
@@ -177,7 +184,10 @@ async def stream_agent_events(
             raise HTTPException(status_code=401, detail="Invalid token")
 
     async def event_generator() -> AsyncGenerator[str, None]:
-        yield _sse_event("status", {"state": "connected", "agent_id": agent_id})
+        yield _sse_event(
+            "status",
+            {"state": "connected", "agent_id": agent_id},
+        )
         try:
             while True:
                 await asyncio.sleep(15)

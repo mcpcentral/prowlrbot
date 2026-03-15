@@ -28,12 +28,11 @@ logger = logging.getLogger(__name__)
 # Tunables
 # ---------------------------------------------------------------------------
 
+# Access count at which an entry is auto-promoted to long-term storage.
 PROMOTION_THRESHOLD: int = 3
-"""Access count at which an entry is auto-promoted to long-term storage."""
 
+# Days without access before a long-term entry becomes a candidate for pruning.
 DECAY_DAYS: int = 30
-"""Days without access before a long-term entry becomes a candidate for
-pruning."""
 
 
 class MemoryTierManager:

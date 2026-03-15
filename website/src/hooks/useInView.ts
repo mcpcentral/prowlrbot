@@ -11,7 +11,7 @@ export function useInView(threshold = 0.08) {
       ([entry]) => {
         if (entry.isIntersecting) setIsInView(true);
       },
-      { threshold }
+      { threshold },
     );
     observer.observe(el);
     return () => observer.disconnect();

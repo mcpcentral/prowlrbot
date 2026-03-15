@@ -33,7 +33,8 @@ class ArchiveDB:
     # ------------------------------------------------------------------
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS archive (
                 id            TEXT PRIMARY KEY,
                 agent_id      TEXT NOT NULL,
@@ -52,7 +53,8 @@ class ArchiveDB:
 
             CREATE INDEX IF NOT EXISTS idx_archive_agent
                 ON archive(agent_id);
-        """)
+        """,
+        )
         self._conn.commit()
 
     # ------------------------------------------------------------------
@@ -87,7 +89,16 @@ class ArchiveDB:
                (id, agent_id, topic, summary, importance,
                 promoted_from, created_at, last_accessed)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-            (entry_id, agent_id, topic, summary, importance, promoted_from, now, now),
+            (
+                entry_id,
+                agent_id,
+                topic,
+                summary,
+                importance,
+                promoted_from,
+                now,
+                now,
+            ),
         )
         rowid = cursor.lastrowid
         self._conn.execute(
@@ -229,7 +240,9 @@ class ArchiveDB:
                 (agent_id,),
             ).fetchone()
         else:
-            row = self._conn.execute("SELECT COUNT(*) AS cnt FROM archive").fetchone()
+            row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM archive",
+            ).fetchone()
         return row["cnt"] if row else 0
 
     def close(self) -> None:

@@ -18,14 +18,70 @@ interface Row {
 }
 
 const rows: Row[] = [
-  { feature: "Open Source", prowlrbot: "yes", manus: "no", devin: "no", autogpt: "yes", crewai: "yes" },
-  { feature: "Self-Hosted", prowlrbot: "yes", manus: "no", devin: "no", autogpt: "yes", crewai: "yes" },
-  { feature: "Multi-Channel (8)", prowlrbot: "yes", manus: "no", devin: "no", autogpt: "no", crewai: "no" },
-  { feature: "Multi-Agent War Room", prowlrbot: "yes", manus: "partial", devin: "no", autogpt: "no", crewai: "partial" },
-  { feature: "Web Monitoring", prowlrbot: "yes", manus: "no", devin: "no", autogpt: "no", crewai: "no" },
-  { feature: "Provider Agnostic (7)", prowlrbot: "yes", manus: "no", devin: "no", autogpt: "partial", crewai: "partial" },
-  { feature: "Graduated Autonomy", prowlrbot: "yes", manus: "no", devin: "no", autogpt: "no", crewai: "no" },
-  { feature: "MCP + A2A Support", prowlrbot: "yes", manus: "partial", devin: "no", autogpt: "no", crewai: "no" },
+  {
+    feature: "Open Source",
+    prowlrbot: "yes",
+    manus: "no",
+    devin: "no",
+    autogpt: "yes",
+    crewai: "yes",
+  },
+  {
+    feature: "Self-Hosted",
+    prowlrbot: "yes",
+    manus: "no",
+    devin: "no",
+    autogpt: "yes",
+    crewai: "yes",
+  },
+  {
+    feature: "Multi-Channel (8)",
+    prowlrbot: "yes",
+    manus: "no",
+    devin: "no",
+    autogpt: "no",
+    crewai: "no",
+  },
+  {
+    feature: "Multi-Agent War Room",
+    prowlrbot: "yes",
+    manus: "partial",
+    devin: "no",
+    autogpt: "no",
+    crewai: "partial",
+  },
+  {
+    feature: "Web Monitoring",
+    prowlrbot: "yes",
+    manus: "no",
+    devin: "no",
+    autogpt: "no",
+    crewai: "no",
+  },
+  {
+    feature: "Provider Agnostic (7)",
+    prowlrbot: "yes",
+    manus: "no",
+    devin: "no",
+    autogpt: "partial",
+    crewai: "partial",
+  },
+  {
+    feature: "Graduated Autonomy",
+    prowlrbot: "yes",
+    manus: "no",
+    devin: "no",
+    autogpt: "no",
+    crewai: "no",
+  },
+  {
+    feature: "MCP + A2A Support",
+    prowlrbot: "yes",
+    manus: "partial",
+    devin: "no",
+    autogpt: "no",
+    crewai: "no",
+  },
 ];
 
 const competitors = [
@@ -45,12 +101,33 @@ const competitorSubtitles: Record<string, string> = {
 
 function StatusIcon({ status }: { status: Support }) {
   if (status === "yes") {
-    return <Check size={18} strokeWidth={2.5} style={{ color: "var(--accent)" }} aria-label="Supported" />;
+    return (
+      <Check
+        size={18}
+        strokeWidth={2.5}
+        style={{ color: "var(--accent)" }}
+        aria-label="Supported"
+      />
+    );
   }
   if (status === "partial") {
-    return <Minus size={18} strokeWidth={2.5} style={{ color: "var(--text-muted)" }} aria-label="Partial support" />;
+    return (
+      <Minus
+        size={18}
+        strokeWidth={2.5}
+        style={{ color: "var(--text-muted)" }}
+        aria-label="Partial support"
+      />
+    );
   }
-  return <X size={18} strokeWidth={2.5} style={{ color: "#666" }} aria-label="Not supported" />;
+  return (
+    <X
+      size={18}
+      strokeWidth={2.5}
+      style={{ color: "#666" }}
+      aria-label="Not supported"
+    />
+  );
 }
 
 export function CompetitorComparison({ lang }: CompetitorComparisonProps) {
@@ -100,7 +177,8 @@ export function CompetitorComparison({ lang }: CompetitorComparisonProps) {
                     textAlign: "center",
                     padding: "var(--space-3) var(--space-2)",
                     fontWeight: c.key === "prowlrbot" ? 700 : 600,
-                    color: c.key === "prowlrbot" ? "var(--accent)" : "var(--text)",
+                    color:
+                      c.key === "prowlrbot" ? "var(--accent)" : "var(--text)",
                     borderBottom: "1px solid var(--border)",
                     fontSize: "0.8125rem",
                     whiteSpace: "nowrap",
@@ -130,7 +208,8 @@ export function CompetitorComparison({ lang }: CompetitorComparisonProps) {
                 key={row.feature}
                 className="comparison-row"
                 style={{
-                  background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)",
+                  background:
+                    i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)",
                 }}
               >
                 <td

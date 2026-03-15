@@ -12,7 +12,13 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 
 from ...auth.jwt_handler import JWTHandler
 from ...auth.middleware import get_current_user, require_role, _JWT_SECRET
-from ...auth.models import AuthResponse, Permission, Role, ROLE_PERMISSIONS, User
+from ...auth.models import (
+    AuthResponse,
+    Permission,
+    Role,
+    ROLE_PERMISSIONS,
+    User,
+)
 from ...auth.store import UserStore
 
 logger = logging.getLogger(__name__)
@@ -68,7 +74,10 @@ async def register(
             role=Role.viewer,
         )
     except sqlite3.IntegrityError as exc:
-        raise HTTPException(status_code=409, detail="Username already exists") from exc
+        raise HTTPException(
+            status_code=409,
+            detail="Username already exists",
+        ) from exc
 
     jwt = _get_jwt()
     token = jwt.create_token(user)

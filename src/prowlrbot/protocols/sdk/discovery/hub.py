@@ -87,7 +87,7 @@ class HubClient:
 
         try:
             async with httpx.AsyncClient(
-                timeout=self._config.timeout_ms / 1000
+                timeout=self._config.timeout_ms / 1000,
             ) as client:
                 resp = await client.post(
                     f"{self._url}/agents",
@@ -112,7 +112,7 @@ class HubClient:
 
         try:
             async with httpx.AsyncClient(
-                timeout=self._config.timeout_ms / 1000
+                timeout=self._config.timeout_ms / 1000,
             ) as client:
                 resp = await client.get(
                     f"{self._url}/agents/{did}",
@@ -142,7 +142,7 @@ class HubClient:
 
         try:
             async with httpx.AsyncClient(
-                timeout=self._config.timeout_ms / 1000
+                timeout=self._config.timeout_ms / 1000,
             ) as client:
                 resp = await client.get(
                     f"{self._url}/agents",
@@ -171,7 +171,7 @@ class HubClient:
 
         try:
             async with httpx.AsyncClient(
-                timeout=self._config.timeout_ms / 1000
+                timeout=self._config.timeout_ms / 1000,
             ) as client:
                 resp = await client.delete(
                     f"{self._url}/agents/{did}",

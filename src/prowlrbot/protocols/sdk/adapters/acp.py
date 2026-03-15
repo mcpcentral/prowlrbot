@@ -114,7 +114,9 @@ class ACPAdapter:
         return {
             "run_id": run_id or msg.id,
             "session_id": msg.context.get("session_id", ""),
-            "status": "completed" if msg.intent == MessageIntent.RESPOND else "in_progress",
+            "status": "completed"
+            if msg.intent == MessageIntent.RESPOND
+            else "in_progress",
             "output": ACPAdapter.roar_to_acp_message(msg),
             "metadata": {
                 "roar_intent": msg.intent,

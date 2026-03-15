@@ -28,7 +28,11 @@ def swarm_status():
 
 
 @swarm_group.command(name="up", help="Start swarm infrastructure")
-@click.option("--env-file", default=".env.swarm", help="Path to environment file")
+@click.option(
+    "--env-file",
+    default=".env.swarm",
+    help="Path to environment file",
+)
 def swarm_up(env_file: str):
     """Start the swarm infrastructure (Redis + Worker)."""
     click.echo(f"Starting AI Swarm with config: {env_file}")
@@ -69,7 +73,9 @@ def swarm_enqueue(capability: str, param: tuple, wait: bool):
     import os
 
     # Add swarm/client to path relative to prowlrbot package
-    prowlrbot_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    prowlrbot_root = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__)),
+    )
     project_root = os.path.dirname(prowlrbot_root)
     client_path = os.path.join(project_root, "swarm", "client")
     sys.path.insert(0, client_path)
@@ -108,7 +114,11 @@ def swarm_enqueue(capability: str, param: tuple, wait: bool):
 @swarm_group.command(name="result", help="Get job result")
 @click.argument("job_id")
 @click.option(
-    "--timeout", "-t", default=0, type=int, help="Seconds to wait (0 = immediate)"
+    "--timeout",
+    "-t",
+    default=0,
+    type=int,
+    help="Seconds to wait (0 = immediate)",
 )
 def swarm_result(job_id: str, timeout: int):
     """Get the result of a job."""
@@ -118,7 +128,7 @@ def swarm_result(job_id: str, timeout: int):
     # Get project root relative to this file's location
     # src/prowlrbot/cli/swarm_cmd.py -> project root
     project_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..")
+        os.path.join(os.path.dirname(__file__), "..", "..", ".."),
     )
     swarm_client_path = os.path.join(project_root, "swarm", "client")
 
@@ -173,4 +183,6 @@ def swarm_config():
     click.echo(f"REDIS_PORT: {os.getenv('REDIS_PORT', '6379')}")
     click.echo(f"BRIDGE_HOST: {os.getenv('BRIDGE_HOST', 'not set')}")
     click.echo(f"BRIDGE_PORT: {os.getenv('BRIDGE_PORT', '8765')}")
-    click.echo(f"HMAC_SECRET: {'*' * 10 if os.getenv('HMAC_SECRET') else 'not set'}")
+    click.echo(
+        f"HMAC_SECRET: {'*' * 10 if os.getenv('HMAC_SECRET') else 'not set'}",
+    )

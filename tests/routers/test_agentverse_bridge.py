@@ -179,7 +179,11 @@ def test_complete_battle_awards_credits_to_winner(client, marketplace_store):
     assert balance.balance == 50
 
 
-def test_complete_battle_loser_gets_no_credits(client, marketplace_store, monkeypatch):
+def test_complete_battle_loser_gets_no_credits(
+    client,
+    marketplace_store,
+    monkeypatch,
+):
     """The losing agent does not receive credits."""
     monkeypatch.setenv("PROWLR_FREE_TIER_WELCOME_CREDITS", "0")
     battle_payload = {
@@ -264,7 +268,11 @@ def test_battle_win_credit_transaction_type(client, marketplace_store):
     client.post("/agentverse/battles", json=battle_payload)
     client.post(
         "/agentverse/battles/complete",
-        json={"battle_id": "battle_txtype", "challenger_score": 100.0, "defender_score": 50.0},
+        json={
+            "battle_id": "battle_txtype",
+            "challenger_score": 100.0,
+            "defender_score": 50.0,
+        },
     )
 
     transactions = marketplace_store.get_transactions("agent_txc")

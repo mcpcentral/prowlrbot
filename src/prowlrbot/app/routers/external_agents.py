@@ -66,7 +66,11 @@ async def create_task(req: TaskRequest) -> ExternalTask:
     agent = _manager.get_agent(req.agent_id)
     if not agent:
         raise HTTPException(404, f"External agent '{req.agent_id}' not found")
-    task = ExternalTask(agent_id=req.agent_id, prompt=req.prompt, context=req.context)
+    task = ExternalTask(
+        agent_id=req.agent_id,
+        prompt=req.prompt,
+        context=req.context,
+    )
     return _manager.create_task(task)
 
 

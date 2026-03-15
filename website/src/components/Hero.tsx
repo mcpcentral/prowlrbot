@@ -102,14 +102,17 @@ export function Hero({
               letterSpacing: "0.05em",
             }}
           >
-            <span className="hero-pulse-dot" style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: "var(--accent)",
-              display: "inline-block",
-              flexShrink: 0,
-            }} />
+            <span
+              className="hero-pulse-dot"
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: "var(--accent)",
+                display: "inline-block",
+                flexShrink: 0,
+              }}
+            />
             {t(lang, "hero.badge")}
           </motion.div>
 
@@ -167,7 +170,10 @@ export function Hero({
           )}
 
           {/* Email capture form */}
-          <motion.div variants={item} style={{ marginBottom: "var(--space-4)" }}>
+          <motion.div
+            variants={item}
+            style={{ marginBottom: "var(--space-4)" }}
+          >
             <EarlyAccessForm variant="hero" />
           </motion.div>
 
@@ -222,12 +228,16 @@ export function Hero({
               <Github size={16} strokeWidth={2} aria-hidden />
               Star on GitHub
             </a>
-            <span style={{ color: "var(--border)", fontSize: "0.75rem" }}>|</span>
-            <span style={{
-              fontSize: "0.8125rem",
-              color: "var(--text-muted)",
-              opacity: 0.7,
-            }}>
+            <span style={{ color: "var(--border)", fontSize: "0.75rem" }}>
+              |
+            </span>
+            <span
+              style={{
+                fontSize: "0.8125rem",
+                color: "var(--text-muted)",
+                opacity: 0.7,
+              }}
+            >
               Free during beta
             </span>
           </motion.div>

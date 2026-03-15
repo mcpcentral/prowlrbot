@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Client configuration module."""
 import os
 

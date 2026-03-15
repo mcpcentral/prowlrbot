@@ -56,127 +56,142 @@ export function RoadmapVisual({ lang }: RoadmapVisualProps) {
           position: "relative",
         }}
       >
-        {phases.map(({ key, icon: Icon, titleKey, subtitleKey, itemsKey, statusLabel, statusColor, status }) => (
-          <div
-            key={key}
-            className="roadmap-card"
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
-              borderRadius: "0.75rem",
-              padding: "var(--space-4)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "var(--space-2)",
-              position: "relative",
-              overflow: "hidden",
-              transition: "border-color 0.2s ease, box-shadow 0.2s ease",
-            }}
-          >
-            {/* Top accent line */}
+        {phases.map(
+          ({
+            key,
+            icon: Icon,
+            titleKey,
+            subtitleKey,
+            itemsKey,
+            statusLabel,
+            statusColor,
+            status,
+          }) => (
             <div
-              aria-hidden
+              key={key}
+              className="roadmap-card"
               style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: "2px",
-                background: statusColor,
-                opacity: status === "done" ? 1 : 0.5,
-              }}
-            />
-
-            {/* Status badge */}
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.375rem",
-                alignSelf: "flex-start",
-                padding: "0.2rem 0.625rem",
-                fontSize: "0.625rem",
-                fontWeight: 600,
-                fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
-                letterSpacing: "0.1em",
-                color: statusColor,
-                background: `${statusColor}15`,
-                border: `1px solid ${statusColor}30`,
-                borderRadius: "9999px",
-              }}
-            >
-              <Icon
-                size={12}
-                strokeWidth={2}
-                aria-hidden
-                style={status === "progress" ? { animation: "spin 2s linear infinite" } : undefined}
-              />
-              {statusLabel}
-            </div>
-
-            <h3
-              style={{
-                margin: 0,
-                fontSize: "1.125rem",
-                fontWeight: 700,
-                color: "var(--text)",
-              }}
-            >
-              {t(lang, titleKey)}
-            </h3>
-
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.8125rem",
-                fontWeight: 500,
-                color: "var(--text-muted)",
-              }}
-            >
-              {t(lang, subtitleKey)}
-            </p>
-
-            <ul
-              style={{
-                margin: "var(--space-1) 0 0 0",
-                padding: 0,
-                listStyle: "none",
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "0.75rem",
+                padding: "var(--space-4)",
                 display: "flex",
                 flexDirection: "column",
-                gap: "0.375rem",
+                gap: "var(--space-2)",
+                position: "relative",
+                overflow: "hidden",
+                transition: "border-color 0.2s ease, box-shadow 0.2s ease",
               }}
             >
-              {t(lang, itemsKey)
-                .split("|")
-                .map((item, i) => (
-                  <li
-                    key={i}
-                    style={{
-                      fontSize: "0.8125rem",
-                      color: "var(--text-muted)",
-                      paddingLeft: "var(--space-2)",
-                      position: "relative",
-                    }}
-                  >
-                    <span
-                      aria-hidden
+              {/* Top accent line */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "2px",
+                  background: statusColor,
+                  opacity: status === "done" ? 1 : 0.5,
+                }}
+              />
+
+              {/* Status badge */}
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.375rem",
+                  alignSelf: "flex-start",
+                  padding: "0.2rem 0.625rem",
+                  fontSize: "0.625rem",
+                  fontWeight: 600,
+                  fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+                  letterSpacing: "0.1em",
+                  color: statusColor,
+                  background: `${statusColor}15`,
+                  border: `1px solid ${statusColor}30`,
+                  borderRadius: "9999px",
+                }}
+              >
+                <Icon
+                  size={12}
+                  strokeWidth={2}
+                  aria-hidden
+                  style={
+                    status === "progress"
+                      ? { animation: "spin 2s linear infinite" }
+                      : undefined
+                  }
+                />
+                {statusLabel}
+              </div>
+
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: "1.125rem",
+                  fontWeight: 700,
+                  color: "var(--text)",
+                }}
+              >
+                {t(lang, titleKey)}
+              </h3>
+
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "0.8125rem",
+                  fontWeight: 500,
+                  color: "var(--text-muted)",
+                }}
+              >
+                {t(lang, subtitleKey)}
+              </p>
+
+              <ul
+                style={{
+                  margin: "var(--space-1) 0 0 0",
+                  padding: 0,
+                  listStyle: "none",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.375rem",
+                }}
+              >
+                {t(lang, itemsKey)
+                  .split("|")
+                  .map((item, i) => (
+                    <li
+                      key={i}
                       style={{
-                        position: "absolute",
-                        left: 0,
-                        top: "0.55em",
-                        width: "4px",
-                        height: "4px",
-                        borderRadius: "50%",
-                        background: statusColor,
-                        opacity: 0.6,
+                        fontSize: "0.8125rem",
+                        color: "var(--text-muted)",
+                        paddingLeft: "var(--space-2)",
+                        position: "relative",
                       }}
-                    />
-                    {item.trim()}
-                  </li>
-                ))}
-            </ul>
-          </div>
-        ))}
+                    >
+                      <span
+                        aria-hidden
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          top: "0.55em",
+                          width: "4px",
+                          height: "4px",
+                          borderRadius: "50%",
+                          background: statusColor,
+                          opacity: 0.6,
+                        }}
+                      />
+                      {item.trim()}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ),
+        )}
       </div>
 
       <style>{`

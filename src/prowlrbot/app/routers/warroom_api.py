@@ -107,10 +107,16 @@ def _validate_lock_path(path: str) -> str:
     if "\x00" in path:
         raise HTTPException(status_code=400, detail="Invalid path")
     if path.startswith("/") or path.startswith("\\"):
-        raise HTTPException(status_code=400, detail="Absolute paths not allowed")
+        raise HTTPException(
+            status_code=400,
+            detail="Absolute paths not allowed",
+        )
     normalized = os.path.normpath(path)
     if normalized.startswith(".."):
-        raise HTTPException(status_code=400, detail="Path traversal not allowed")
+        raise HTTPException(
+            status_code=400,
+            detail="Path traversal not allowed",
+        )
     return normalized
 
 
@@ -218,7 +224,11 @@ async def claim_task(agent_id: str, req: ClaimRequest):
     result = engine.claim_task(task_id, agent_id, room["room_id"])
     if result.success:
         return {"success": True, "lock_token": result.lock_token}
-    return {"success": False, "reason": result.reason, "conflicts": result.conflicts}
+    return {
+        "success": False,
+        "reason": result.reason,
+        "conflicts": result.conflicts,
+    }
 
 
 @router.post("/update/{agent_id}")

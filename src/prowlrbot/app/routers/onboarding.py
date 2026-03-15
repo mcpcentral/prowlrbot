@@ -9,7 +9,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from ...constant import WORKING_DIR
-from ...onboarding.wizard import OnboardingManager, OnboardingProgress, OnboardingStep
+from ...onboarding.wizard import (
+    OnboardingManager,
+    OnboardingProgress,
+    OnboardingStep,
+)
 
 router = APIRouter(prefix="/onboarding", tags=["onboarding"])
 
@@ -34,7 +38,10 @@ class StepAction(BaseModel):
 
 
 @router.post("/complete-step/{user_id}", response_model=OnboardingProgress)
-async def complete_step(user_id: str, action: StepAction) -> OnboardingProgress:
+async def complete_step(
+    user_id: str,
+    action: StepAction,
+) -> OnboardingProgress:
     progress = _manager.complete_step(user_id, action.step)
     if not progress:
         raise HTTPException(404, f"No onboarding progress for '{user_id}'")
@@ -51,7 +58,8 @@ async def skip_step(user_id: str, action: StepAction) -> OnboardingProgress:
 
 @router.put("/preferences/{user_id}", response_model=OnboardingProgress)
 async def set_preferences(
-    user_id: str, preferences: Dict[str, Any]
+    user_id: str,
+    preferences: Dict[str, Any],
 ) -> OnboardingProgress:
     progress = _manager.set_preferences(user_id, preferences)
     if not progress:

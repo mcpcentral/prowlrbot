@@ -12,7 +12,10 @@ from prowlrbot.protocols.roar import (
     ROARMessage,
 )
 from prowlrbot.protocols.sdk.adapters.a2a import A2AFullAdapter
-from prowlrbot.protocols.sdk.adapters.detect import ProtocolType, detect_protocol
+from prowlrbot.protocols.sdk.adapters.detect import (
+    ProtocolType,
+    detect_protocol,
+)
 from prowlrbot.protocols.sdk.adapters.mcp import MCPFullAdapter
 
 
@@ -36,7 +39,11 @@ class TestProtocolDetection(unittest.TestCase):
         assert detect_protocol(msg) == ProtocolType.A2A
 
     def test_detect_a2a_task_envelope(self):
-        msg = {"id": "task-1", "status": {"state": "completed"}, "artifacts": []}
+        msg = {
+            "id": "task-1",
+            "status": {"state": "completed"},
+            "artifacts": [],
+        }
         assert detect_protocol(msg) == ProtocolType.A2A
 
     def test_detect_unknown(self):
@@ -89,7 +96,10 @@ class TestMCPAdapter(unittest.TestCase):
             intent=MessageIntent.EXECUTE,
             payload={
                 "mcp_method": "tools/call",
-                "mcp_params": {"name": "shell", "arguments": {"command": "ls"}},
+                "mcp_params": {
+                    "name": "shell",
+                    "arguments": {"command": "ls"},
+                },
             },
             context={"jsonrpc_id": 42},
         )
@@ -100,7 +110,11 @@ class TestMCPAdapter(unittest.TestCase):
         assert mcp["params"]["name"] == "shell"
 
     def test_mcp_result_to_roar(self):
-        result = {"jsonrpc": "2.0", "id": 1, "result": {"tools": [{"name": "shell"}]}}
+        result = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {"tools": [{"name": "shell"}]},
+        }
         roar = MCPFullAdapter.mcp_result_to_roar(result)
         assert roar.intent == MessageIntent.RESPOND
         assert roar.payload["mcp_result"] == {"tools": [{"name": "shell"}]}
@@ -120,7 +134,10 @@ class TestMCPAdapter(unittest.TestCase):
             "jsonrpc": "2.0",
             "id": 5,
             "method": "tools/call",
-            "params": {"name": "browser", "arguments": {"url": "https://example.com"}},
+            "params": {
+                "name": "browser",
+                "arguments": {"url": "https://example.com"},
+            },
         }
         roar = MCPFullAdapter.mcp_to_roar(original)
         back = MCPFullAdapter.roar_to_mcp(roar)
@@ -179,7 +196,8 @@ class TestA2AAdapter(unittest.TestCase):
             "status": {"state": "working", "message": "Processing..."},
         }
         event = A2AFullAdapter.a2a_sse_to_stream_event(
-            sse, source_did="did:roar:agent:a2a-12345678"
+            sse,
+            source_did="did:roar:agent:a2a-12345678",
         )
         assert event.type == "task_update"
         assert event.data["status"] == "working"

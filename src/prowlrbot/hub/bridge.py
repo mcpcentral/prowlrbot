@@ -62,7 +62,9 @@ def _get_allowed_origins() -> list[str]:
 
 
 # For CSRF check on POST requests (open mode)
-_ALLOWED_ORIGINS = set(_DEFAULT_ORIGINS[:2])  # only main app origins, not dev server
+_ALLOWED_ORIGINS = set(
+    _DEFAULT_ORIGINS[:2],
+)  # only main app origins, not dev server
 
 # Rate limiter — created lazily in create_bridge_app() so env vars are checked at runtime
 limiter: Limiter = None  # type: ignore[assignment]
@@ -115,7 +117,13 @@ async def verify_auth(request: Request):
         return  # Open mode when no secret configured
 
     # Allow unauthenticated access to health, status page, and docs
-    if request.url.path in ("/", "/health", "/docs", "/redoc", "/openapi.json"):
+    if request.url.path in (
+        "/",
+        "/health",
+        "/docs",
+        "/redoc",
+        "/openapi.json",
+    ):
         return
 
     auth = request.headers.get("Authorization", "")
@@ -178,7 +186,11 @@ class FindingRequest(BaseModel):
 # --- Path validation ---
 
 
-def _verify_session(engine: WarRoomEngine, agent_id: str, request: Request) -> None:
+def _verify_session(
+    engine: WarRoomEngine,
+    agent_id: str,
+    request: Request,
+) -> None:
     """Verify the X-Session-Token header matches the agent's session_id.
 
     This prevents agent impersonation — knowing an agent_id alone is not
@@ -188,7 +200,8 @@ def _verify_session(engine: WarRoomEngine, agent_id: str, request: Request) -> N
     if not token:
         raise HTTPException(status_code=401, detail="Missing session token")
     row = engine._conn.execute(
-        "SELECT session_id FROM agents WHERE agent_id=?", (agent_id,)
+        "SELECT session_id FROM agents WHERE agent_id=?",
+        (agent_id,),
     ).fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Agent not found")
@@ -201,10 +214,16 @@ def _validate_lock_path(path: str) -> str:
     if "\x00" in path:
         raise HTTPException(status_code=400, detail="Invalid path")
     if path.startswith("/") or path.startswith("\\"):
-        raise HTTPException(status_code=400, detail="Absolute paths not allowed")
+        raise HTTPException(
+            status_code=400,
+            detail="Absolute paths not allowed",
+        )
     normalized = os.path.normpath(path)
     if normalized.startswith(".."):
-        raise HTTPException(status_code=400, detail="Path traversal not allowed")
+        raise HTTPException(
+            status_code=400,
+            detail="Path traversal not allowed",
+        )
     return normalized
 
 
@@ -231,7 +250,10 @@ def create_bridge_app() -> FastAPI:
         while True:
             await asyncio.sleep(_sweep_interval_sec)
             try:
-                await asyncio.to_thread(engine.sweep_dead_agents, _sweep_ttl_minutes)
+                await asyncio.to_thread(
+                    engine.sweep_dead_agents,
+                    _sweep_ttl_minutes,
+                )
             except Exception as e:
                 logger.warning("Sweep dead agents failed: %s", e)
 
@@ -318,7 +340,11 @@ def create_bridge_app() -> FastAPI:
     @limiter.limit("10/minute")
     def register(request: Request, req: RegisterRequest):
         room = engine.get_or_create_default_room()
-        result = engine.register_agent(req.name, room["room_id"], req.capabilities)
+        result = engine.register_agent(
+            req.name,
+            room["room_id"],
+            req.capabilities,
+        )
         return result
 
     @app.post("/heartbeat/{agent_id}")
@@ -393,7 +419,11 @@ def create_bridge_app() -> FastAPI:
         result = engine.lock_file(safe_path, agent_id, room["room_id"])
         if result.success:
             return {"success": True, "lock_token": result.lock_token}
-        return {"success": False, "reason": result.reason, "owner": result.owner}
+        return {
+            "success": False,
+            "reason": result.reason,
+            "owner": result.owner,
+        }
 
     @app.post("/unlock/{agent_id}")
     @limiter.limit("30/minute")
@@ -448,8 +478,10 @@ def create_bridge_app() -> FastAPI:
         room = engine.get_or_create_default_room()
         return {
             "events": engine.get_events(
-                room["room_id"], _clamp_limit(limit), event_type
-            )
+                room["room_id"],
+                _clamp_limit(limit),
+                event_type,
+            ),
         }
 
     # --- JSON API endpoints for dashboard consumption ---
@@ -476,7 +508,11 @@ def create_bridge_app() -> FastAPI:
     @limiter.limit("60/minute")
     def api_events(request: Request, limit: int = 50, event_type: str = ""):
         room = engine.get_or_create_default_room()
-        return engine.get_events(room["room_id"], _clamp_limit(limit), event_type)
+        return engine.get_events(
+            room["room_id"],
+            _clamp_limit(limit),
+            event_type,
+        )
 
     @app.get("/api/context")
     @limiter.limit("60/minute")

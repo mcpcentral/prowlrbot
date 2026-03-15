@@ -29,6 +29,7 @@ def _load_monitors() -> list[dict]:
     if f.suffix in (".yaml", ".yml"):
         try:
             import yaml
+
             data = yaml.safe_load(raw)
         except ImportError:
             data = json.loads(raw)
@@ -63,14 +64,18 @@ def list_monitors():
     for m in monitors:
         status = "enabled" if m.get("enabled", True) else "disabled"
         click.echo(
-            f"  {m['name']}  [{m.get('type', 'web')}]  {m.get('url', '')}  ({status}, every {m.get('interval', '5m')})"
+            f"  {m['name']}  [{m.get('type', 'web')}]  {m.get('url', '')}  ({status}, every {m.get('interval', '5m')})",
         )
 
 
 @monitor_group.command("add")
 @click.option("--name", required=True, help="Unique monitor name")
 @click.option("--url", required=True, help="URL to monitor")
-@click.option("--interval", default="5m", help="Check interval (e.g. 30s, 5m, 1h)")
+@click.option(
+    "--interval",
+    default="5m",
+    help="Check interval (e.g. 30s, 5m, 1h)",
+)
 @click.option(
     "--type",
     "monitor_type",
@@ -78,13 +83,30 @@ def list_monitors():
     type=click.Choice(["web", "api"]),
     help="Monitor type",
 )
-@click.option("--css-selector", default=None, help="CSS selector to extract (web only)")
-@click.option("--json-path", default=None, help="JSON path to extract (api only)")
 @click.option(
-    "--expected-status", default=200, type=int, help="Expected HTTP status (api only)"
+    "--css-selector",
+    default=None,
+    help="CSS selector to extract (web only)",
+)
+@click.option(
+    "--json-path",
+    default=None,
+    help="JSON path to extract (api only)",
+)
+@click.option(
+    "--expected-status",
+    default=200,
+    type=int,
+    help="Expected HTTP status (api only)",
 )
 def add_monitor(
-    name, url, interval, monitor_type, css_selector, json_path, expected_status
+    name,
+    url,
+    interval,
+    monitor_type,
+    css_selector,
+    json_path,
+    expected_status,
 ):
     """Add a new monitor."""
     from prowlrbot.monitor.config import parse_interval
@@ -119,7 +141,9 @@ def add_monitor(
 
     monitors.append(entry)
     _save_monitors(monitors)
-    click.echo(f"Added monitor '{name}' ({monitor_type}) for {url} every {interval}.")
+    click.echo(
+        f"Added monitor '{name}' ({monitor_type}) for {url} every {interval}.",
+    )
 
 
 @monitor_group.command("remove")

@@ -21,7 +21,8 @@ class ActivityLog:
         self._create_tables()
 
     def _create_tables(self):
-        self._conn.execute("""
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS activity_log (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_id TEXT NOT NULL,
@@ -29,11 +30,14 @@ class ActivityLog:
                 event_data TEXT NOT NULL DEFAULT '{}',
                 timestamp REAL NOT NULL
             )
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_activity_session
             ON activity_log(session_id, timestamp DESC)
-        """)
+        """,
+        )
         self._conn.commit()
 
     def record(
@@ -83,7 +87,8 @@ class ActivityLog:
         """Delete events older than max_age_days. Returns count deleted."""
         cutoff = time.time() - (max_age_days * 86400)
         cursor = self._conn.execute(
-            "DELETE FROM activity_log WHERE timestamp < ?", (cutoff,)
+            "DELETE FROM activity_log WHERE timestamp < ?",
+            (cutoff,),
         )
         self._conn.commit()
         return cursor.rowcount

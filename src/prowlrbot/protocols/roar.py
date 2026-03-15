@@ -182,7 +182,11 @@ class ROARMessage(BaseModel):
         now = time.time()
         self.auth = {"timestamp": now}
         body = self._signing_body()
-        sig = hmac.new(secret.encode(), body.encode(), hashlib.sha256).hexdigest()
+        sig = hmac.new(
+            secret.encode(),
+            body.encode(),
+            hashlib.sha256,
+        ).hexdigest()
         self.auth["signature"] = f"hmac-sha256:{sig}"
         return self
 
@@ -211,7 +215,9 @@ class ROARMessage(BaseModel):
         expected_sig = sig_value.split(":", 1)[1]
         body = self._signing_body()
         actual_sig = hmac.new(
-            secret.encode(), body.encode(), hashlib.sha256
+            secret.encode(),
+            body.encode(),
+            hashlib.sha256,
         ).hexdigest()
         return hmac.compare_digest(expected_sig, actual_sig)
 

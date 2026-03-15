@@ -33,33 +33,49 @@ class TeamMember(BaseModel):
     """A single agent's membership within a team."""
 
     agent_id: str = Field(description="ID of the agent")
-    role: TeamRole = Field(default=TeamRole.SPECIALIST, description="Member role")
+    role: TeamRole = Field(
+        default=TeamRole.SPECIALIST,
+        description="Member role",
+    )
     personality: str = Field(
-        default="", description="Personality overlay for this team context"
+        default="",
+        description="Personality overlay for this team context",
     )
     skills: List[str] = Field(
-        default_factory=list, description="Skills this member contributes"
+        default_factory=list,
+        description="Skills this member contributes",
     )
     model_preference: str = Field(
-        default="", description="Preferred model ID for this member"
+        default="",
+        description="Preferred model ID for this member",
     )
 
 
 class AgentTeam(BaseModel):
     """An orchestrated team of agents."""
 
-    id: str = Field(default="", description="Team ID (auto-generated if empty)")
+    id: str = Field(
+        default="",
+        description="Team ID (auto-generated if empty)",
+    )
     name: str = Field(description="Team display name")
     description: str = Field(default="", description="What this team does")
-    members: List[TeamMember] = Field(default_factory=list, description="Team members")
+    members: List[TeamMember] = Field(
+        default_factory=list,
+        description="Team members",
+    )
     coordination: CoordinationMode = Field(
-        default=CoordinationMode.HIERARCHICAL, description="Coordination strategy"
+        default=CoordinationMode.HIERARCHICAL,
+        description="Coordination strategy",
     )
     fallback_strategy: str = Field(
         default="escalate",
         description="What to do when the team fails: escalate, retry, degrade",
     )
-    created_at: float = Field(default_factory=time.time, description="Unix timestamp")
+    created_at: float = Field(
+        default_factory=time.time,
+        description="Unix timestamp",
+    )
 
 
 class TeamStore:
@@ -68,12 +84,16 @@ class TeamStore:
     def __init__(self, db_path: Path):
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
+        self._conn = sqlite3.connect(
+            str(self.db_path),
+            check_same_thread=False,
+        )
         self._conn.row_factory = sqlite3.Row
         self._create_tables()
 
     def _create_tables(self):
-        self._conn.execute("""
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS teams (
                 id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -82,8 +102,10 @@ class TeamStore:
                 fallback_strategy TEXT NOT NULL DEFAULT 'escalate',
                 created_at REAL NOT NULL
             )
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS team_members (
                 team_id TEXT NOT NULL,
                 agent_id TEXT NOT NULL,
@@ -94,11 +116,16 @@ class TeamStore:
                 PRIMARY KEY (team_id, agent_id),
                 FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
             )
-        """)
+        """,
+        )
         self._conn.execute("PRAGMA foreign_keys = ON")
         self._conn.commit()
 
-    def _row_to_team(self, row: sqlite3.Row, members: List[TeamMember]) -> AgentTeam:
+    def _row_to_team(
+        self,
+        row: sqlite3.Row,
+        members: List[TeamMember],
+    ) -> AgentTeam:
         return AgentTeam(
             id=row["id"],
             name=row["name"],
@@ -111,7 +138,8 @@ class TeamStore:
 
     def _fetch_members(self, team_id: str) -> List[TeamMember]:
         rows = self._conn.execute(
-            "SELECT * FROM team_members WHERE team_id = ?", (team_id,)
+            "SELECT * FROM team_members WHERE team_id = ?",
+            (team_id,),
         ).fetchall()
         return [
             TeamMember(
@@ -125,7 +153,10 @@ class TeamStore:
         ]
 
     def _upsert_members(self, team_id: str, members: List[TeamMember]):
-        self._conn.execute("DELETE FROM team_members WHERE team_id = ?", (team_id,))
+        self._conn.execute(
+            "DELETE FROM team_members WHERE team_id = ?",
+            (team_id,),
+        )
         for m in members:
             self._conn.execute(
                 "INSERT INTO team_members (team_id, agent_id, role, personality, skills, model_preference) "
@@ -163,7 +194,8 @@ class TeamStore:
     def get_team(self, team_id: str) -> Optional[AgentTeam]:
         """Get a team by ID, or None if not found."""
         row = self._conn.execute(
-            "SELECT * FROM teams WHERE id = ?", (team_id,)
+            "SELECT * FROM teams WHERE id = ?",
+            (team_id,),
         ).fetchone()
         if not row:
             return None
@@ -173,14 +205,15 @@ class TeamStore:
     def list_teams(self) -> List[AgentTeam]:
         """List all teams ordered by creation time."""
         rows = self._conn.execute(
-            "SELECT * FROM teams ORDER BY created_at DESC"
+            "SELECT * FROM teams ORDER BY created_at DESC",
         ).fetchall()
         return [self._row_to_team(r, self._fetch_members(r["id"])) for r in rows]
 
     def update_team(self, team_id: str, team: AgentTeam) -> bool:
         """Update an existing team. Returns False if not found."""
         existing = self._conn.execute(
-            "SELECT id FROM teams WHERE id = ?", (team_id,)
+            "SELECT id FROM teams WHERE id = ?",
+            (team_id,),
         ).fetchone()
         if not existing:
             return False
@@ -201,11 +234,15 @@ class TeamStore:
     def delete_team(self, team_id: str) -> bool:
         """Delete a team. Returns False if not found."""
         existing = self._conn.execute(
-            "SELECT id FROM teams WHERE id = ?", (team_id,)
+            "SELECT id FROM teams WHERE id = ?",
+            (team_id,),
         ).fetchone()
         if not existing:
             return False
-        self._conn.execute("DELETE FROM team_members WHERE team_id = ?", (team_id,))
+        self._conn.execute(
+            "DELETE FROM team_members WHERE team_id = ?",
+            (team_id,),
+        )
         self._conn.execute("DELETE FROM teams WHERE id = ?", (team_id,))
         self._conn.commit()
         return True
@@ -213,7 +250,8 @@ class TeamStore:
     def add_member(self, team_id: str, member: TeamMember) -> bool:
         """Add a member to a team. Returns False if team not found."""
         existing = self._conn.execute(
-            "SELECT id FROM teams WHERE id = ?", (team_id,)
+            "SELECT id FROM teams WHERE id = ?",
+            (team_id,),
         ).fetchone()
         if not existing:
             return False

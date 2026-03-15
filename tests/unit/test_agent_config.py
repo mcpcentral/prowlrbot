@@ -45,7 +45,7 @@ def test_tools_config_with_permissions():
             "shell": ToolPermissions(
                 allowed_commands=["ls", "grep"],
                 blocked_commands=["rm"],
-            )
+            ),
         },
     )
     assert "shell" in tools.enabled

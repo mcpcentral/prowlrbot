@@ -72,7 +72,8 @@ class AnalyticsTracker:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.execute("""
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS usage_stats (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_id TEXT NOT NULL,
@@ -83,19 +84,26 @@ class AnalyticsTracker:
                 latency_ms REAL NOT NULL DEFAULT 0.0,
                 timestamp REAL NOT NULL
             )
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_usage_timestamp
             ON usage_stats(timestamp DESC)
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_usage_model
             ON usage_stats(model, timestamp DESC)
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_usage_session
             ON usage_stats(session_id, timestamp DESC)
-        """)
+        """,
+        )
         self._conn.commit()
 
     def record(
@@ -181,7 +189,8 @@ class AnalyticsTracker:
         )
 
     def _build_model_breakdown(
-        self, cutoff: Optional[float] = None
+        self,
+        cutoff: Optional[float] = None,
     ) -> Dict[str, ModelStats]:
         """Build per-model statistics."""
         if cutoff is not None:
@@ -291,7 +300,8 @@ class AnalyticsTracker:
         """
         cutoff = time.time() - (older_than_days * 86400)
         cursor = self._conn.execute(
-            "DELETE FROM usage_stats WHERE timestamp < ?", (cutoff,)
+            "DELETE FROM usage_stats WHERE timestamp < ?",
+            (cutoff,),
         )
         self._conn.commit()
         return cursor.rowcount

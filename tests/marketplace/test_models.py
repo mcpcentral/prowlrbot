@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for marketplace model enums and new fields."""
 
 from prowlrbot.marketplace.models import (

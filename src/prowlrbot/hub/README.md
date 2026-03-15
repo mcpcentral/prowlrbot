@@ -26,10 +26,10 @@ When you run 4 Claude Code terminals on the same codebase, they can't see each o
 
 ## Quick Start
 
-> **Shortest path (Claude does it for you):**  
-> Tell your Claude Code agent in this project:  
-> *"Connect this project to the ProwlrBot war room using  
-> https://github.com/prowlrbot/prowlrbot/blob/main/INSTALL.md.  
+> **Shortest path (Claude does it for you):**
+> Tell your Claude Code agent in this project:
+> *"Connect this project to the ProwlrBot war room using
+> https://github.com/prowlrbot/prowlrbot/blob/main/INSTALL.md.
 > The prowlrbot repo lives at `~/dev/prowlrbot`."*
 >
 > The agent will clone/update the repo if needed, ask for an agent name + capabilities,

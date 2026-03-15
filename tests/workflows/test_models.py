@@ -185,7 +185,10 @@ class TestWorkflowTrigger:
         assert trigger.event_type == "monitor.alert"
 
     def test_serialization_roundtrip(self):
-        trigger = WorkflowTrigger(type=TriggerType.cron, schedule="*/5 * * * *")
+        trigger = WorkflowTrigger(
+            type=TriggerType.cron,
+            schedule="*/5 * * * *",
+        )
         data = json.loads(trigger.model_dump_json())
         restored = WorkflowTrigger(**data)
         assert restored.type == trigger.type
@@ -218,11 +221,18 @@ class TestWorkflowSpec:
             name="Deploy Pipeline",
             version="2.0.0",
             description="Deploys the app",
-            trigger=WorkflowTrigger(type=TriggerType.webhook, webhook_path="/deploy"),
+            trigger=WorkflowTrigger(
+                type=TriggerType.webhook,
+                webhook_path="/deploy",
+            ),
             config={"env": "prod"},
             steps=[
                 WorkflowStep(id="build", prompt="Build the project"),
-                WorkflowStep(id="test", prompt="Run tests", depends_on=["build"]),
+                WorkflowStep(
+                    id="test",
+                    prompt="Run tests",
+                    depends_on=["build"],
+                ),
             ],
         )
         assert spec.id == "wf-123"
@@ -233,7 +243,10 @@ class TestWorkflowSpec:
     def test_serialization_roundtrip(self):
         spec = WorkflowSpec(
             name="Roundtrip",
-            steps=[WorkflowStep(id="a"), WorkflowStep(id="b", depends_on=["a"])],
+            steps=[
+                WorkflowStep(id="a"),
+                WorkflowStep(id="b", depends_on=["a"]),
+            ],
         )
         data = json.loads(spec.model_dump_json())
         restored = WorkflowSpec(**data)
@@ -304,7 +317,9 @@ class TestWorkflowRun:
             status=WorkflowRunStatus.completed,
             step_results={
                 "s1": StepResult(
-                    step_id="s1", status=StepStatus.completed, output="ok"
+                    step_id="s1",
+                    status=StepStatus.completed,
+                    output="ok",
                 ),
                 "s2": StepResult(step_id="s2", status=StepStatus.skipped),
             },

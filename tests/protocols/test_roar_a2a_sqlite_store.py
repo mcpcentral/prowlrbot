@@ -59,7 +59,11 @@ class TestSQLiteA2ATaskStore(unittest.TestCase):
 
     def test_update_status(self):
         task = self.store.create(self._make_task())
-        updated = self.store.update_status(task.id, TaskStatus.WORKING, "Processing")
+        updated = self.store.update_status(
+            task.id,
+            TaskStatus.WORKING,
+            "Processing",
+        )
         assert updated is not None
         assert updated.status == TaskStatus.WORKING
         assert len(updated.history) == 2
@@ -130,10 +134,15 @@ class TestSQLiteA2ATaskStore(unittest.TestCase):
         task = self.store.create(self._make_task())
         self.store.update_status(task.id, TaskStatus.WORKING)
         self.store.append_message(
-            task.id, Message(role="agent", parts=[Part(text="Analyzing...")])
+            task.id,
+            Message(role="agent", parts=[Part(text="Analyzing...")]),
         )
         self.store.append_artifact(
-            task.id, Artifact(name="output.json", parts=[Part(text='{"result": true}')])
+            task.id,
+            Artifact(
+                name="output.json",
+                parts=[Part(text='{"result": true}')],
+            ),
         )
         self.store.update_status(task.id, TaskStatus.COMPLETED, "Done!")
 
@@ -159,7 +168,9 @@ class TestSQLiteA2ATaskStore(unittest.TestCase):
         store2.close()
 
     def test_metadata_preserved(self):
-        task = self._make_task(metadata={"priority": "high", "tags": ["urgent"]})
+        task = self._make_task(
+            metadata={"priority": "high", "tags": ["urgent"]},
+        )
         self.store.create(task)
         found = self.store.get(task.id)
         assert found is not None

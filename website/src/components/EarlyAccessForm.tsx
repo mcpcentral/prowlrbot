@@ -77,7 +77,7 @@ export function EarlyAccessForm({
       setState("success");
       setEmail("");
     },
-    [email, webhookUrl]
+    [email, webhookUrl],
   );
 
   const isHero = variant === "hero";
@@ -166,8 +166,8 @@ export function EarlyAccessForm({
                 state === "error"
                   ? "1px solid #ff4444"
                   : state === "duplicate"
-                    ? "1px solid #ffaa00"
-                    : "1px solid var(--border)",
+                  ? "1px solid #ffaa00"
+                  : "1px solid var(--border)",
               borderRadius: "0.5rem",
               outline: "none",
               transition: "border-color 0.2s ease, box-shadow 0.2s ease",

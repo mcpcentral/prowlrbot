@@ -54,7 +54,9 @@ class AuthDependency:
     async def __call__(
         self,
         request: Request,
-        credentials: Optional[HTTPAuthorizationCredentials] = Security(_security),
+        credentials: Optional[HTTPAuthorizationCredentials] = Security(
+            _security,
+        ),
     ) -> Optional[str]:
         # Auth disabled — allow all
         if not self.auth_config.enabled:
@@ -87,7 +89,9 @@ class AuthDependency:
         # Static assets, health check, and auth endpoints — no API-token needed.
         # JWT auth endpoints must be accessible so users can log in.
         path = request.url.path
-        if path in ("/", "/health", "/api/health") or not path.startswith("/api"):
+        if path in ("/", "/health", "/api/health") or not path.startswith(
+            "/api",
+        ):
             return None
         if path.startswith("/api/auth/oauth/") or path in (
             "/api/auth/login",
@@ -97,13 +101,17 @@ class AuthDependency:
             return None
 
         if credentials is None:
-            raise HTTPException(status_code=401, detail="Missing authentication token")
+            raise HTTPException(
+                status_code=401,
+                detail="Missing authentication token",
+            )
 
         token = credentials.credentials
 
         # Accept either a valid API token or a valid JWT
         if self.auth_config.token_hash and verify_api_token(
-            token, self.auth_config.token_hash
+            token,
+            self.auth_config.token_hash,
         ):
             return token
 
@@ -124,4 +132,7 @@ class AuthDependency:
         if verify_clerk_token(token) is not None:
             return token
 
-        raise HTTPException(status_code=401, detail="Invalid authentication token")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid authentication token",
+        )

@@ -47,7 +47,10 @@ def test_auth_enabled_accepts_valid_token():
     app = _create_test_app(config)
     client = TestClient(app)
 
-    response = client.get("/api/test", headers={"Authorization": f"Bearer {token}"})
+    response = client.get(
+        "/api/test",
+        headers={"Authorization": f"Bearer {token}"},
+    )
     assert response.status_code == 200
 
 
@@ -57,7 +60,10 @@ def test_auth_enabled_rejects_invalid_token():
     app = _create_test_app(config)
     client = TestClient(app)
 
-    response = client.get("/api/test", headers={"Authorization": "Bearer wrong-token"})
+    response = client.get(
+        "/api/test",
+        headers={"Authorization": "Bearer wrong-token"},
+    )
     assert response.status_code == 401
 
 

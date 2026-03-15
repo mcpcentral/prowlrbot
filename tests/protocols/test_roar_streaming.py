@@ -59,15 +59,24 @@ class TestStreamFilter(unittest.TestCase):
         )
         # Must match both
         assert f.matches(
-            _make_event(event_type="tool_call", source="did:roar:agent:alice-11111111")
+            _make_event(
+                event_type="tool_call",
+                source="did:roar:agent:alice-11111111",
+            ),
         )
         # Wrong type
         assert not f.matches(
-            _make_event(event_type="reasoning", source="did:roar:agent:alice-11111111")
+            _make_event(
+                event_type="reasoning",
+                source="did:roar:agent:alice-11111111",
+            ),
         )
         # Wrong source
         assert not f.matches(
-            _make_event(event_type="tool_call", source="did:roar:agent:bob-22222222")
+            _make_event(
+                event_type="tool_call",
+                source="did:roar:agent:bob-22222222",
+            ),
         )
 
 
@@ -227,7 +236,11 @@ class TestAIMDController(unittest.TestCase):
         assert ctrl.delay > 0
 
     def test_additive_increase(self):
-        ctrl = AIMDController(rate=100.0, window_size=5, additive_increase=10.0)
+        ctrl = AIMDController(
+            rate=100.0,
+            window_size=5,
+            additive_increase=10.0,
+        )
         initial_rate = ctrl.rate
         for _ in range(5):  # Fill one window
             ctrl.on_success()
@@ -239,7 +252,11 @@ class TestAIMDController(unittest.TestCase):
         assert ctrl.rate == 50.0
 
     def test_min_rate_floor(self):
-        ctrl = AIMDController(rate=2.0, min_rate=1.0, multiplicative_decrease=0.5)
+        ctrl = AIMDController(
+            rate=2.0,
+            min_rate=1.0,
+            multiplicative_decrease=0.5,
+        )
         ctrl.on_drop()
         assert ctrl.rate == 1.0
         ctrl.on_drop()
@@ -247,7 +264,10 @@ class TestAIMDController(unittest.TestCase):
 
     def test_max_rate_ceiling(self):
         ctrl = AIMDController(
-            rate=9995.0, max_rate=10000.0, window_size=1, additive_increase=10.0
+            rate=9995.0,
+            max_rate=10000.0,
+            window_size=1,
+            additive_increase=10.0,
         )
         ctrl.on_success()
         assert ctrl.rate == 10000.0

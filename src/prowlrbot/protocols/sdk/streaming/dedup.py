@@ -28,7 +28,11 @@ class IdempotencyGuard:
         ttl_seconds: How long to remember a key before allowing reuse.
     """
 
-    def __init__(self, max_keys: int = 10000, ttl_seconds: float = 300.0) -> None:
+    def __init__(
+        self,
+        max_keys: int = 10000,
+        ttl_seconds: float = 300.0,
+    ) -> None:
         self._max_keys = max_keys
         self._ttl = ttl_seconds
         self._seen: OrderedDict[str, float] = OrderedDict()

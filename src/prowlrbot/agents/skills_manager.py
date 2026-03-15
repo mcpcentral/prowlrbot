@@ -488,10 +488,16 @@ class SkillService:
 
         # Collect from builtin and customized skills.
         # If both exist with the same name, prefer customized.
-        for skill in _read_skills_from_dir(get_builtin_skills_dir(), "builtin"):
+        for skill in _read_skills_from_dir(
+            get_builtin_skills_dir(),
+            "builtin",
+        ):
             skills_by_name[skill.name] = skill
 
-        for skill in _read_skills_from_dir(get_customized_skills_dir(), "customized"):
+        for skill in _read_skills_from_dir(
+            get_customized_skills_dir(),
+            "customized",
+        ):
             skills_by_name[skill.name] = skill
 
         return sorted(skills_by_name.values(), key=lambda s: s.name)

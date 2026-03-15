@@ -34,7 +34,11 @@ from .a2a_server import (
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_DB_PATH = os.path.join(os.path.expanduser("~"), ".prowlrbot", "a2a_tasks.db")
+_DEFAULT_DB_PATH = os.path.join(
+    os.path.expanduser("~"),
+    ".prowlrbot",
+    "a2a_tasks.db",
+)
 
 
 class SQLiteA2ATaskStore:
@@ -60,7 +64,8 @@ class SQLiteA2ATaskStore:
 
     def _create_tables(self) -> None:
         """Create tables on first use."""
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS tasks (
                 id TEXT PRIMARY KEY,
                 from_agent TEXT NOT NULL DEFAULT '',
@@ -96,7 +101,8 @@ class SQLiteA2ATaskStore:
                 message TEXT,
                 FOREIGN KEY (task_id) REFERENCES tasks(id)
             );
-            """)
+            """,
+        )
         self._conn.commit()
 
     def create(self, task: A2ATask) -> A2ATask:
@@ -173,7 +179,8 @@ class SQLiteA2ATaskStore:
         """
         with self._lock:
             row = self._conn.execute(
-                "SELECT id FROM tasks WHERE id = ?", (task_id,)
+                "SELECT id FROM tasks WHERE id = ?",
+                (task_id,),
             ).fetchone()
             if row is None:
                 return None
@@ -202,7 +209,8 @@ class SQLiteA2ATaskStore:
         """
         with self._lock:
             row = self._conn.execute(
-                "SELECT id FROM tasks WHERE id = ?", (task_id,)
+                "SELECT id FROM tasks WHERE id = ?",
+                (task_id,),
             ).fetchone()
             if row is None:
                 return None
@@ -211,7 +219,11 @@ class SQLiteA2ATaskStore:
             self._conn.commit()
         return self.get(task_id)
 
-    def append_artifact(self, task_id: str, artifact: Artifact) -> Optional[A2ATask]:
+    def append_artifact(
+        self,
+        task_id: str,
+        artifact: Artifact,
+    ) -> Optional[A2ATask]:
         """Append an output artifact to a task.
 
         Args:
@@ -223,7 +235,8 @@ class SQLiteA2ATaskStore:
         """
         with self._lock:
             row = self._conn.execute(
-                "SELECT id FROM tasks WHERE id = ?", (task_id,)
+                "SELECT id FROM tasks WHERE id = ?",
+                (task_id,),
             ).fetchone()
             if row is None:
                 return None
@@ -248,7 +261,7 @@ class SQLiteA2ATaskStore:
             ).fetchall()
         else:
             rows = self._conn.execute(
-                "SELECT id, from_agent, to_agent, status, metadata_json FROM tasks"
+                "SELECT id, from_agent, to_agent, status, metadata_json FROM tasks",
             ).fetchall()
         return [self._build_task(row) for row in rows]
 
@@ -298,7 +311,7 @@ class SQLiteA2ATaskStore:
                     role=mr["role"],
                     parts=parts,
                     metadata=json.loads(mr["metadata_json"]),
-                )
+                ),
             )
 
         # Load artifacts
@@ -316,7 +329,7 @@ class SQLiteA2ATaskStore:
                     description=ar["description"],
                     parts=parts,
                     metadata=json.loads(ar["metadata_json"]),
-                )
+                ),
             )
 
         # Load history

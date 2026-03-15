@@ -1,5 +1,11 @@
+# -*- coding: utf-8 -*-
 # tests/hardware/test_catalog.py
-from prowlrbot.hardware.catalog import MODEL_CATALOG, ModelEntry, QuantVariant, get_model
+from prowlrbot.hardware.catalog import (
+    MODEL_CATALOG,
+    ModelEntry,
+    QuantVariant,
+    get_model,
+)
 
 
 def test_catalog_not_empty():

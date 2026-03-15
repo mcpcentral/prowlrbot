@@ -46,8 +46,15 @@ async def update_privacy_settings(
 
 @router.post("/retention/apply")
 async def apply_retention(
-    days: int = Query(default=90, ge=1, description="Retain data newer than N days"),
-    dry_run: bool = Query(default=True, description="Preview without deleting"),
+    days: int = Query(
+        default=90,
+        ge=1,
+        description="Retain data newer than N days",
+    ),
+    dry_run: bool = Query(
+        default=True,
+        description="Preview without deleting",
+    ),
     _user: User = Depends(require_role(Role.admin)),
 ) -> Dict[str, Any]:
     """Apply data retention policy across all databases.
@@ -68,11 +75,15 @@ async def apply_retention(
             try:
                 conn = sqlite3.connect(str(db_file))
                 cursor = conn.cursor()
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+                cursor.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table'",
+                )
                 tables = [row[0] for row in cursor.fetchall()]
                 db_total = 0
                 for table in tables:
-                    cursor.execute(f"PRAGMA table_info([{table}])")  # noqa: S608
+                    cursor.execute(
+                        f"PRAGMA table_info([{table}])",
+                    )  # noqa: S608
                     columns = [row[1] for row in cursor.fetchall()]
                     ts_cols = [
                         c
@@ -136,7 +147,10 @@ async def export_user_data(
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     if current_user.role != Role.admin and current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Can only export your own data")
+        raise HTTPException(
+            status_code=403,
+            detail="Can only export your own data",
+        )
     """Export all data associated with a user (GDPR data portability)."""
     result = _manager.export_user_data(user_id, working_dir=WORKING_DIR)
     return result
@@ -153,7 +167,10 @@ async def delete_user_data(
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     if current_user.role != Role.admin and current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Can only delete your own data")
+        raise HTTPException(
+            status_code=403,
+            detail="Can only delete your own data",
+        )
     """Delete all data associated with a user (right to be forgotten).
 
     Iterates over every ``.db`` file in the working directory and
@@ -181,8 +198,7 @@ async def delete_user_data(
                 ]
                 for col in id_cols:
                     cursor.execute(
-                        f"DELETE FROM [{table}] "  # noqa: S608
-                        f"WHERE [{col}] = ?",
+                        f"DELETE FROM [{table}] " f"WHERE [{col}] = ?",  # noqa: S608
                         (user_id,),
                     )
                     db_total += cursor.rowcount
@@ -218,7 +234,10 @@ async def delete_user_data(
             ]
             removed = original - len(filtered)
             if removed > 0:
-                json_file.write_text(json.dumps(filtered, indent=2), encoding="utf-8")
+                json_file.write_text(
+                    json.dumps(filtered, indent=2),
+                    encoding="utf-8",
+                )
                 records_deleted[json_file.name] = removed
         except (json.JSONDecodeError, OSError):
             continue

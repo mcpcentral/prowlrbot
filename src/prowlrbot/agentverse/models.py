@@ -174,10 +174,10 @@ class TradeOffer(BaseModel):
     from_agent: str
     to_agent: str
     offering: Dict[str, Any] = Field(
-        default_factory=dict
+        default_factory=dict,
     )  # e.g. {"skill": "seo_analyzer"}
     requesting: Dict[str, Any] = Field(
-        default_factory=dict
+        default_factory=dict,
     )  # e.g. {"skill": "newsletter_writer"}
     status: TradeStatus = TradeStatus.PENDING
     created_at: float = 0.0

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Worker service that polls Redis for jobs and routes to Bridge API."""
 
 import hashlib
@@ -14,7 +15,7 @@ from config import Config
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -34,10 +35,12 @@ class JobWorker:
                 host=self.config.REDIS_HOST,
                 port=self.config.REDIS_PORT,
                 db=self.config.REDIS_DB,
-                decode_responses=True
+                decode_responses=True,
             )
             self.redis_client.ping()
-            logger.info(f"Connected to Redis at {self.config.REDIS_HOST}:{self.config.REDIS_PORT}")
+            logger.info(
+                f"Connected to Redis at {self.config.REDIS_HOST}:{self.config.REDIS_PORT}",
+            )
             return True
         except Exception as e:
             logger.error(f"Failed to connect to Redis: {e}")
@@ -49,7 +52,7 @@ class JobWorker:
         signature = hmac.new(
             self.config.HMAC_SECRET.encode(),
             body.encode(),
-            hashlib.sha256
+            hashlib.sha256,
         ).hexdigest()
         return signature
 
@@ -83,7 +86,7 @@ class JobWorker:
         payload = {
             "job_id": job_id,
             "capability": capability,
-            "parameters": parameters
+            "parameters": parameters,
         }
         signature = self.sign_request(payload)
 
@@ -92,7 +95,7 @@ class JobWorker:
                 f"{self.config.BRIDGE_BASE_URL}/execute",
                 json=payload,
                 headers={"X-Swarm-Signature": signature},
-                timeout=300
+                timeout=300,
             )
             response.raise_for_status()
             result = response.json()
@@ -100,21 +103,21 @@ class JobWorker:
             return {
                 "status": "success",
                 "result": result,
-                "completed_at": time.time()
+                "completed_at": time.time(),
             }
         except requests.exceptions.Timeout:
             logger.error(f"Job {job_id} timed out")
             return {
                 "status": "timeout",
                 "error": "Request to bridge timed out",
-                "completed_at": time.time()
+                "completed_at": time.time(),
             }
         except requests.exceptions.RequestException as e:
             logger.error(f"Job {job_id} failed: {e}")
             return {
                 "status": "error",
                 "error": str(e),
-                "completed_at": time.time()
+                "completed_at": time.time(),
             }
 
     def store_result(self, job_id: str, result: dict):
@@ -127,7 +130,7 @@ class JobWorker:
             self.redis_client.setex(
                 key,
                 86400,  # 24 hour TTL
-                json.dumps(result)
+                json.dumps(result),
             )
             logger.info(f"Stored result for job {job_id}")
         except Exception as e:
@@ -149,7 +152,9 @@ class JobWorker:
             raise RuntimeError("Failed to connect to Redis")
 
         self.running = True
-        logger.info(f"Worker ready. Polling every {self.config.POLL_INTERVAL}s")
+        logger.info(
+            f"Worker ready. Polling every {self.config.POLL_INTERVAL}s",
+        )
 
         while self.running:
             try:

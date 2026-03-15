@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for job queue client."""
 
 import json
@@ -78,7 +79,7 @@ class TestJobQueue:
         """Test getting result immediately."""
         mock_redis_class.return_value = mock_redis
         mock_redis.get.return_value = json.dumps(
-            {"status": "success", "result": {"data": "test"}}
+            {"status": "success", "result": {"data": "test"}},
         )
 
         queue = JobQueue()

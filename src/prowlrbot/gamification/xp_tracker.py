@@ -21,7 +21,10 @@ from .models import (
 
 
 async def _push_leaderboard_update(
-    entity_id: str, entity_type: str, new_xp: int, category: str
+    entity_id: str,
+    entity_type: str,
+    new_xp: int,
+    category: str,
 ) -> None:
     """Broadcast a leaderboard_update event to all WebSocket clients. Best-effort."""
     try:
@@ -60,7 +63,8 @@ class XPTracker:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS xp_log (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 entity_id TEXT NOT NULL,
@@ -91,7 +95,8 @@ class XPTracker:
                 period TEXT NOT NULL,
                 PRIMARY KEY(entity_id, challenge_id, period)
             );
-        """)
+        """,
+        )
         self._conn.commit()
 
     # ------------------------------------------------------------------
@@ -128,7 +133,12 @@ class XPTracker:
         try:
             loop = asyncio.get_running_loop()
             loop.create_task(
-                _push_leaderboard_update(entity_id, entity_type, new_total, category)
+                _push_leaderboard_update(
+                    entity_id,
+                    entity_type,
+                    new_total,
+                    category,
+                ),
             )
         except RuntimeError:
             # No running event loop — skip push (sync-only caller, e.g. tests/CLI)
@@ -146,7 +156,11 @@ class XPTracker:
         ).fetchone()
         return int(row["total"]) if row else 0
 
-    def get_level_info(self, entity_id: str, entity_type: str = "user") -> LevelInfo:
+    def get_level_info(
+        self,
+        entity_id: str,
+        entity_type: str = "user",
+    ) -> LevelInfo:
         """Get full level info for an entity."""
         total_xp = self.get_total_xp(entity_id, entity_type)
         level, title = level_from_xp(total_xp, entity_type)
@@ -222,7 +236,7 @@ class XPTracker:
                     total_xp=total,
                     level=level,
                     title=title,
-                )
+                ),
             )
         return entries
 
@@ -255,7 +269,10 @@ class XPTracker:
         ach = self.get_achievement_def(achievement_id)
         if ach and ach.xp_reward > 0:
             self.award_xp(
-                entity_id, ach.xp_reward, "achievement", f"Unlocked: {ach.name}"
+                entity_id,
+                ach.xp_reward,
+                "achievement",
+                f"Unlocked: {ach.name}",
             )
 
         return UnlockedAchievement(
@@ -299,7 +316,10 @@ class XPTracker:
     def cleanup(self, older_than_days: int = 365) -> int:
         """Delete XP log entries older than N days. Returns count deleted."""
         cutoff = time.time() - (older_than_days * 86400)
-        cursor = self._conn.execute("DELETE FROM xp_log WHERE timestamp < ?", (cutoff,))
+        cursor = self._conn.execute(
+            "DELETE FROM xp_log WHERE timestamp < ?",
+            (cutoff,),
+        )
         self._conn.commit()
         return cursor.rowcount
 

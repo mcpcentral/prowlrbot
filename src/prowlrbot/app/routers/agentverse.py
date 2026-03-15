@@ -129,7 +129,10 @@ async def get_guild_team(guild_id: str) -> AgentTeam:
     """Return the AgentTeam linked to a guild (created automatically on guild creation)."""
     team = _get_team_store().get_team(guild_id)
     if team is None:
-        raise HTTPException(404, f"No linked team found for guild '{guild_id}'")
+        raise HTTPException(
+            404,
+            f"No linked team found for guild '{guild_id}'",
+        )
     return team
 
 
@@ -175,7 +178,9 @@ class BattleResult(BaseModel):
 @router.post("/battles/complete")
 async def complete_battle(result: BattleResult) -> Dict[str, Any]:
     battle = _world.complete_battle(
-        result.battle_id, result.challenger_score, result.defender_score
+        result.battle_id,
+        result.challenger_score,
+        result.defender_score,
     )
     if not battle:
         raise HTTPException(404, "Battle not found")
@@ -192,4 +197,8 @@ async def complete_battle(result: BattleResult) -> Dict[str, Any]:
         except Exception:
             # Credit award failure is non-fatal — don't break the battle result
             pass
-    return {"winner": battle.winner_id, "status": "completed", "credits_awarded": _BATTLE_WIN_CREDITS if battle.winner_id else 0}
+    return {
+        "winner": battle.winner_id,
+        "status": "completed",
+        "credits_awarded": _BATTLE_WIN_CREDITS if battle.winner_id else 0,
+    }

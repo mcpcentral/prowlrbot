@@ -111,7 +111,7 @@ class ShellPolicy:
             "more",
             # ProwlrBot
             "prowlr",
-        ]
+        ],
     )
 
     blocked_patterns: List[str] = field(
@@ -136,7 +136,7 @@ class ShellPolicy:
             r"\beval\b",  # eval
             r"\bexec\b",  # exec
             r"\bsource\b",  # source
-        ]
+        ],
     )
 
     # Shell metacharacters that enable injection bypasses
@@ -150,7 +150,7 @@ class ShellPolicy:
             r"\$'",  # $'...' ANSI-C quoting (hex/octal escapes)
             r"\s+>{1,2}\s*/",  # redirect to absolute path (> /path, >> /path)
             r"\s+2>\s*/",  # stderr redirect to absolute path
-        ]
+        ],
     )
 
     def check(self, command: str) -> Tuple[bool, str]:
@@ -165,7 +165,10 @@ class ShellPolicy:
         # Layer 1: Reject injection metacharacters
         for pattern in self._INJECTION_PATTERNS:
             if re.search(pattern, command):
-                return False, "Command blocked: contains shell injection metacharacters"
+                return (
+                    False,
+                    "Command blocked: contains shell injection metacharacters",
+                )
 
         # Layer 2: Check denylist patterns
         for pattern in self.blocked_patterns:

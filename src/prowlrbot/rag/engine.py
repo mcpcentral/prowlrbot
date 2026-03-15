@@ -76,7 +76,9 @@ class RAGEngine:
 
             self.store.add_chunks(chunks)
             self.store.update_document_status(
-                doc.id, DocumentStatus.indexed, chunk_count=len(chunks)
+                doc.id,
+                DocumentStatus.indexed,
+                chunk_count=len(chunks),
             )
             doc.status = DocumentStatus.indexed
             doc.chunk_count = len(chunks)
@@ -90,7 +92,11 @@ class RAGEngine:
         except Exception:
             self.store.update_document_status(doc.id, DocumentStatus.failed)
             doc.status = DocumentStatus.failed
-            logger.exception("Failed to ingest document %r (%s)", title, doc.id)
+            logger.exception(
+                "Failed to ingest document %r (%s)",
+                title,
+                doc.id,
+            )
             raise
 
         return doc
@@ -127,7 +133,9 @@ class RAGEngine:
             doc = self.store.get_document(chunk.document_id)
             if doc is None:
                 continue
-            results.append(SearchResult(chunk=chunk, score=score, document=doc))
+            results.append(
+                SearchResult(chunk=chunk, score=score, document=doc),
+            )
 
         # Sort descending by score, then truncate.
         results.sort(key=lambda r: r.score, reverse=True)
@@ -145,7 +153,11 @@ class RAGEngine:
     # Context helper
     # ------------------------------------------------------------------
 
-    def get_context(self, query: str, max_results: Optional[int] = None) -> str:
+    def get_context(
+        self,
+        query: str,
+        max_results: Optional[int] = None,
+    ) -> str:
         """Search for relevant chunks and format them as an LLM context block.
 
         Returns a string suitable for injection into a system/user prompt.

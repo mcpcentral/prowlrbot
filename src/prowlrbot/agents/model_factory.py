@@ -306,7 +306,9 @@ def _create_remote_model_instance(
             model_name = "unconfigured"
             api_key = ""
             base_url = ""
-        logger.warning("No active LLM configured — falling back to env var detection")
+        logger.warning(
+            "No active LLM configured — falling back to env var detection",
+        )
 
     # Instantiate model
     model = chat_model_class(

@@ -38,9 +38,13 @@ class AuditEntry(BaseModel):
     id: Optional[int] = None
     timestamp: float = Field(default_factory=time.time)
     actor: str = Field(
-        ..., description="Who performed the action (user, agent, system)"
+        ...,
+        description="Who performed the action (user, agent, system)",
     )
-    action: str = Field(..., description="What was done (e.g. login, config_change)")
+    action: str = Field(
+        ...,
+        description="What was done (e.g. login, config_change)",
+    )
     target: str = Field(default="", description="The resource acted upon")
     details: Dict[str, Any] = Field(default_factory=dict)
     ip_address: str = Field(default="")
@@ -49,7 +53,10 @@ class AuditEntry(BaseModel):
     @property
     def timestamp_iso(self) -> str:
         """Return the timestamp as an ISO-8601 string (UTC)."""
-        return datetime.fromtimestamp(self.timestamp, tz=timezone.utc).isoformat()
+        return datetime.fromtimestamp(
+            self.timestamp,
+            tz=timezone.utc,
+        ).isoformat()
 
 
 class AuditLog:
@@ -80,7 +87,8 @@ class AuditLog:
     # ------------------------------------------------------------------
 
     def _create_tables(self) -> None:
-        self._conn.execute("""
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS audit_log (
                 id         INTEGER PRIMARY KEY AUTOINCREMENT,
                 timestamp  REAL    NOT NULL,
@@ -91,19 +99,26 @@ class AuditLog:
                 ip_address TEXT    NOT NULL DEFAULT '',
                 result     TEXT    NOT NULL DEFAULT 'success'
             )
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_audit_actor
             ON audit_log(actor, timestamp DESC)
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_audit_action
             ON audit_log(action, timestamp DESC)
-        """)
-        self._conn.execute("""
+        """,
+        )
+        self._conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_audit_timestamp
             ON audit_log(timestamp DESC)
-        """)
+        """,
+        )
         self._conn.commit()
 
     # ------------------------------------------------------------------
@@ -217,7 +232,7 @@ class AuditLog:
             The serialised audit log.
         """
         rows = self._conn.execute(
-            "SELECT * FROM audit_log ORDER BY timestamp ASC"
+            "SELECT * FROM audit_log ORDER BY timestamp ASC",
         ).fetchall()
         entries = [self._row_to_entry(row) for row in rows]
 
@@ -238,7 +253,8 @@ class AuditLog:
         """Delete entries older than *older_than_days*. Returns count deleted."""
         cutoff = time.time() - (older_than_days * 86400)
         cursor = self._conn.execute(
-            "DELETE FROM audit_log WHERE timestamp < ?", (cutoff,)
+            "DELETE FROM audit_log WHERE timestamp < ?",
+            (cutoff,),
         )
         self._conn.commit()
         deleted = cursor.rowcount

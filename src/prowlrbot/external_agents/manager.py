@@ -30,7 +30,8 @@ class ExternalAgentManager:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS external_agents (
                 id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -59,14 +60,18 @@ class ExternalAgentManager:
             );
             CREATE INDEX IF NOT EXISTS idx_tasks_agent ON external_tasks(agent_id);
             CREATE INDEX IF NOT EXISTS idx_tasks_status ON external_tasks(status);
-        """)
+        """,
+        )
         self._conn.commit()
 
     # ------------------------------------------------------------------
     # Agent CRUD
     # ------------------------------------------------------------------
 
-    def register_agent(self, config: ExternalAgentConfig) -> ExternalAgentConfig:
+    def register_agent(
+        self,
+        config: ExternalAgentConfig,
+    ) -> ExternalAgentConfig:
         config.created_at = time.time()
         self._conn.execute(
             "INSERT OR REPLACE INTO external_agents "
@@ -92,13 +97,17 @@ class ExternalAgentManager:
 
     def get_agent(self, agent_id: str) -> Optional[ExternalAgentConfig]:
         row = self._conn.execute(
-            "SELECT * FROM external_agents WHERE id = ?", (agent_id,)
+            "SELECT * FROM external_agents WHERE id = ?",
+            (agent_id,),
         ).fetchone()
         if not row:
             return None
         return self._row_to_config(row)
 
-    def list_agents(self, enabled_only: bool = False) -> List[ExternalAgentConfig]:
+    def list_agents(
+        self,
+        enabled_only: bool = False,
+    ) -> List[ExternalAgentConfig]:
         query = "SELECT * FROM external_agents"
         if enabled_only:
             query += " WHERE enabled = 1"
@@ -108,7 +117,8 @@ class ExternalAgentManager:
 
     def delete_agent(self, agent_id: str) -> bool:
         cursor = self._conn.execute(
-            "DELETE FROM external_agents WHERE id = ?", (agent_id,)
+            "DELETE FROM external_agents WHERE id = ?",
+            (agent_id,),
         )
         self._conn.commit()
         return cursor.rowcount > 0
@@ -141,7 +151,8 @@ class ExternalAgentManager:
 
     def get_task(self, task_id: str) -> Optional[ExternalTask]:
         row = self._conn.execute(
-            "SELECT * FROM external_tasks WHERE id = ?", (task_id,)
+            "SELECT * FROM external_tasks WHERE id = ?",
+            (task_id,),
         ).fetchone()
         if not row:
             return None
@@ -167,7 +178,11 @@ class ExternalAgentManager:
         return [self._row_to_task(r) for r in rows]
 
     def update_task_status(
-        self, task_id: str, status: TaskStatus, result: str = "", error: str = ""
+        self,
+        task_id: str,
+        status: TaskStatus,
+        result: str = "",
+        error: str = "",
     ) -> bool:
         now = time.time()
         updates = ["status = ?"]
@@ -175,7 +190,11 @@ class ExternalAgentManager:
         if status == TaskStatus.RUNNING:
             updates.append("started_at = ?")
             params.append(now)
-        if status in (TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.CANCELLED):
+        if status in (
+            TaskStatus.COMPLETED,
+            TaskStatus.FAILED,
+            TaskStatus.CANCELLED,
+        ):
             updates.append("completed_at = ?")
             params.append(now)
         if result:
@@ -186,7 +205,8 @@ class ExternalAgentManager:
             params.append(error)
         params.append(task_id)
         cursor = self._conn.execute(
-            f"UPDATE external_tasks SET {', '.join(updates)} WHERE id = ?", params
+            f"UPDATE external_tasks SET {', '.join(updates)} WHERE id = ?",
+            params,
         )
         self._conn.commit()
         return cursor.rowcount > 0
@@ -206,7 +226,11 @@ class ExternalAgentManager:
 
         agent = self.get_agent(task.agent_id)
         if not agent:
-            self.update_task_status(task_id, TaskStatus.FAILED, error="Agent not found")
+            self.update_task_status(
+                task_id,
+                TaskStatus.FAILED,
+                error="Agent not found",
+            )
             task.status = TaskStatus.FAILED
             task.error = "Agent not found"
             return task
@@ -223,11 +247,19 @@ class ExternalAgentManager:
             else:
                 result = f"Backend {agent.backend_type} execution not yet implemented"
 
-            self.update_task_status(task_id, TaskStatus.COMPLETED, result=result)
+            self.update_task_status(
+                task_id,
+                TaskStatus.COMPLETED,
+                result=result,
+            )
             task.status = TaskStatus.COMPLETED
             task.result = result
         except asyncio.TimeoutError:
-            self.update_task_status(task_id, TaskStatus.TIMEOUT, error="Task timed out")
+            self.update_task_status(
+                task_id,
+                TaskStatus.TIMEOUT,
+                error="Task timed out",
+            )
             task.status = TaskStatus.TIMEOUT
             task.error = "Task timed out"
         except Exception as e:
@@ -237,7 +269,11 @@ class ExternalAgentManager:
 
         return task
 
-    async def _run_cli(self, agent: ExternalAgentConfig, task: ExternalTask) -> str:
+    async def _run_cli(
+        self,
+        agent: ExternalAgentConfig,
+        task: ExternalTask,
+    ) -> str:
         """Run a CLI-based external agent."""
         env = {**agent.environment}
         cmd = f"{agent.command} {task.prompt}"
@@ -249,15 +285,20 @@ class ExternalAgentManager:
             env=env if env else None,
         )
         stdout, stderr = await asyncio.wait_for(
-            proc.communicate(), timeout=agent.timeout_seconds
+            proc.communicate(),
+            timeout=agent.timeout_seconds,
         )
         if proc.returncode != 0:
             raise RuntimeError(
-                f"CLI exited with code {proc.returncode}: {stderr.decode()}"
+                f"CLI exited with code {proc.returncode}: {stderr.decode()}",
             )
         return stdout.decode()
 
-    async def _run_docker(self, agent: ExternalAgentConfig, task: ExternalTask) -> str:
+    async def _run_docker(
+        self,
+        agent: ExternalAgentConfig,
+        task: ExternalTask,
+    ) -> str:
         """Run a Docker-based external agent."""
         env_flags = " ".join(f"-e {k}={v}" for k, v in agent.environment.items())
         cmd = f"docker run --rm {env_flags} {agent.command} {task.prompt}"
@@ -267,16 +308,19 @@ class ExternalAgentManager:
             stderr=asyncio.subprocess.PIPE,
         )
         stdout, stderr = await asyncio.wait_for(
-            proc.communicate(), timeout=agent.timeout_seconds
+            proc.communicate(),
+            timeout=agent.timeout_seconds,
         )
         if proc.returncode != 0:
             raise RuntimeError(
-                f"Docker exited with code {proc.returncode}: {stderr.decode()}"
+                f"Docker exited with code {proc.returncode}: {stderr.decode()}",
             )
         return stdout.decode()
 
     async def _run_claude_code(
-        self, agent: ExternalAgentConfig, task: ExternalTask
+        self,
+        agent: ExternalAgentConfig,
+        task: ExternalTask,
     ) -> str:
         """Run Claude Code as an external agent."""
         cmd = f"claude -p '{task.prompt}'"
@@ -289,11 +333,12 @@ class ExternalAgentManager:
             env={**agent.environment} if agent.environment else None,
         )
         stdout, stderr = await asyncio.wait_for(
-            proc.communicate(), timeout=agent.timeout_seconds
+            proc.communicate(),
+            timeout=agent.timeout_seconds,
         )
         if proc.returncode != 0:
             raise RuntimeError(
-                f"Claude Code exited with code {proc.returncode}: {stderr.decode()}"
+                f"Claude Code exited with code {proc.returncode}: {stderr.decode()}",
             )
         return stdout.decode()
 

@@ -63,13 +63,18 @@ class MCPFullAdapter:
         params = mcp_message.get("params", {})
         msg_id = mcp_message.get("id", "")
 
-        intent = MCPFullAdapter.METHOD_TO_INTENT.get(method, MessageIntent.EXECUTE)
+        intent = MCPFullAdapter.METHOD_TO_INTENT.get(
+            method,
+            MessageIntent.EXECUTE,
+        )
 
         from_id = source_identity or AgentIdentity(
-            display_name="mcp-client", agent_type="tool"
+            display_name="mcp-client",
+            agent_type="tool",
         )
         to_id = target_identity or AgentIdentity(
-            display_name="mcp-server", agent_type="tool"
+            display_name="mcp-server",
+            agent_type="tool",
         )
 
         return ROARMessage(
@@ -99,7 +104,10 @@ class MCPFullAdapter:
         """
         method = method_override or roar_message.payload.get(
             "mcp_method",
-            MCPFullAdapter.INTENT_TO_METHOD.get(roar_message.intent, "tools/call"),
+            MCPFullAdapter.INTENT_TO_METHOD.get(
+                roar_message.intent,
+                "tools/call",
+            ),
         )
 
         params = roar_message.payload.get("mcp_params", roar_message.payload)
@@ -128,7 +136,8 @@ class MCPFullAdapter:
             A ROARMessage with RESPOND intent carrying the MCP result.
         """
         from_id = server_identity or AgentIdentity(
-            display_name="mcp-server", agent_type="tool"
+            display_name="mcp-server",
+            agent_type="tool",
         )
         to_id = (
             original_request.from_identity
@@ -170,5 +179,8 @@ class MCPFullAdapter:
         return {
             "jsonrpc": "2.0",
             "id": jsonrpc_id,
-            "result": roar_response.payload.get("mcp_result", roar_response.payload),
+            "result": roar_response.payload.get(
+                "mcp_result",
+                roar_response.payload,
+            ),
         }

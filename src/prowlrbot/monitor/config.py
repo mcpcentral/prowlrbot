@@ -24,7 +24,7 @@ def parse_interval(value: str) -> int:
     m = _INTERVAL_RE.match(value.strip())
     if not m:
         raise ValueError(
-            f"Invalid interval '{value}'. Use format like '30s', '5m', '1h', '2d'."
+            f"Invalid interval '{value}'. Use format like '30s', '5m', '1h', '2d'.",
         )
     amount = int(m.group(1))
     unit = m.group(2).lower()

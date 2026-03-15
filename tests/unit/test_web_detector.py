@@ -46,7 +46,7 @@ class TestWebDetector:
     async def test_detect_first_run(self):
         """First run should always report changed."""
         transport = httpx.MockTransport(
-            lambda req: httpx.Response(200, text="<h1>Hello</h1>")
+            lambda req: httpx.Response(200, text="<h1>Hello</h1>"),
         )
         client = httpx.AsyncClient(transport=transport)
         detector = WebDetector(
@@ -62,7 +62,7 @@ class TestWebDetector:
 
     async def test_detect_no_change(self):
         transport = httpx.MockTransport(
-            lambda req: httpx.Response(200, text="<h1>Hello</h1>")
+            lambda req: httpx.Response(200, text="<h1>Hello</h1>"),
         )
         client = httpx.AsyncClient(transport=transport)
         detector = WebDetector(
@@ -77,7 +77,7 @@ class TestWebDetector:
 
     async def test_detect_change(self):
         transport = httpx.MockTransport(
-            lambda req: httpx.Response(200, text="<h1>New Title</h1>")
+            lambda req: httpx.Response(200, text="<h1>New Title</h1>"),
         )
         client = httpx.AsyncClient(transport=transport)
         detector = WebDetector(
@@ -92,7 +92,9 @@ class TestWebDetector:
 
     async def test_detect_without_selector(self):
         html = "<html><body>Full page</body></html>"
-        transport = httpx.MockTransport(lambda req: httpx.Response(200, text=html))
+        transport = httpx.MockTransport(
+            lambda req: httpx.Response(200, text=html),
+        )
         client = httpx.AsyncClient(transport=transport)
         detector = WebDetector(url="https://example.com", client=client)
         result = await detector.detect(last_content=None)
@@ -101,7 +103,9 @@ class TestWebDetector:
         await client.aclose()
 
     async def test_detect_http_error(self):
-        transport = httpx.MockTransport(lambda req: httpx.Response(500, text="error"))
+        transport = httpx.MockTransport(
+            lambda req: httpx.Response(500, text="error"),
+        )
         client = httpx.AsyncClient(transport=transport)
         detector = WebDetector(url="https://example.com", client=client)
         result = await detector.detect(last_content=None)

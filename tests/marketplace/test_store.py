@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for MarketplaceStore v3 migration and trust tier fields."""
 
 import tempfile

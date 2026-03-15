@@ -481,7 +481,11 @@ class ProwlrBotAgent(ReActAgent):
                     env=rebuild_info.get("env", {}),
                     cwd=rebuild_info.get("cwd"),
                 )
-                setattr(rebuilt_client, "_prowlrbot_rebuild_info", rebuild_info)
+                setattr(
+                    rebuilt_client,
+                    "_prowlrbot_rebuild_info",
+                    rebuild_info,
+                )
                 return rebuilt_client
 
             rebuilt_client = HttpStatefulClient(

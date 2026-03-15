@@ -118,7 +118,10 @@ async def evaluate_action(req: EvaluateRequest):
 @router.get("/escalations/{agent_id}")
 async def list_escalations(
     agent_id: str,
-    resolved: Optional[bool] = Query(None, description="Filter by resolution status"),
+    resolved: Optional[bool] = Query(
+        None,
+        description="Filter by resolution status",
+    ),
 ):
     """List escalation events for an agent."""
     ctrl = _get_controller()

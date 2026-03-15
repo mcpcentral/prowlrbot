@@ -149,7 +149,12 @@ function AgentField({ particles }: { particles: Particle[] }) {
 
       {/* Connection lines */}
       <svg
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+        }}
       >
         {particles.slice(0, 8).map((p, i) => {
           const next = particles[(i + 3) % particles.length];
@@ -351,11 +356,7 @@ export function AgentGreeting() {
                       boxShadow: "0 0 40px rgba(0,229,255,0.15)",
                     }}
                   >
-                    <Sparkles
-                      size={32}
-                      color="#00E5FF"
-                      strokeWidth={1.5}
-                    />
+                    <Sparkles size={32} color="#00E5FF" strokeWidth={1.5} />
                   </div>
                 </motion.div>
 

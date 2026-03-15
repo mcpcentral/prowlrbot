@@ -22,7 +22,9 @@ def test_blocks_ssh_keys():
 
 def test_blocks_secret_dir():
     assert (
-        validate_file_path(str(Path.home() / ".prowlrbot.secret" / "envs.json"))
+        validate_file_path(
+            str(Path.home() / ".prowlrbot.secret" / "envs.json"),
+        )
         is False
     )
 

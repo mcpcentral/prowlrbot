@@ -138,7 +138,8 @@ class TemplateStore:
         self._seed_builtins()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS templates (
                 id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -159,13 +160,15 @@ class TemplateStore:
                 created_at REAL NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_tmpl_category ON templates(category);
-        """)
+        """,
+        )
         self._conn.commit()
 
     def _seed_builtins(self) -> None:
         for tmpl in BUILTIN_TEMPLATES:
             existing = self._conn.execute(
-                "SELECT id FROM templates WHERE id = ?", (tmpl.id,)
+                "SELECT id FROM templates WHERE id = ?",
+                (tmpl.id,),
             ).fetchone()
             if not existing:
                 tmpl.created_at = time.time()
@@ -173,14 +176,17 @@ class TemplateStore:
 
     def get(self, template_id: str) -> Optional[AgentTemplate]:
         row = self._conn.execute(
-            "SELECT * FROM templates WHERE id = ?", (template_id,)
+            "SELECT * FROM templates WHERE id = ?",
+            (template_id,),
         ).fetchone()
         if not row:
             return None
         return self._row_to_template(row)
 
     def list_templates(
-        self, category: Optional[str] = None, builtin_only: bool = False
+        self,
+        category: Optional[str] = None,
+        builtin_only: bool = False,
     ) -> List[AgentTemplate]:
         query = "SELECT * FROM templates WHERE 1=1"
         params: list = []
@@ -199,7 +205,11 @@ class TemplateStore:
         self._save(template)
         return template
 
-    def update(self, template_id: str, **kwargs: Any) -> Optional[AgentTemplate]:
+    def update(
+        self,
+        template_id: str,
+        **kwargs: Any,
+    ) -> Optional[AgentTemplate]:
         template = self.get(template_id)
         if not template or template.is_builtin:
             return None

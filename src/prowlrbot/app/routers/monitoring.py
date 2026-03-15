@@ -83,7 +83,7 @@ async def list_monitors() -> List[MonitorResponse]:
                 enabled=config.enabled,
                 status="ok" if snapshot else "unknown",
                 last_checked=snapshot.checked_at if snapshot else None,
-            )
+            ),
         )
     return results
 
@@ -174,5 +174,5 @@ async def get_monitor_history(monitor_id: str) -> List[Dict[str, Any]]:
             "monitor_name": snapshot.monitor_name,
             "checked_at": snapshot.checked_at,
             "content_length": len(snapshot.content),
-        }
+        },
     ]

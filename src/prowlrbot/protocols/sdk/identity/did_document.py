@@ -50,7 +50,9 @@ class DIDDocument:
 
     id: str
     controller: str = ""
-    verification_methods: List[VerificationMethod] = field(default_factory=list)
+    verification_methods: List[VerificationMethod] = field(
+        default_factory=list,
+    )
     authentication: List[str] = field(default_factory=list)
     assertion_method: List[str] = field(default_factory=list)
     services: List[ServiceEndpoint] = field(default_factory=list)

@@ -5,7 +5,10 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing
+from prowlrbot.marketplace.models import (
+    MarketplaceCategory,
+    MarketplaceListing,
+)
 from prowlrbot.marketplace.store import MarketplaceStore
 
 
@@ -28,7 +31,7 @@ def test_cli_install_creates_skill_directory():
             description="Process PDFs",
             category=MarketplaceCategory.skills,
             status="approved",
-        )
+        ),
     )
 
     with tempfile.TemporaryDirectory() as tmpdir:

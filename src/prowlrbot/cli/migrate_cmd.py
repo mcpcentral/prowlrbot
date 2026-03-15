@@ -48,7 +48,7 @@ def migrate_up(target: int | None) -> None:
         click.style(
             f"Applying {len(pending)} migration(s)...",
             fg="cyan",
-        )
+        ),
     )
 
     applied = manager.migrate_up(target_version=target)
@@ -60,7 +60,7 @@ def migrate_up(target: int | None) -> None:
             f"Done. Current version: v{manager.get_current_version()}",
             fg="green",
             bold=True,
-        )
+        ),
     )
 
 
@@ -85,7 +85,7 @@ def migrate_down(target: int) -> None:
         click.style(
             f"Rolling back from v{current} down to v{target}...",
             fg="yellow",
-        )
+        ),
     )
 
     rolled_back = manager.migrate_down(target_version=target)
@@ -97,7 +97,7 @@ def migrate_down(target: int) -> None:
             f"Done. Current version: v{manager.get_current_version()}",
             fg="green",
             bold=True,
-        )
+        ),
     )
 
 
@@ -139,6 +139,7 @@ def migrate_history() -> None:
         ts = ""
         if m.applied_at is not None:
             ts = datetime.datetime.fromtimestamp(
-                m.applied_at, tz=datetime.timezone.utc
+                m.applied_at,
+                tz=datetime.timezone.utc,
             ).strftime("%Y-%m-%d %H:%M:%S UTC")
         click.echo(f"  v{m.version:<9} {m.name:<25} {ts}")

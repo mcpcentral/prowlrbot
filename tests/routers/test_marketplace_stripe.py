@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for Stripe tip jar with graceful degradation."""
 
 import importlib.util
@@ -8,7 +9,10 @@ from unittest.mock import patch, MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from prowlrbot.marketplace.models import MarketplaceCategory, MarketplaceListing
+from prowlrbot.marketplace.models import (
+    MarketplaceCategory,
+    MarketplaceListing,
+)
 from prowlrbot.marketplace.store import MarketplaceStore
 from prowlrbot.auth.models import User, Role
 
@@ -43,7 +47,7 @@ def store():
             title="Tippable Skill",
             description="test",
             category=MarketplaceCategory.skills,
-        )
+        ),
     )
     yield s
     s.close()
@@ -69,7 +73,10 @@ def test_tip_records_locally_when_stripe_not_configured(client):
 
     env = {k: v for k, v in os.environ.items() if k != "STRIPE_SECRET_KEY"}
     with patch.dict("os.environ", env, clear=True):
-        resp = client.post("/marketplace/listings/tippable/tip", json={"amount": 5})
+        resp = client.post(
+            "/marketplace/listings/tippable/tip",
+            json={"amount": 5},
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert data["checkout_url"] is None
@@ -79,13 +86,22 @@ def test_tip_records_locally_when_stripe_not_configured(client):
 def test_tip_validates_amount_range(client):
     """Tip below $1 or above $100 is rejected."""
     with patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_fake"}):
-        resp = client.post("/marketplace/listings/tippable/tip", json={"amount": 0.50})
+        resp = client.post(
+            "/marketplace/listings/tippable/tip",
+            json={"amount": 0.50},
+        )
         assert resp.status_code == 400
 
-        resp = client.post("/marketplace/listings/tippable/tip", json={"amount": 150})
+        resp = client.post(
+            "/marketplace/listings/tippable/tip",
+            json={"amount": 150},
+        )
         assert resp.status_code == 400
 
 
 def test_tip_not_found_listing(client):
-    resp = client.post("/marketplace/listings/nonexistent/tip", json={"amount": 5})
+    resp = client.post(
+        "/marketplace/listings/nonexistent/tip",
+        json={"amount": 5},
+    )
     assert resp.status_code == 404

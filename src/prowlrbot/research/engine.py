@@ -25,7 +25,10 @@ class ResearchEngine:
         self.store = store
 
     def create_project(
-        self, topic: str, objective: str = "", max_sources: int = 20
+        self,
+        topic: str,
+        objective: str = "",
+        max_sources: int = 20,
     ) -> ResearchProject:
         """Create a new research project."""
         queries = self._generate_search_queries(topic)
@@ -170,7 +173,7 @@ class ResearchEngine:
                             evidence=[source.id],
                             confidence=overlap / len(topic_words) if topic_words else 0,
                             category="extracted",
-                        )
+                        ),
                     )
 
         # Deduplicate similar findings
@@ -194,13 +197,15 @@ class ResearchEngine:
 
         parts.append(
             f"## Summary\nAnalyzed {len(project.sources)} sources, "
-            f"extracted {len(project.findings)} key findings.\n"
+            f"extracted {len(project.findings)} key findings.\n",
         )
 
         if project.findings:
             parts.append("## Key Findings\n")
             for i, f in enumerate(project.findings[:10], 1):
-                parts.append(f"{i}. {f.claim} (confidence: {f.confidence:.0%})")
+                parts.append(
+                    f"{i}. {f.claim} (confidence: {f.confidence:.0%})",
+                )
 
         if project.sources:
             parts.append("\n## Sources\n")

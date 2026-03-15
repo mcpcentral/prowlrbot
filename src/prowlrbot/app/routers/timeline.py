@@ -68,7 +68,10 @@ def fork_checkpoint(checkpoint_id: str, body: ForkCheckpointRequest):
     mgr = _get_manager()
     cp = mgr.fork_from_checkpoint(checkpoint_id, body.new_label)
     if cp is None:
-        raise HTTPException(status_code=404, detail="Parent checkpoint not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Parent checkpoint not found",
+        )
     return cp.model_dump(mode="json")
 
 

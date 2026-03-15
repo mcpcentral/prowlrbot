@@ -77,7 +77,10 @@ def verify_clerk_token(token: str) -> Optional[ClerkClaims]:
     if authorized_parties:
         azp = payload.get("azp")
         if azp and azp not in authorized_parties:
-            logger.warning("Clerk token azp %r not in CLERK_AUTHORIZED_PARTIES", azp)
+            logger.warning(
+                "Clerk token azp %r not in CLERK_AUTHORIZED_PARTIES",
+                azp,
+            )
             return None
 
     email = (payload.get("email") or payload.get("primary_email") or "").strip()

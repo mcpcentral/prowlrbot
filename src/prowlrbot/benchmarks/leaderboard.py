@@ -59,7 +59,8 @@ class ModelLeaderboard:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS benchmark_results (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 model TEXT NOT NULL,
@@ -80,7 +81,8 @@ class ModelLeaderboard:
                 tasks TEXT DEFAULT '[]',
                 created_at REAL NOT NULL
             );
-        """)
+        """,
+        )
         self._conn.commit()
 
     def record_result(self, result: BenchmarkResult) -> int:
@@ -160,7 +162,7 @@ class ModelLeaderboard:
                     ),
                     best_category=best["benchmark"] if best else "",
                     last_run=float(row["last_run"]),
-                )
+                ),
             )
         return rankings
 
@@ -191,7 +193,7 @@ class ModelLeaderboard:
     def get_categories(self) -> List[str]:
         """Get all benchmark categories that have results."""
         rows = self._conn.execute(
-            "SELECT DISTINCT benchmark FROM benchmark_results ORDER BY benchmark"
+            "SELECT DISTINCT benchmark FROM benchmark_results ORDER BY benchmark",
         ).fetchall()
         return [row["benchmark"] for row in rows]
 
@@ -213,7 +215,7 @@ class ModelLeaderboard:
 
     def list_suites(self) -> List[BenchmarkSuite]:
         rows = self._conn.execute(
-            "SELECT * FROM benchmark_suites ORDER BY created_at DESC"
+            "SELECT * FROM benchmark_suites ORDER BY created_at DESC",
         ).fetchall()
         return [
             BenchmarkSuite(

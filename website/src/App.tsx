@@ -66,62 +66,126 @@ export default function App() {
 
   return (
     <>
-    <AgentGreeting />
-    <Routes>
-      <Route
-        path="/"
-        element={<Home config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />}
-      />
-      <Route path="/docs" element={<Navigate to="/docs/intro" replace />} />
-      <Route
-        path="/docs/:slug"
-        element={<Docs config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />}
-      />
-      <Route path="/marketplace" element={<Marketplace config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
-      <Route path="/blog" element={<Blog config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
-      <Route path="/blog/:slug" element={<Blog config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
-      <Route path="/pricing" element={<Pricing config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />} />
-      <Route
-        path="/sign-in"
-        element={
-          authEnabled ? (
-            <SignInPage config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        }
-      />
-      <Route
-        path="/sign-in/sso-callback"
-        element={
-          authEnabled ? (
-            <SignInSsoCallbackPage />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        }
-      />
-      <Route
-        path="/sign-up"
-        element={
-          authEnabled ? (
-            <SignUpPage config={config} lang={lang} theme={theme} onThemeToggle={toggleTheme} />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        }
-      />
-      <Route
-        path="/sign-up/sso-callback"
-        element={
-          authEnabled ? (
-            <SignInSsoCallbackPage />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        }
-      />
-    </Routes>
+      <AgentGreeting />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              config={config}
+              lang={lang}
+              theme={theme}
+              onThemeToggle={toggleTheme}
+            />
+          }
+        />
+        <Route path="/docs" element={<Navigate to="/docs/intro" replace />} />
+        <Route
+          path="/docs/:slug"
+          element={
+            <Docs
+              config={config}
+              lang={lang}
+              theme={theme}
+              onThemeToggle={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/marketplace"
+          element={
+            <Marketplace
+              config={config}
+              lang={lang}
+              theme={theme}
+              onThemeToggle={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/blog"
+          element={
+            <Blog
+              config={config}
+              lang={lang}
+              theme={theme}
+              onThemeToggle={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/blog/:slug"
+          element={
+            <Blog
+              config={config}
+              lang={lang}
+              theme={theme}
+              onThemeToggle={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/pricing"
+          element={
+            <Pricing
+              config={config}
+              lang={lang}
+              theme={theme}
+              onThemeToggle={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/sign-in"
+          element={
+            authEnabled ? (
+              <SignInPage
+                config={config}
+                lang={lang}
+                theme={theme}
+                onThemeToggle={toggleTheme}
+              />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/sign-in/sso-callback"
+          element={
+            authEnabled ? (
+              <SignInSsoCallbackPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/sign-up"
+          element={
+            authEnabled ? (
+              <SignUpPage
+                config={config}
+                lang={lang}
+                theme={theme}
+                onThemeToggle={toggleTheme}
+              />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/sign-up/sso-callback"
+          element={
+            authEnabled ? (
+              <SignInSsoCallbackPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+      </Routes>
     </>
   );
 }

@@ -42,14 +42,26 @@ def test_query_by_type(log):
 
 def test_query_limit(log):
     for i in range(10):
-        log.record(session_id="s1", event_type=EventType.TOOL_CALL, data={"i": i})
+        log.record(
+            session_id="s1",
+            event_type=EventType.TOOL_CALL,
+            data={"i": i},
+        )
     events = log.query(session_id="s1", limit=5)
     assert len(events) == 5
 
 
 def test_query_returns_newest_first(log):
-    log.record(session_id="s1", event_type=EventType.TOOL_CALL, data={"order": 1})
-    log.record(session_id="s1", event_type=EventType.TOOL_CALL, data={"order": 2})
+    log.record(
+        session_id="s1",
+        event_type=EventType.TOOL_CALL,
+        data={"order": 1},
+    )
+    log.record(
+        session_id="s1",
+        event_type=EventType.TOOL_CALL,
+        data={"order": 2},
+    )
     events = log.query(session_id="s1")
     assert events[0]["data"]["order"] == 2  # newest first
 

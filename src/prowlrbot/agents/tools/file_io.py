@@ -19,7 +19,7 @@ if _LEGACY_SECRET_DIR.exists():
     logger.warning(
         "Deprecated: ~/.copaw.secret detected. "
         "Migrate secrets to ~/.prowlrbot.secret/ and remove the old directory. "
-        "Legacy path support will be removed in v1.0."
+        "Legacy path support will be removed in v1.0.",
     )
 
 # Directories that are always blocked
@@ -74,7 +74,7 @@ def validate_file_path(file_path: str) -> bool:
         try:
             blocked_resolved = blocked.resolve()
             if resolved == blocked_resolved or resolved.is_relative_to(
-                blocked_resolved
+                blocked_resolved,
             ):
                 return False
         except (ValueError, OSError):
@@ -85,7 +85,7 @@ def validate_file_path(file_path: str) -> bool:
         try:
             allowed_resolved = allowed.resolve()
             if resolved == allowed_resolved or resolved.is_relative_to(
-                allowed_resolved
+                allowed_resolved,
             ):
                 return True
         except (ValueError, OSError):

@@ -104,5 +104,5 @@ class CronExecutor:
                 category="cron_complete",
                 reason=f"Completed cron job {job.id}",
                 amount=5,
-            )
+            ),
         )

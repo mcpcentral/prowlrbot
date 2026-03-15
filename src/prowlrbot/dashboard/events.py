@@ -40,7 +40,7 @@ class DashboardEvent:
                 "session_id": self.session_id,
                 "data": self.data,
                 "timestamp": self.timestamp,
-            }
+            },
         )
 
 

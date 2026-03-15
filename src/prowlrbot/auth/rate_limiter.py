@@ -26,19 +26,29 @@ class RateLimitConfig(BaseModel):
 
 TIER_CONFIGS: Dict[str, RateLimitConfig] = {
     "admin": RateLimitConfig(
-        requests_per_minute=300, requests_per_hour=10000, burst_size=50
+        requests_per_minute=300,
+        requests_per_hour=10000,
+        burst_size=50,
     ),
     "operator": RateLimitConfig(
-        requests_per_minute=120, requests_per_hour=5000, burst_size=20
+        requests_per_minute=120,
+        requests_per_hour=5000,
+        burst_size=20,
     ),
     "viewer": RateLimitConfig(
-        requests_per_minute=60, requests_per_hour=1000, burst_size=10
+        requests_per_minute=60,
+        requests_per_hour=1000,
+        burst_size=10,
     ),
     "agent": RateLimitConfig(
-        requests_per_minute=200, requests_per_hour=8000, burst_size=30
+        requests_per_minute=200,
+        requests_per_hour=8000,
+        burst_size=30,
     ),
     "anonymous": RateLimitConfig(
-        requests_per_minute=200, requests_per_hour=5000, burst_size=30
+        requests_per_minute=200,
+        requests_per_hour=5000,
+        burst_size=30,
     ),
 }
 
@@ -50,7 +60,10 @@ class RateLimiter:
     per-hour, and burst limits.
     """
 
-    def __init__(self, default_config: Optional[RateLimitConfig] = None) -> None:
+    def __init__(
+        self,
+        default_config: Optional[RateLimitConfig] = None,
+    ) -> None:
         self.default_config = default_config or RateLimitConfig()
         self._windows: Dict[str, List[float]] = {}
 
@@ -58,7 +71,11 @@ class RateLimiter:
     # Public API
     # ------------------------------------------------------------------
 
-    def check(self, client_key: str, config: Optional[RateLimitConfig] = None) -> bool:
+    def check(
+        self,
+        client_key: str,
+        config: Optional[RateLimitConfig] = None,
+    ) -> bool:
         """Return ``True`` if the request is allowed, ``False`` otherwise."""
         cfg = config or self.default_config
         now = time.time()
@@ -88,7 +105,9 @@ class RateLimiter:
         return True
 
     def get_remaining(
-        self, client_key: str, config: Optional[RateLimitConfig] = None
+        self,
+        client_key: str,
+        config: Optional[RateLimitConfig] = None,
     ) -> Dict[str, object]:
         """Return remaining quota and next reset time for *client_key*."""
         cfg = config or self.default_config
@@ -243,7 +262,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 return JSONResponse(
                     status_code=429,
                     content={
-                        "detail": "Too many authentication attempts. Please try again later."
+                        "detail": "Too many authentication attempts. Please try again later.",
                     },
                     headers={"Retry-After": str(retry_after)},
                 )
@@ -257,7 +276,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             retry_after = max(1, retry_after)
             return JSONResponse(
                 status_code=429,
-                content={"detail": "Rate limit exceeded. Please try again later."},
+                content={
+                    "detail": "Rate limit exceeded. Please try again later.",
+                },
                 headers={
                     "Retry-After": str(retry_after),
                     "X-RateLimit-Remaining": "0",
@@ -269,7 +290,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Attach rate-limit headers to successful responses
         info = self.limiter.get_remaining(client_key, config)
-        response.headers["X-RateLimit-Remaining"] = str(info["remaining_minute"])
+        response.headers["X-RateLimit-Remaining"] = str(
+            info["remaining_minute"],
+        )
         response.headers["X-RateLimit-Reset"] = str(int(info["reset"]))  # type: ignore[arg-type]
 
         return response

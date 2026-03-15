@@ -167,7 +167,9 @@ class EventBus:
             A Subscription that can be iterated or polled.
         """
         sub_id = f"sub-{uuid.uuid4().hex[:12]}"
-        queue: asyncio.Queue = asyncio.Queue(maxsize=buffer_size or self._max_buffer)
+        queue: asyncio.Queue = asyncio.Queue(
+            maxsize=buffer_size or self._max_buffer,
+        )
         effective_filter = filter_spec or StreamFilter()
 
         # Pre-fill queue with matching events from the replay buffer
@@ -229,7 +231,8 @@ class EventBus:
                 except asyncio.QueueFull:
                     sub.events_dropped += 1
                     logger.warning(
-                        "Subscription %s dropping events (buffer full)", sub.id
+                        "Subscription %s dropping events (buffer full)",
+                        sub.id,
                     )
 
         return delivered

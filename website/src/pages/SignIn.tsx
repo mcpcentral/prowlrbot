@@ -12,7 +12,12 @@ interface SignInProps {
   onThemeToggle: () => void;
 }
 
-export function SignInPage({ config, lang, theme, onThemeToggle }: SignInProps) {
+export function SignInPage({
+  config,
+  lang,
+  theme,
+  onThemeToggle,
+}: SignInProps) {
   const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "") || "";
   return (
     <>

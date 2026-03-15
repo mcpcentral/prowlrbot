@@ -27,7 +27,8 @@ class ModelRegistry:
         self._init_db()
 
     def _init_db(self) -> None:
-        self._conn.execute("""
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS models (
                 id                TEXT PRIMARY KEY,
                 name              TEXT NOT NULL,
@@ -43,7 +44,8 @@ class ModelRegistry:
                 added_at          REAL NOT NULL DEFAULT 0.0,
                 last_used         REAL NOT NULL DEFAULT 0.0
             )
-            """)
+            """,
+        )
         self._conn.commit()
 
     # -- helpers --
@@ -102,7 +104,8 @@ class ModelRegistry:
     def get(self, model_id: str) -> Optional[ModelEntry]:
         """Get a model by its unique id."""
         row = self._conn.execute(
-            "SELECT * FROM models WHERE id = ?", (model_id,)
+            "SELECT * FROM models WHERE id = ?",
+            (model_id,),
         ).fetchone()
         if row is None:
             return None
@@ -173,12 +176,14 @@ class ModelRegistry:
                         [
                             c.value if isinstance(c, ModelCapability) else c
                             for c in value
-                        ]
-                    )
+                        ],
+                    ),
                 )
             elif key == "model_type":
                 sets.append("model_type = ?")
-                params.append(value.value if isinstance(value, ModelType) else value)
+                params.append(
+                    value.value if isinstance(value, ModelType) else value,
+                )
             elif key == "metadata":
                 sets.append("metadata = ?")
                 params.append(json.dumps(value))
@@ -202,7 +207,10 @@ class ModelRegistry:
 
     def delete(self, model_id: str) -> bool:
         """Delete a model by id. Returns True if a row was deleted."""
-        cur = self._conn.execute("DELETE FROM models WHERE id = ?", (model_id,))
+        cur = self._conn.execute(
+            "DELETE FROM models WHERE id = ?",
+            (model_id,),
+        )
         self._conn.commit()
         return cur.rowcount > 0
 
@@ -257,9 +265,13 @@ class ModelRegistry:
             return self.list_models(capability=ModelCapability.vision)
 
         if task == "code":
-            all_text = self.list_models(capability=ModelCapability.text_generation)
+            all_text = self.list_models(
+                capability=ModelCapability.text_generation,
+            )
             # Sort so that code-type models come first
-            all_text.sort(key=lambda m: (0 if m.model_type == ModelType.code else 1))
+            all_text.sort(
+                key=lambda m: (0 if m.model_type == ModelType.code else 1),
+            )
             return all_text
 
         # Default / "chat"

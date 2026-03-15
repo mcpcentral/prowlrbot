@@ -88,7 +88,11 @@ class WebhookStore:
                 )
                 wf.rules[idx] = rule
                 await self._save(wf)
-                logger.info("webhook rule updated: %s (%s)", rule.id, rule.name)
+                logger.info(
+                    "webhook rule updated: %s (%s)",
+                    rule.id,
+                    rule.name,
+                )
                 return rule
         return None
 
@@ -104,7 +108,9 @@ class WebhookStore:
         return True
 
     async def toggle_enabled(
-        self, rule_id: str, enabled: bool
+        self,
+        rule_id: str,
+        enabled: bool,
     ) -> Optional[WebhookRule]:
         """Toggle the enabled flag on a rule. Returns updated rule or None."""
         wf = await self._load()

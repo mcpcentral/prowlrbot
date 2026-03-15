@@ -141,7 +141,9 @@ _DANGEROUS_IMPORT_PATTERNS: list[tuple[re.Pattern[str], str]] = [
         "shutil.move can relocate files outside allowed paths",
     ),
     (
-        re.compile(r"\bsubprocess\.(run|call|check_call|check_output|Popen)\b"),
+        re.compile(
+            r"\bsubprocess\.(run|call|check_call|check_output|Popen)\b",
+        ),
         "subprocess usage allows arbitrary command execution",
     ),
     (
@@ -209,13 +211,15 @@ _NETWORK_PATTERNS: list[tuple[re.Pattern[str], str]] = [
         "urllib network access",
     ),
     (
-        re.compile(r"\brequests\.(get|post|put|patch|delete|head|options|Session)\b"),
+        re.compile(
+            r"\brequests\.(get|post|put|patch|delete|head|options|Session)\b",
+        ),
         "requests library network access",
     ),
     (
         re.compile(
             r"\bhttpx\."
-            r"(get|post|put|patch|delete|head|options|Client|AsyncClient)\b"
+            r"(get|post|put|patch|delete|head|options|Client|AsyncClient)\b",
         ),
         "httpx library network access",
     ),
@@ -286,7 +290,10 @@ class StaticAnalyzer:
         # 3. AST-based import analysis for blocked imports.
         if self._config and self._config.blocked_imports:
             warnings.extend(
-                self._check_blocked_imports(code, self._config.blocked_imports)
+                self._check_blocked_imports(
+                    code,
+                    self._config.blocked_imports,
+                ),
             )
 
         # 4. AST-based checks for additional dangerous constructs.
@@ -305,7 +312,9 @@ class StaticAnalyzer:
         for pattern, description in _DANGEROUS_IMPORT_PATTERNS:
             matches = pattern.findall(code)
             if matches:
-                warnings.append(f"DANGEROUS: {description} (found: {matches[0]})")
+                warnings.append(
+                    f"DANGEROUS: {description} (found: {matches[0]})",
+                )
         return warnings
 
     @staticmethod
@@ -315,7 +324,9 @@ class StaticAnalyzer:
         for pattern, description in _NETWORK_PATTERNS:
             matches = pattern.findall(code)
             if matches:
-                warnings.append(f"NETWORK: {description} (found: {matches[0]})")
+                warnings.append(
+                    f"NETWORK: {description} (found: {matches[0]})",
+                )
         return warnings
 
     @staticmethod
@@ -336,7 +347,7 @@ class StaticAnalyzer:
                         warnings.append(
                             f"BLOCKED_IMPORT: import of '{alias.name}' "
                             f"is not allowed "
-                            f"(blocked module: {top_module})"
+                            f"(blocked module: {top_module})",
                         )
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
@@ -345,7 +356,7 @@ class StaticAnalyzer:
                         warnings.append(
                             f"BLOCKED_IMPORT: from-import of "
                             f"'{node.module}' is not allowed "
-                            f"(blocked module: {top_module})"
+                            f"(blocked module: {top_module})",
                         )
 
         return warnings
@@ -376,7 +387,7 @@ class StaticAnalyzer:
                 ):
                     warnings.append(
                         f"DANGEROUS: Access to '{node.attr}' can be "
-                        f"used to escape sandbox restrictions"
+                        f"used to escape sandbox restrictions",
                     )
 
             # Detect open() calls with absolute paths outside
@@ -387,16 +398,19 @@ class StaticAnalyzer:
                     if node.args:
                         first_arg = node.args[0]
                         if isinstance(first_arg, ast.Constant) and isinstance(
-                            first_arg.value, str
+                            first_arg.value,
+                            str,
                         ):
                             path_val = first_arg.value
-                            if path_val.startswith("/") and not path_val.startswith(
-                                "/tmp"
+                            if path_val.startswith(
+                                "/",
+                            ) and not path_val.startswith(
+                                "/tmp",
                             ):
                                 warnings.append(
                                     f"FILESYSTEM: open() with absolute "
                                     f"path '{path_val}' may access "
-                                    f"files outside allowed directories"
+                                    f"files outside allowed directories",
                                 )
 
         return warnings
@@ -484,7 +498,7 @@ class SkillSandbox:
                 code = py_file.read_text(encoding="utf-8")
             except Exception as exc:
                 all_warnings.append(
-                    f"Could not read " f"{py_file.relative_to(skill_path)}: {exc}"
+                    f"Could not read " f"{py_file.relative_to(skill_path)}: {exc}",
                 )
                 continue
 

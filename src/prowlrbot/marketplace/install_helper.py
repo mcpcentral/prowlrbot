@@ -16,7 +16,11 @@ logger = logging.getLogger(__name__)
 
 def materialize_install(listing: MarketplaceListing) -> None:
     """Write install manifest to WORKING_DIR/marketplace/<id> and, for skills, fetch content and enable."""
-    install_dir = WORKING_DIR / "marketplace" / (listing.id[:12] if len(listing.id) > 12 else listing.id)
+    install_dir = (
+        WORKING_DIR
+        / "marketplace"
+        / (listing.id[:12] if len(listing.id) > 12 else listing.id)
+    )
     install_dir.mkdir(parents=True, exist_ok=True)
     try:
         manifest_path = install_dir / "manifest.json"
@@ -33,7 +37,10 @@ def materialize_install(listing: MarketplaceListing) -> None:
 
     try:
         with RegistryClient() as client:
-            files = client.fetch_listing_files(listing.category.value, listing.id)
+            files = client.fetch_listing_files(
+                listing.category.value,
+                listing.id,
+            )
         if not files:
             logger.debug("No files fetched for skill listing %s", listing.id)
             return

@@ -29,7 +29,8 @@ def _verify_ws_token(ws: WebSocket) -> bool:
         return True
     if token_hash:
         return hmac.compare_digest(
-            hashlib.sha256(token.encode()).hexdigest(), token_hash
+            hashlib.sha256(token.encode()).hexdigest(),
+            token_hash,
         )
     return False
 

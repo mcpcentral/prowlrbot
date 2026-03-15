@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """prowlr doctor — environment health check via prowlr-doctor."""
 from __future__ import annotations
 
@@ -9,15 +10,42 @@ import click
     "--profile",
     default="developer",
     show_default=True,
-    type=click.Choice(["developer", "security", "minimal", "agent-builder", "research"]),
+    type=click.Choice(
+        ["developer", "security", "minimal", "agent-builder", "research"],
+    ),
     help="Recommendation profile.",
 )
-@click.option("--json", "as_json", is_flag=True, help="Output JSON instead of text.")
-@click.option("--write-plan", is_flag=True, help="Write fix plan to ~/.claude/doctor-plan.json.")
-@click.option("--diff", is_flag=True, help="Show settings.json diff from plan on disk.")
-@click.option("--apply", is_flag=True, help="Apply plan at ~/.claude/doctor-plan.json.")
-@click.option("--tui", is_flag=True, help="Launch interactive TUI (requires prowlr-doctor[tui]).")
-@click.option("--no-tui", is_flag=True, help="Rich report only (skip TUI even if installed).")
+@click.option(
+    "--json",
+    "as_json",
+    is_flag=True,
+    help="Output JSON instead of text.",
+)
+@click.option(
+    "--write-plan",
+    is_flag=True,
+    help="Write fix plan to ~/.claude/doctor-plan.json.",
+)
+@click.option(
+    "--diff",
+    is_flag=True,
+    help="Show settings.json diff from plan on disk.",
+)
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Apply plan at ~/.claude/doctor-plan.json.",
+)
+@click.option(
+    "--tui",
+    is_flag=True,
+    help="Launch interactive TUI (requires prowlr-doctor[tui]).",
+)
+@click.option(
+    "--no-tui",
+    is_flag=True,
+    help="Rich report only (skip TUI even if installed).",
+)
 @click.pass_context
 def doctor_cmd(
     ctx: click.Context,
@@ -38,18 +66,20 @@ def doctor_cmd(
         from prowlr_doctor.reporter import render
     except ImportError:
         raise click.ClickException(
-            "prowlr-doctor not installed. Run: pip install prowlr-doctor"
+            "prowlr-doctor not installed. Run: pip install prowlr-doctor",
         )
 
     if apply:
         import json
+
         plan_path = paths.doctor_plan_path()
         if not plan_path.exists():
             raise click.ClickException(
                 f"No plan found at {plan_path}.\n"
-                "Run: prowlr doctor --write-plan  to generate one first."
+                "Run: prowlr doctor --write-plan  to generate one first.",
             )
         from prowlr_doctor.models import FixAction, PatchPlan
+
         data = json.loads(plan_path.read_text())
         actions = [
             FixAction(
@@ -83,16 +113,29 @@ def doctor_cmd(
         import json, difflib
         from rich.console import Console
         from rich.syntax import Syntax
+
         plan_path = paths.doctor_plan_path()
         if not plan_path.exists():
             raise click.ClickException(
-                f"No plan found at {plan_path}. Run --write-plan first."
+                f"No plan found at {plan_path}. Run --write-plan first.",
             )
         data = json.loads(plan_path.read_text())
-        before = json.dumps(data["settings_diff"]["before"], indent=2).splitlines()
-        after = json.dumps(data["settings_diff"]["after"], indent=2).splitlines()
+        before = json.dumps(
+            data["settings_diff"]["before"],
+            indent=2,
+        ).splitlines()
+        after = json.dumps(
+            data["settings_diff"]["after"],
+            indent=2,
+        ).splitlines()
         diff_text = "\n".join(
-            difflib.unified_diff(before, after, fromfile="before", tofile="after", lineterm="")
+            difflib.unified_diff(
+                before,
+                after,
+                fromfile="before",
+                tofile="after",
+                lineterm="",
+            ),
         )
         Console().print(Syntax(diff_text, "diff", theme="monokai"))
         return
@@ -105,16 +148,23 @@ def doctor_cmd(
     if tui:
         try:
             from prowlr_doctor.tui.app import EnvDoctorApp
+
             plan = build_plan(env, rec)
-            EnvDoctorApp(findings=findings, budget=budget, rec=rec, plan=plan).run()
+            EnvDoctorApp(
+                findings=findings,
+                budget=budget,
+                rec=rec,
+                plan=plan,
+            ).run()
         except ImportError:
             raise click.ClickException(
-                "Textual not installed. Install with: pip install prowlr-doctor[tui]"
+                "Textual not installed. Install with: pip install prowlr-doctor[tui]",
             )
         return
 
     if as_json or write_plan:
         import json
+
         plan = build_plan(env, rec)
         output = {
             "version": "1",
@@ -148,7 +198,9 @@ def doctor_cmd(
                         "after": f.fix_action.after,
                         "reversible": f.fix_action.reversible,
                         "requires_restart": f.fix_action.requires_restart,
-                    } if f.fix_action else None,
+                    }
+                    if f.fix_action
+                    else None,
                 }
                 for f in findings
             ],
@@ -169,7 +221,7 @@ def doctor_cmd(
             click.echo(f"Plan written to {plan_path}")
             click.echo(
                 f"  {len(plan.actions)} actions  ·  "
-                f"saves {budget.savings_if_cleaned:,} tokens/session"
+                f"saves {budget.savings_if_cleaned:,} tokens/session",
             )
             click.echo("Run: prowlr doctor --diff   to preview")
             click.echo("Run: prowlr doctor --apply  to apply")
@@ -182,11 +234,17 @@ def doctor_cmd(
     # Default: try TUI, fall back to Rich report
     try:
         from prowlr_doctor.tui.app import EnvDoctorApp
+
         plan = build_plan(env, rec)
-        EnvDoctorApp(findings=findings, budget=budget, rec=rec, plan=plan).run()
+        EnvDoctorApp(
+            findings=findings,
+            budget=budget,
+            rec=rec,
+            plan=plan,
+        ).run()
     except ImportError:
         click.echo(
             "[dim]Textual not installed — falling back to Rich report. "
-            "Install with: pip install prowlr-doctor[tui][/dim]"
+            "Install with: pip install prowlr-doctor[tui][/dim]",
         )
         render(findings, budget, rec)

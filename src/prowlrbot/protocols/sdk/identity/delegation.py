@@ -241,7 +241,10 @@ class CapabilityDelegation:
 
         return highest
 
-    def list_tokens(self, grantee: Optional[str] = None) -> List[DelegationToken]:
+    def list_tokens(
+        self,
+        grantee: Optional[str] = None,
+    ) -> List[DelegationToken]:
         """List delegation tokens, optionally filtered by grantee."""
         if grantee:
             token_ids = self._by_grantee.get(grantee, [])

@@ -55,7 +55,7 @@ async def send_message(
     elif config.transport == TransportType.GRPC:
         raise NotImplementedError(
             "gRPC transport is planned for a future release. "
-            "Use HTTP or WebSocket for now."
+            "Use HTTP or WebSocket for now.",
         )
     else:
         raise ValueError(f"Unsupported transport: {config.transport}")

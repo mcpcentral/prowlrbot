@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for bundle API endpoints."""
 
 import importlib.util
@@ -9,7 +10,11 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from prowlrbot.marketplace.models import Bundle, MarketplaceCategory, MarketplaceListing
+from prowlrbot.marketplace.models import (
+    Bundle,
+    MarketplaceCategory,
+    MarketplaceListing,
+)
 from prowlrbot.marketplace.store import MarketplaceStore
 
 
@@ -43,7 +48,7 @@ def store():
                 description="test",
                 category=MarketplaceCategory.skills,
                 status="approved",
-            )
+            ),
         )
     # Seed a bundle
     s.create_bundle(
@@ -52,7 +57,7 @@ def store():
             name="Test Bundle",
             description="A test bundle",
             listing_ids=["skill-a", "skill-b"],
-        )
+        ),
     )
     yield s
     s.close()

@@ -46,7 +46,8 @@ def _verify_warroom_token(token: str, secret: str, token_hash: str) -> bool:
         import hashlib
 
         if hmac.compare_digest(
-            hashlib.sha256(token.encode()).hexdigest(), token_hash
+            hashlib.sha256(token.encode()).hexdigest(),
+            token_hash,
         ):
             return True
         # Console users log in with JWT; accept valid JWT for same-origin War Room WS
@@ -56,7 +57,8 @@ def _verify_warroom_token(token: str, secret: str, token_hash: str) -> bool:
 
             expiry = int(os.environ.get("PROWLRBOT_JWT_EXPIRY_MINUTES", "60"))
             handler = JWTHandler(
-                secret_key=_JWT_SECRET, expiry_minutes=expiry
+                secret_key=_JWT_SECRET,
+                expiry_minutes=expiry,
             )
             handler.decode_token(token)
             return True
@@ -119,4 +121,7 @@ async def warroom_ws(ws: WebSocket):
         pass
     finally:
         _ws_clients.discard(ws)
-        logger.info("WebSocket client disconnected (%d remaining)", len(_ws_clients))
+        logger.info(
+            "WebSocket client disconnected (%d remaining)",
+            len(_ws_clients),
+        )

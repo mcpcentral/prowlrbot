@@ -85,7 +85,10 @@ async def batch_save_envs(
     response_model=List[EnvVar],
     summary="Delete an environment variable",
 )
-async def delete_env(key: str, _user=Depends(get_current_user)) -> List[EnvVar]:
+async def delete_env(
+    key: str,
+    _user=Depends(get_current_user),
+) -> List[EnvVar]:
     """Delete a single env var."""
     envs = load_envs()
     if key not in envs:

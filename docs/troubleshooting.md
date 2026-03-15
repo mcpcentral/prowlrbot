@@ -117,7 +117,7 @@ prowlr --version
 lsof -i :8088    # macOS/Linux
 netstat -ano | findstr :8088    # Windows
 
-# Set alias 
+# Set alias
 alias ports="ss -tlnp | grep"
 
 # If it’s an old prowlr app:

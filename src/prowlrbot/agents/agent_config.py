@@ -15,30 +15,41 @@ class AvatarConfig(BaseModel):
     )
     color: str = Field(default="#6B5CE7", description="Primary color hex")
     accessories: List[str] = Field(
-        default_factory=list, description="Avatar accessories"
+        default_factory=list,
+        description="Avatar accessories",
     )
     mood: str = Field(
-        default="neutral", description="Current mood (auto-derived or manual)"
+        default="neutral",
+        description="Current mood (auto-derived or manual)",
     )
     level: int = Field(default=1, description="XP level from completed tasks")
-    reputation: float = Field(default=0.0, description="Community reputation score")
+    reputation: float = Field(
+        default=0.0,
+        description="Community reputation score",
+    )
 
 
 class SoulConfig(BaseModel):
     """Agent personality and behavioral configuration."""
 
     personality: str = Field(
-        default="Helpful and knowledgeable", description="Core personality traits"
+        default="Helpful and knowledgeable",
+        description="Core personality traits",
     )
     tone: str = Field(default="helpful", description="Communication tone")
     language: str = Field(default="en", description="Primary language")
     soul_file: str = Field(
-        default="SOUL.md", description="Personality document filename"
+        default="SOUL.md",
+        description="Personality document filename",
     )
     profile_file: str = Field(
-        default="PROFILE.md", description="Background and knowledge areas"
+        default="PROFILE.md",
+        description="Background and knowledge areas",
     )
-    agents_file: str = Field(default="AGENTS.md", description="Behavioral instructions")
+    agents_file: str = Field(
+        default="AGENTS.md",
+        description="Behavioral instructions",
+    )
 
 
 class MemoryConfig(BaseModel):
@@ -49,16 +60,20 @@ class MemoryConfig(BaseModel):
         description="Memory type: persistent, session-only, shared",
     )
     max_tokens: int = Field(
-        default=50000, description="Memory budget before compaction"
+        default=50000,
+        description="Memory budget before compaction",
     )
     compaction_strategy: str = Field(
-        default="summarize", description="Strategy: summarize, prune, archive"
+        default="summarize",
+        description="Strategy: summarize, prune, archive",
     )
     shared_with: List[str] = Field(
-        default_factory=list, description="Agent IDs sharing this memory pool"
+        default_factory=list,
+        description="Agent IDs sharing this memory pool",
     )
     knowledge_bases: List[str] = Field(
-        default_factory=list, description="Marketplace knowledge base IDs"
+        default_factory=list,
+        description="Marketplace knowledge base IDs",
     )
 
 
@@ -81,11 +96,12 @@ class ToolsConfig(BaseModel):
             "browser",
             "memory_search",
             "send_file",
-        ]
+        ],
     )
     disabled: List[str] = Field(default_factory=list)
     custom_tools: List[str] = Field(
-        default_factory=list, description="Marketplace tool IDs"
+        default_factory=list,
+        description="Marketplace tool IDs",
     )
     permissions: Dict[str, ToolPermissions] = Field(default_factory=dict)
 
@@ -95,7 +111,8 @@ class ModelConfig(BaseModel):
 
     preferred: str = Field(default="", description="Preferred model ID")
     fallback_chain: List[str] = Field(
-        default_factory=list, description="Fallback model chain"
+        default_factory=list,
+        description="Fallback model chain",
     )
     temperature: float = Field(default=0.7)
     max_tokens: int = Field(default=4096)
@@ -105,14 +122,16 @@ class AutonomyConfig(BaseModel):
     """Agent autonomy level configuration."""
 
     default_level: str = Field(
-        default="guide", description="Default: watch, guide, delegate, autonomous"
+        default="guide",
+        description="Default: watch, guide, delegate, autonomous",
     )
     escalation_triggers: List[str] = Field(
         default_factory=lambda: ["file deletion", "external API calls"],
         description="Actions that trigger escalation to human",
     )
     auto_checkpoint: bool = Field(
-        default=True, description="Auto-create checkpoints at key moments"
+        default=True,
+        description="Auto-create checkpoints at key moments",
     )
 
 
@@ -134,7 +153,10 @@ class AgentConfig(BaseModel):
     soul: SoulConfig = Field(default_factory=SoulConfig)
     memory: MemoryConfig = Field(default_factory=MemoryConfig)
     tools: ToolsConfig = Field(default_factory=ToolsConfig)
-    skills: List[str] = Field(default_factory=list, description="Enabled skill IDs")
+    skills: List[str] = Field(
+        default_factory=list,
+        description="Enabled skill IDs",
+    )
     model: ModelConfig = Field(default_factory=ModelConfig)
     autonomy: AutonomyConfig = Field(default_factory=AutonomyConfig)
     channels: List[str] = Field(default_factory=lambda: ["console"])

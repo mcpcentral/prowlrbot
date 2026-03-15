@@ -15,7 +15,11 @@ def db(tmp_path):
 
 class TestStoreAndRetrieve:
     def test_store_returns_id(self, db):
-        entry_id = db.store("agent-1", "Python tips", "Use type hints for clarity")
+        entry_id = db.store(
+            "agent-1",
+            "Python tips",
+            "Use type hints for clarity",
+        )
         assert entry_id.startswith("arch_")
 
     def test_search_finds_stored_entry(self, db):

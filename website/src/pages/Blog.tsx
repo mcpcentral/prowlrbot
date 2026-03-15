@@ -4,12 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
-import {
-  ArrowLeft,
-  Calendar,
-  User,
-  Clock,
-} from "lucide-react";
+import { ArrowLeft, Calendar, User, Clock } from "lucide-react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import type { SiteConfig } from "../config";
@@ -43,9 +38,16 @@ function fileToSlug(filename: string): string {
   return filename.replace(/\.md$/, "");
 }
 
-function parseFrontmatter(raw: string): { meta: Omit<BlogMeta, "slug" | "readTime">; body: string } {
+function parseFrontmatter(raw: string): {
+  meta: Omit<BlogMeta, "slug" | "readTime">;
+  body: string;
+} {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) return { meta: { title: "", date: "", author: "", tags: [], summary: "" }, body: raw };
+  if (!match)
+    return {
+      meta: { title: "", date: "", author: "", tags: [], summary: "" },
+      body: raw,
+    };
 
   const fm = match[1];
   const body = match[2];
@@ -138,7 +140,13 @@ function BlogList({ posts }: { posts: BlogMeta[] }) {
         </p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--space-3)",
+        }}
+      >
         {posts.map((post) => (
           <Link
             key={post.slug}
@@ -290,15 +298,33 @@ function BlogPostView({ post }: { post: BlogPost }) {
             flexWrap: "wrap",
           }}
         >
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem" }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.375rem",
+            }}
+          >
             <User size={14} />
             {post.author}
           </span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem" }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.375rem",
+            }}
+          >
             <Calendar size={14} />
             {post.date}
           </span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem" }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.375rem",
+            }}
+          >
             <Clock size={14} />
             {post.readTime}
           </span>

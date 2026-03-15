@@ -109,7 +109,11 @@ class TestTopologicalOrder:
         assert tiers == [["only"]]
 
     def test_independent_steps_same_tier(self):
-        steps = [WorkflowStep(id="a"), WorkflowStep(id="b"), WorkflowStep(id="c")]
+        steps = [
+            WorkflowStep(id="a"),
+            WorkflowStep(id="b"),
+            WorkflowStep(id="c"),
+        ]
         tiers = _topological_order(steps)
         assert len(tiers) == 1
         assert set(tiers[0]) == {"a", "b", "c"}
@@ -195,7 +199,13 @@ class TestWorkflowEngineExecuteDryRun:
         spec = WorkflowSpec(
             id="wf1",
             name="Single Step",
-            steps=[WorkflowStep(id="s1", type=StepType.agent_query, prompt="Hello")],
+            steps=[
+                WorkflowStep(
+                    id="s1",
+                    type=StepType.agent_query,
+                    prompt="Hello",
+                ),
+            ],
         )
         engine.register(spec)
 
@@ -302,7 +312,10 @@ class TestWorkflowEngineExecuteDryRun:
         )
         engine.register(spec)
 
-        run = await engine.execute("wf6", config_overrides={"msg": "overridden"})
+        run = await engine.execute(
+            "wf6",
+            config_overrides={"msg": "overridden"},
+        )
         assert run.step_results["t1"].output == "overridden"
 
     @pytest.mark.asyncio
@@ -311,7 +324,11 @@ class TestWorkflowEngineExecuteDryRun:
             id="wf7",
             name="Multi-Tier",
             steps=[
-                WorkflowStep(id="a", type=StepType.transform, transform_expr="A"),
+                WorkflowStep(
+                    id="a",
+                    type=StepType.transform,
+                    transform_expr="A",
+                ),
                 WorkflowStep(
                     id="b",
                     type=StepType.transform,
@@ -368,7 +385,9 @@ class TestWorkflowEngineWithRunner:
             id="wf-tmpl",
             name="Template",
             config={"topic": "AI"},
-            steps=[WorkflowStep(id="s1", prompt="Tell me about {{config.topic}}")],
+            steps=[
+                WorkflowStep(id="s1", prompt="Tell me about {{config.topic}}"),
+            ],
         )
         engine.register(spec)
 
@@ -392,7 +411,11 @@ class TestWorkflowEngineErrorStrategies:
             id="wf-abort",
             name="Abort on Error",
             steps=[
-                WorkflowStep(id="s1", prompt="fail", on_error=ErrorStrategy.abort),
+                WorkflowStep(
+                    id="s1",
+                    prompt="fail",
+                    on_error=ErrorStrategy.abort,
+                ),
                 WorkflowStep(id="s2", prompt="never", depends_on=["s1"]),
             ],
         )
@@ -414,8 +437,16 @@ class TestWorkflowEngineErrorStrategies:
             id="wf-skip",
             name="Skip on Error",
             steps=[
-                WorkflowStep(id="s1", prompt="fail", on_error=ErrorStrategy.skip),
-                WorkflowStep(id="s2", prompt="runs", on_error=ErrorStrategy.skip),
+                WorkflowStep(
+                    id="s1",
+                    prompt="fail",
+                    on_error=ErrorStrategy.skip,
+                ),
+                WorkflowStep(
+                    id="s2",
+                    prompt="runs",
+                    on_error=ErrorStrategy.skip,
+                ),
             ],
         )
         engine.register(spec)
@@ -432,7 +463,11 @@ class TestWorkflowEngineErrorStrategies:
         runner = MagicMock()
         # Fail twice then succeed
         runner.process_query = AsyncMock(
-            side_effect=[RuntimeError("fail1"), RuntimeError("fail2"), "success"]
+            side_effect=[
+                RuntimeError("fail1"),
+                RuntimeError("fail2"),
+                "success",
+            ],
         )
         engine = WorkflowEngine(runner=runner)
 
@@ -458,7 +493,9 @@ class TestWorkflowEngineErrorStrategies:
     @pytest.mark.asyncio
     async def test_retry_exhausted_remains_failed(self):
         runner = MagicMock()
-        runner.process_query = AsyncMock(side_effect=RuntimeError("always fails"))
+        runner.process_query = AsyncMock(
+            side_effect=RuntimeError("always fails"),
+        )
         engine = WorkflowEngine(runner=runner)
 
         spec = WorkflowSpec(
@@ -485,7 +522,11 @@ class TestWorkflowEngineErrorStrategies:
             id="wf-dur",
             name="Duration",
             steps=[
-                WorkflowStep(id="s1", type=StepType.transform, transform_expr="fast")
+                WorkflowStep(
+                    id="s1",
+                    type=StepType.transform,
+                    transform_expr="fast",
+                ),
             ],
         )
         engine.register(spec)

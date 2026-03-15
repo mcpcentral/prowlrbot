@@ -12,9 +12,11 @@ if _sentry_dsn:
     sentry_sdk.init(
         dsn=_sentry_dsn,
         send_default_pii=True,
-        traces_sample_rate=float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "1.0")),
+        traces_sample_rate=float(
+            os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "1.0"),
+        ),
         profiles_sample_rate=float(
-            os.environ.get("SENTRY_PROFILES_SAMPLE_RATE", "1.0")
+            os.environ.get("SENTRY_PROFILES_SAMPLE_RATE", "1.0"),
         ),
     )
 
@@ -124,7 +126,9 @@ def _ensure_admin_user() -> None:
             print(f"  Admin account created!")
             print(f"  Username: {username}")
             print(f"  Password: {password}")
-            print(f"  (Set PROWLRBOT_ADMIN_PASSWORD env var to choose your own)")
+            print(
+                f"  (Set PROWLRBOT_ADMIN_PASSWORD env var to choose your own)",
+            )
             print(f"{'='*60}\n")
     except Exception:
         logger.exception("Failed to create initial admin user")
@@ -187,7 +191,7 @@ def _auto_detect_provider() -> None:
 
         logger.warning(
             "No LLM provider API key found in environment. "
-            "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, or configure via Settings > Models."
+            "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, or configure via Settings > Models.",
         )
     except Exception:
         logger.exception("Failed to auto-detect LLM provider")
@@ -394,6 +398,7 @@ app.include_router(create_websocket_router(event_bus))
 
 # Register as global singleton so subsystems (e.g. XPTracker) can push events.
 from ..dashboard.events import set_global_event_bus as _set_global_event_bus
+
 _set_global_event_bus(event_bus)
 
 # --- War Room WebSocket (real-time war room events) ---
@@ -435,6 +440,7 @@ roar_server = ROARServer(
     channels=["console", "discord", "telegram"],
 )
 
+
 # Public ROAR endpoints (no auth) so health checks and discovery work
 @app.get("/roar/health", tags=["roar"])
 def _roar_health() -> dict:
@@ -459,7 +465,11 @@ def _roar_card(request: Request) -> dict:
     )
     return card.model_dump(by_alias=True)
 
-app.include_router(create_roar_router(roar_server), dependencies=[Depends(auth_dep)])
+
+app.include_router(
+    create_roar_router(roar_server),
+    dependencies=[Depends(auth_dep)],
+)
 
 # Wire EXECUTE and DELEGATE intents through AgentRunner
 from ..protocols.roar import MessageIntent, ROARMessage as _ROARMessage
@@ -485,7 +495,9 @@ async def _roar_agent_handler(msg: _ROARMessage) -> _ROARMessage:
     )
 
     agent_request = AgentRequest(
-        input=[Message(role="user", content=[TextContent(text=str(task_text))])],
+        input=[
+            Message(role="user", content=[TextContent(text=str(task_text))]),
+        ],
         session_id=f"roar_{msg.id}",
         user_id=msg.from_identity.did,
     )

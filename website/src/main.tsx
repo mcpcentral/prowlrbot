@@ -6,7 +6,9 @@ import { AuthProvider } from "./contexts/AuthContext";
 import App from "./App";
 
 const base = import.meta.env.BASE_URL || "/";
-const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as
+  | string
+  | undefined;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

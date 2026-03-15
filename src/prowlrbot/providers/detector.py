@@ -41,7 +41,9 @@ class ProviderDetector:
             key = os.environ.get(provider.env_var, "")
             if not key:
                 continue
-            if provider.api_key_prefix and not key.startswith(provider.api_key_prefix):
+            if provider.api_key_prefix and not key.startswith(
+                provider.api_key_prefix,
+            ):
                 logger.warning(
                     "Key for %s doesn't start with expected prefix %s",
                     provider.id,

@@ -78,7 +78,11 @@ class WorkflowEngine:
     and the channel system for channel_send steps.
     """
 
-    def __init__(self, runner: Any = None, channel_manager: Any = None) -> None:
+    def __init__(
+        self,
+        runner: Any = None,
+        channel_manager: Any = None,
+    ) -> None:
         self._runner = runner
         self._channel_manager = channel_manager
         self._workflows: dict[str, WorkflowSpec] = {}
@@ -148,7 +152,9 @@ class WorkflowEngine:
                     ):
                         run.status = WorkflowRunStatus.failed
                         run.error = f"Step '{step_id}' failed: {result.error}"
-                        run.completed_at = datetime.now(timezone.utc).isoformat()
+                        run.completed_at = datetime.now(
+                            timezone.utc,
+                        ).isoformat()
                         return run
 
             run.status = WorkflowRunStatus.completed
@@ -200,7 +206,11 @@ class WorkflowEngine:
         except Exception as exc:
             result.status = StepStatus.failed
             result.error = str(exc)
-            context[step.id] = {"output": "", "status": "failed", "error": str(exc)}
+            context[step.id] = {
+                "output": "",
+                "status": "failed",
+                "error": str(exc),
+            }
             logger.warning("Step %s failed: %s", step.id, exc)
 
             if step.on_error == ErrorStrategy.retry and step.retries > 0:
@@ -210,7 +220,10 @@ class WorkflowEngine:
                         result.status = StepStatus.completed
                         result.output = output
                         result.error = ""
-                        context[step.id] = {"output": output, "status": "completed"}
+                        context[step.id] = {
+                            "output": output,
+                            "status": "completed",
+                        }
                         break
                     except Exception:
                         if attempt == step.retries - 1:
@@ -224,7 +237,11 @@ class WorkflowEngine:
             result.duration_ms = int((time.monotonic() - t0) * 1000)
             result.completed_at = datetime.now(timezone.utc).isoformat()
 
-    async def _run_agent_step(self, step: WorkflowStep, context: dict[str, Any]) -> str:
+    async def _run_agent_step(
+        self,
+        step: WorkflowStep,
+        context: dict[str, Any],
+    ) -> str:
         """Run an agent query step."""
         prompt = _resolve_template(step.prompt, context)
 
@@ -248,11 +265,13 @@ class WorkflowEngine:
             return str(result) if result else ""
         except asyncio.TimeoutError:
             raise TimeoutError(
-                f"Step '{step.id}' timed out after {step.timeout_seconds}s"
+                f"Step '{step.id}' timed out after {step.timeout_seconds}s",
             )
 
     async def _run_channel_step(
-        self, step: WorkflowStep, context: dict[str, Any]
+        self,
+        step: WorkflowStep,
+        context: dict[str, Any],
     ) -> str:
         """Send a message to a channel."""
         channel = _resolve_template(step.channel, context)

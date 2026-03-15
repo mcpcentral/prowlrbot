@@ -11,7 +11,7 @@ async def test_award_xp_background_never_raises():
 
     with patch("httpx.AsyncClient") as mock_client:
         mock_client.return_value.__aenter__.return_value.post = AsyncMock(
-            side_effect=ConnectionError("server down")
+            side_effect=ConnectionError("server down"),
         )
         # Should not raise
         await _award_xp_background("test-agent", "task_complete", "test", 10)
@@ -26,7 +26,7 @@ async def test_award_xp_background_never_raises_on_timeout():
 
     with patch("httpx.AsyncClient") as mock_client:
         mock_client.return_value.__aenter__.return_value.post = AsyncMock(
-            side_effect=httpx.TimeoutException("timeout")
+            side_effect=httpx.TimeoutException("timeout"),
         )
         await _award_xp_background("test-agent", "cron_complete", "test", 5)
 
@@ -38,7 +38,7 @@ async def test_award_xp_background_cron_never_raises():
 
     with patch("httpx.AsyncClient") as mock_client:
         mock_client.return_value.__aenter__.return_value.post = AsyncMock(
-            side_effect=ConnectionError("server down")
+            side_effect=ConnectionError("server down"),
         )
         await _award_xp_background("cron-session", "cron_complete", "test", 5)
 
@@ -53,6 +53,11 @@ async def test_award_xp_background_succeeds_silently():
 
     with patch("httpx.AsyncClient") as mock_client:
         mock_client.return_value.__aenter__.return_value.post = AsyncMock(
-            return_value=mock_response
+            return_value=mock_response,
         )
-        await _award_xp_background("test-agent", "task_complete", "Completed", 10)
+        await _award_xp_background(
+            "test-agent",
+            "task_complete",
+            "Completed",
+            10,
+        )

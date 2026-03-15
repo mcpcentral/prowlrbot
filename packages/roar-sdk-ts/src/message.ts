@@ -107,10 +107,7 @@ function pythonJsonDumps(value: unknown): string {
  * @param secret - The shared secret key.
  * @returns A new ROARMessage with the auth field populated.
  */
-export function signMessage(
-  message: ROARMessage,
-  secret: string,
-): ROARMessage {
+export function signMessage(message: ROARMessage, secret: string): ROARMessage {
   // auth.timestamp is part of the canonical body — set it before hashing.
   const authTimestamp = Date.now() / 1000;
   const body = canonicalize(message, authTimestamp);
@@ -134,10 +131,7 @@ export function signMessage(
  * @param secret - The shared secret key.
  * @returns true if the signature is valid, false otherwise.
  */
-export function verifyMessage(
-  message: ROARMessage,
-  secret: string,
-): boolean {
+export function verifyMessage(message: ROARMessage, secret: string): boolean {
   const sigValue = message.auth?.signature;
   if (typeof sigValue !== "string" || !sigValue.startsWith("hmac-sha256:")) {
     return false;

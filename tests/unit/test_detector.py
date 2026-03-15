@@ -52,7 +52,11 @@ _TEST_PROVIDERS = [_FAKE_ANTHROPIC, _FAKE_OPENAI, _FAKE_GROQ, _FAKE_OLLAMA]
 
 
 def test_detects_provider_by_env_var():
-    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "sk-ant-test123"}, clear=False):
+    with patch.dict(
+        os.environ,
+        {"ANTHROPIC_API_KEY": "sk-ant-test123"},
+        clear=False,
+    ):
         detector = ProviderDetector(providers=_TEST_PROVIDERS)
         detected = detector.scan_env_vars()
         ids = [p.id for p in detected]

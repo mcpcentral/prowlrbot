@@ -255,7 +255,9 @@ class PrivacyManager:
                 conn = sqlite3.connect(str(db_file))
                 conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+                cursor.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table'",
+                )
                 tables = [row[0] for row in cursor.fetchall()]
 
                 db_records: dict[str, list[dict[str, Any]]] = {}
@@ -308,9 +310,13 @@ class PrivacyManager:
             else:
                 # Recurse into nested structures.
                 for value in data.values():
-                    matches.extend(PrivacyManager._extract_user_records(value, user_id))
+                    matches.extend(
+                        PrivacyManager._extract_user_records(value, user_id),
+                    )
         elif isinstance(data, list):
             for item in data:
-                matches.extend(PrivacyManager._extract_user_records(item, user_id))
+                matches.extend(
+                    PrivacyManager._extract_user_records(item, user_id),
+                )
 
         return matches

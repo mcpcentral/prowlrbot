@@ -70,7 +70,7 @@ There are a lot of AI chatbots. ProwlrBot is not a chatbot.
 ## 🚀 Quick Start
 
 ```bash
-# 0. Set up venv 
+# 0. Set up venv
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
@@ -89,7 +89,7 @@ prowlr app
 
 Open **http://localhost:8088** – your agent is live.
 
-> **No API key?** Run locally with Ollama:  
+> **No API key?** Run locally with Ollama:
 > `prowlr init --defaults && prowlr app` – ProwlrBot auto‑detects local models.
 
 ---
@@ -116,7 +116,7 @@ prowlr app
 
 - Use the **Linux filesystem** – clone to `/home/user/prowlrbot`, NOT `/mnt/c/...`
 - Create venv inside the project: `python3 -m venv .venv`
-- If you hit I/O errors, install step‑by‑step:  
+- If you hit I/O errors, install step‑by‑step:
   `pip install -e .` then `pip install -e ".[dev]"`
 - See [Troubleshooting Guide](docs/troubleshooting.md) for WSL‑specific issues
 
@@ -190,8 +190,8 @@ You can either let Claude handle setup, or do it manually.
 
   In each project where you want coordination, say:
 
-  > "Connect this project to the ProwlrBot War Room using  
-  > https://github.com/prowlrbot/prowlrbot/blob/main/INSTALL.md.  
+  > "Connect this project to the ProwlrBot War Room using
+  > https://github.com/prowlrbot/prowlrbot/blob/main/INSTALL.md.
   > The prowlrbot repo is already cloned at `~/dev/prowlrbot`."
 
   Claude will:
@@ -409,8 +409,8 @@ Shared Findings:
   frontend: "Using shadcn/ui form components for login"
 ```
 
-**13 Coordination Tools** – `check_mission_board`, `claim_task`, `lock_file`, `share_finding`, and more.  
-**Cross‑Machine Support** – Agents on different machines can connect via HTTP bridge. Use Tailscale, Cloudflare Tunnel, or SSH for cross‑network setups.  
+**13 Coordination Tools** – `check_mission_board`, `claim_task`, `lock_file`, `share_finding`, and more.
+**Cross‑Machine Support** – Agents on different machines can connect via HTTP bridge. Use Tailscale, Cloudflare Tunnel, or SSH for cross‑network setups.
 [Full guide →](docs/guides/cross-network-setup.md)
 
 ---
@@ -451,7 +451,7 @@ prowlr cron add "Monitor competitors" --interval 30m
 
 ### REST API & MCP Integration
 
-**REST API** at `http://localhost:8088/api` – manage agents, channels, skills, cron jobs, and more.  
+**REST API** at `http://localhost:8088/api` – manage agents, channels, skills, cron jobs, and more.
 [API Reference →](docs/api.md)
 
 **MCP Integration** – Connect any MCP server; tools appear instantly (hot‑reload enabled).

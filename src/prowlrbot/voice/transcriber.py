@@ -72,7 +72,9 @@ class WhisperTranscriber:
         elif self.config.backend == "browser":
             return self._transcribe_browser()
         else:
-            raise ValueError(f"Unsupported transcriber backend: {self.config.backend}")
+            raise ValueError(
+                f"Unsupported transcriber backend: {self.config.backend}",
+            )
 
     # ------------------------------------------------------------------
     # Backend implementations
@@ -83,7 +85,7 @@ class WhisperTranscriber:
         if not self.config.api_key:
             raise RuntimeError(
                 "api_key is required for the whisper_api backend. "
-                "Set it in TranscriberConfig or via the OPENAI_API_KEY env var."
+                "Set it in TranscriberConfig or via the OPENAI_API_KEY env var.",
             )
 
         headers = {"Authorization": f"Bearer {self.config.api_key}"}
@@ -94,7 +96,9 @@ class WhisperTranscriber:
 
         async with httpx.AsyncClient(timeout=120.0) as client:
             with open(audio_path, "rb") as f:
-                files = {"file": (audio_path.name, f, "application/octet-stream")}
+                files = {
+                    "file": (audio_path.name, f, "application/octet-stream"),
+                }
                 response = await client.post(
                     OPENAI_TRANSCRIPTION_URL,
                     headers=headers,
@@ -104,7 +108,7 @@ class WhisperTranscriber:
 
         if response.status_code != 200:
             raise RuntimeError(
-                f"Whisper API returned {response.status_code}: {response.text}"
+                f"Whisper API returned {response.status_code}: {response.text}",
             )
 
         result = response.json()
@@ -142,19 +146,25 @@ class WhisperTranscriber:
         if proc.returncode != 0:
             raise RuntimeError(
                 f"whisper CLI exited with code {proc.returncode}: "
-                f"{stderr.decode().strip()}"
+                f"{stderr.decode().strip()}",
             )
 
         # whisper CLI writes a .txt file next to the audio file
         txt_path = audio_path.with_suffix(".txt")
         if txt_path.exists():
             text = txt_path.read_text().strip()
-            logger.info("Local whisper transcription complete (%d chars)", len(text))
+            logger.info(
+                "Local whisper transcription complete (%d chars)",
+                len(text),
+            )
             return text
 
         # Fallback: parse stdout
         text = stdout.decode().strip()
-        logger.info("Local whisper transcription from stdout (%d chars)", len(text))
+        logger.info(
+            "Local whisper transcription from stdout (%d chars)",
+            len(text),
+        )
         return text
 
     @staticmethod

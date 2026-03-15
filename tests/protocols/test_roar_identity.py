@@ -17,7 +17,10 @@ from prowlrbot.protocols.sdk.identity.did_document import (
     ServiceEndpoint,
     VerificationMethod,
 )
-from prowlrbot.protocols.sdk.identity.did_web import DIDWebIdentity, DIDWebMethod
+from prowlrbot.protocols.sdk.identity.did_web import (
+    DIDWebIdentity,
+    DIDWebMethod,
+)
 
 
 class TestDIDDocument(unittest.TestCase):
@@ -76,7 +79,10 @@ class TestDIDWebMethod(unittest.TestCase):
     """Tests for did:web DID method."""
 
     def test_create_simple(self):
-        identity = DIDWebMethod.create(domain="example.com", path="agents/planner")
+        identity = DIDWebMethod.create(
+            domain="example.com",
+            path="agents/planner",
+        )
         assert identity.did == "did:web:example.com:agents:planner"
         assert identity.document_url == "https://example.com/agents/planner/did.json"
         assert identity.domain == "example.com"
@@ -103,7 +109,10 @@ class TestDIDWebMethod(unittest.TestCase):
             DIDWebMethod.did_to_url("did:roar:agent:test")
 
     def test_generate_document(self):
-        identity = DIDWebMethod.create(domain="example.com", path="agents/test")
+        identity = DIDWebMethod.create(
+            domain="example.com",
+            path="agents/test",
+        )
         doc = DIDWebMethod.generate_document(
             identity,
             public_key="test-pubkey",
@@ -228,11 +237,15 @@ class TestCapabilityDelegation(unittest.TestCase):
         )
         # GUIDE < DELEGATE, so not authorized for DELEGATE-level actions
         assert not self.delegation.is_authorized(
-            self.agent_did, "code-review", min_autonomy=AutonomyLevel.DELEGATE
+            self.agent_did,
+            "code-review",
+            min_autonomy=AutonomyLevel.DELEGATE,
         )
         # But authorized at GUIDE level
         assert self.delegation.is_authorized(
-            self.agent_did, "code-review", min_autonomy=AutonomyLevel.GUIDE
+            self.agent_did,
+            "code-review",
+            min_autonomy=AutonomyLevel.GUIDE,
         )
 
     def test_get_autonomy_level(self):

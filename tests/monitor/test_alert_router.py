@@ -15,7 +15,7 @@ class TestAlertRouterBasicRouting:
                 "critical": ["discord", "telegram"],
                 "warning": ["discord"],
                 "info": [],
-            }
+            },
         )
         channels = router.route("critical", "Site down: example.com")
         assert "discord" in channels
@@ -27,7 +27,7 @@ class TestAlertRouterBasicRouting:
                 "critical": ["discord", "telegram"],
                 "warning": ["discord"],
                 "info": [],
-            }
+            },
         )
         channels = router.route("warning", "Content changed on example.com")
         assert channels == ["discord"]
@@ -38,7 +38,7 @@ class TestAlertRouterBasicRouting:
                 "critical": ["discord", "telegram"],
                 "warning": ["discord"],
                 "info": [],
-            }
+            },
         )
         channels = router.route("info", "Check completed successfully")
         assert channels == []

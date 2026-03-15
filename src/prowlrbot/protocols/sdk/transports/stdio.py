@@ -45,7 +45,9 @@ async def stdio_send(
     """
     command = config.url
     if not command:
-        raise ConnectionError("stdio transport requires a command in config.url")
+        raise ConnectionError(
+            "stdio transport requires a command in config.url",
+        )
 
     # Use shlex.split for safe argument parsing (no shell injection)
     parts = shlex.split(command)
@@ -69,7 +71,7 @@ async def stdio_send(
         if proc.returncode != 0:
             stderr_text = stderr_data.decode(errors="replace")[:200]
             raise ConnectionError(
-                f"stdio subprocess exited with code {proc.returncode}: {stderr_text}"
+                f"stdio subprocess exited with code {proc.returncode}: {stderr_text}",
             )
 
         # Read the first complete JSON line from stdout
@@ -86,7 +88,9 @@ async def stdio_send(
         raise ConnectionError("No valid JSON response from stdio subprocess")
 
     except asyncio.TimeoutError:
-        raise ConnectionError(f"stdio subprocess timed out after {timeout}s") from None
+        raise ConnectionError(
+            f"stdio subprocess timed out after {timeout}s",
+        ) from None
 
 
 class StdioConnection:

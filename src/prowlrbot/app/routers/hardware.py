@@ -124,7 +124,9 @@ def get_model_grades(
             _grade_order = ["S", "A", "B", "C", "D", "F"]
             threshold = min_grade.upper()
             if threshold in _grade_order:
-                if _grade_order.index(ms.grade.value) > _grade_order.index(threshold):
+                if _grade_order.index(ms.grade.value) > _grade_order.index(
+                    threshold,
+                ):
                     continue
 
         result.append(
@@ -146,7 +148,7 @@ def get_model_grades(
                 capability_tags=model_entry.capability_tags,
                 is_moe=model_entry.is_moe,
                 ollama_tag=model_entry.ollama_tag,
-            )
+            ),
         )
 
     return result
@@ -160,13 +162,18 @@ def reverse_lookup(model_id: str) -> ReverseLookupResponse:
     """
     model = get_model(model_id)
     if model is None:
-        raise HTTPException(status_code=404, detail=f"Model '{model_id}' not found in catalog.")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Model '{model_id}' not found in catalog.",
+        )
 
     variants = model.quant_variants
 
     # Find Q4_K_M variant → min_vram_gb
     q4_variant = next((v for v in variants if v.quant == "Q4_K_M"), None)
-    min_vram_gb: float = q4_variant.ram_gb if q4_variant else min(v.ram_gb for v in variants)
+    min_vram_gb: float = (
+        q4_variant.ram_gb if q4_variant else min(v.ram_gb for v in variants)
+    )
 
     # Find Q8_0 variant → ideal_vram_gb (fallback: Q4 * 1.5)
     q8_variant = next((v for v in variants if v.quant == "Q8_0"), None)

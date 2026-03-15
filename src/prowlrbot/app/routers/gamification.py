@@ -9,7 +9,12 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from ...constant import WORKING_DIR
-from ...gamification.models import Achievement, LeaderboardEntry, LevelInfo, XPGain
+from ...gamification.models import (
+    Achievement,
+    LeaderboardEntry,
+    LevelInfo,
+    XPGain,
+)
 from ...gamification.xp_tracker import XPTracker
 
 router = APIRouter(prefix="/gamification", tags=["gamification"])
@@ -45,7 +50,9 @@ async def get_level(entity_id: str, entity_type: str = "user") -> LevelInfo:
 
 @router.get("/xp/{entity_id}/history", response_model=List[XPGain])
 async def get_xp_history(
-    entity_id: str, entity_type: str = "user", limit: int = 50
+    entity_id: str,
+    entity_type: str = "user",
+    limit: int = 50,
 ) -> List[XPGain]:
     """Get XP history for a user or agent."""
     return _tracker.get_xp_history(entity_id, entity_type, limit)
@@ -53,7 +60,8 @@ async def get_xp_history(
 
 @router.get("/leaderboard", response_model=List[LeaderboardEntry])
 async def get_leaderboard(
-    entity_type: str = "user", limit: int = 20
+    entity_type: str = "user",
+    limit: int = 20,
 ) -> List[LeaderboardEntry]:
     """Get the leaderboard."""
     return _tracker.get_leaderboard(entity_type, limit)
@@ -79,7 +87,7 @@ async def get_unlocked_achievements(entity_id: str) -> List[Dict[str, Any]]:
                 "name": defn.name if defn else u.achievement_id,
                 "description": defn.description if defn else "",
                 "badge": defn.badge if defn else "",
-            }
+            },
         )
     return result
 

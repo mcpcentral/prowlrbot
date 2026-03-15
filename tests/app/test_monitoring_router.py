@@ -53,7 +53,11 @@ class TestListMonitors:
     async def test_list_after_create(self, client):
         await client.post(
             "/monitors",
-            json={"url": "https://example.com", "type": "web", "interval_minutes": 60},
+            json={
+                "url": "https://example.com",
+                "type": "web",
+                "interval_minutes": 60,
+            },
         )
         resp = await client.get("/monitors")
         assert resp.status_code == 200
@@ -68,7 +72,11 @@ class TestCreateMonitor:
     async def test_create_web_monitor(self, client):
         resp = await client.post(
             "/monitors",
-            json={"url": "https://example.com", "type": "web", "interval_minutes": 30},
+            json={
+                "url": "https://example.com",
+                "type": "web",
+                "interval_minutes": 30,
+            },
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -109,7 +117,11 @@ class TestGetMonitor:
     async def test_get_existing(self, client):
         create_resp = await client.post(
             "/monitors",
-            json={"url": "https://example.com", "type": "web", "interval_minutes": 60},
+            json={
+                "url": "https://example.com",
+                "type": "web",
+                "interval_minutes": 60,
+            },
         )
         monitor_id = create_resp.json()["id"]
         resp = await client.get(f"/monitors/{monitor_id}")
@@ -127,7 +139,11 @@ class TestDeleteMonitor:
     async def test_delete_existing(self, client):
         create_resp = await client.post(
             "/monitors",
-            json={"url": "https://example.com", "type": "web", "interval_minutes": 60},
+            json={
+                "url": "https://example.com",
+                "type": "web",
+                "interval_minutes": 60,
+            },
         )
         monitor_id = create_resp.json()["id"]
         resp = await client.delete(f"/monitors/{monitor_id}")
@@ -155,7 +171,11 @@ class TestMonitorHistory:
     async def test_history_with_snapshot(self, client, engine):
         create_resp = await client.post(
             "/monitors",
-            json={"url": "https://example.com", "type": "web", "interval_minutes": 60},
+            json={
+                "url": "https://example.com",
+                "type": "web",
+                "interval_minutes": 60,
+            },
         )
         monitor_id = create_resp.json()["id"]
         # Simulate a stored snapshot

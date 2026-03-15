@@ -34,13 +34,15 @@ class MonitorStorage:
         self._init_db()
 
     def _init_db(self) -> None:
-        self._conn.execute("""
+        self._conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS monitor_state (
                 monitor_name TEXT PRIMARY KEY,
                 content      TEXT NOT NULL,
                 checked_at   TEXT NOT NULL
             )
-            """)
+            """,
+        )
         self._conn.commit()
 
     def save(self, monitor_name: str, content: str) -> None:
@@ -66,7 +68,11 @@ class MonitorStorage:
         ).fetchone()
         if row is None:
             return None
-        return MonitorSnapshot(monitor_name=row[0], content=row[1], checked_at=row[2])
+        return MonitorSnapshot(
+            monitor_name=row[0],
+            content=row[1],
+            checked_at=row[2],
+        )
 
     def delete(self, monitor_name: str) -> bool:
         """Delete a monitor's stored state. Returns True if a row was deleted."""
@@ -80,7 +86,7 @@ class MonitorStorage:
     def list_monitors(self) -> list[str]:
         """Return names of all monitors with stored state."""
         rows = self._conn.execute(
-            "SELECT monitor_name FROM monitor_state ORDER BY monitor_name"
+            "SELECT monitor_name FROM monitor_state ORDER BY monitor_name",
         ).fetchall()
         return [r[0] for r in rows]
 

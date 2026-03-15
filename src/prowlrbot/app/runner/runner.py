@@ -36,6 +36,7 @@ async def _award_xp_background(
     except Exception:
         pass  # XP is best-effort, never block the agent
 
+
 from agentscope.pipeline import stream_printing_messages
 from agentscope_runtime.engine.runner import Runner
 from agentscope_runtime.engine.schemas.agent_schemas import AgentRequest
@@ -263,7 +264,7 @@ class AgentRunner(Runner):
                     category="task_complete",
                     reason="Completed agent task",
                     amount=10,
-                )
+                ),
             )
 
         except asyncio.CancelledError:
@@ -322,7 +323,9 @@ class AgentRunner(Runner):
         # Load .env only when not in container (production uses Fly secrets / env, no .env file)
         from prowlrbot.constant import RUNNING_IN_CONTAINER
 
-        in_container = RUNNING_IN_CONTAINER and str(RUNNING_IN_CONTAINER).lower() in (
+        in_container = RUNNING_IN_CONTAINER and str(
+            RUNNING_IN_CONTAINER,
+        ).lower() in (
             "1",
             "true",
             "yes",
@@ -333,7 +336,9 @@ class AgentRunner(Runner):
                 load_dotenv(env_path)
                 logger.debug("Loaded environment variables from .env")
             else:
-                logger.debug("No .env file; using existing environment variables")
+                logger.debug(
+                    "No .env file; using existing environment variables",
+                )
 
         session_dir = str(WORKING_DIR / "sessions")
         self.session = SafeJSONSession(save_dir=session_dir)

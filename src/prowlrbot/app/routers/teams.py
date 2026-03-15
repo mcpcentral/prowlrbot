@@ -57,7 +57,10 @@ async def get_team(team_id: str) -> AgentTeam:
     """Get a single team by ID."""
     team = _get_store().get_team(team_id)
     if team is None:
-        raise HTTPException(status_code=404, detail=f"Team {team_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Team {team_id} not found",
+        )
     return team
 
 
@@ -70,7 +73,10 @@ async def get_team(team_id: str) -> AgentTeam:
 async def update_team(team_id: str, team: AgentTeam) -> AgentTeam:
     """Update an existing team."""
     if not _get_store().update_team(team_id, team):
-        raise HTTPException(status_code=404, detail=f"Team {team_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Team {team_id} not found",
+        )
     updated = _get_store().get_team(team_id)
     return updated
 
@@ -84,7 +90,10 @@ async def update_team(team_id: str, team: AgentTeam) -> AgentTeam:
 async def delete_team(team_id: str) -> dict:
     """Delete a team."""
     if not _get_store().delete_team(team_id):
-        raise HTTPException(status_code=404, detail=f"Team {team_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Team {team_id} not found",
+        )
     return {"deleted": True}
 
 
@@ -100,7 +109,10 @@ async def delete_team(team_id: str) -> dict:
 async def add_member(team_id: str, member: TeamMember) -> dict:
     """Add a member to a team."""
     if not _get_store().add_member(team_id, member):
-        raise HTTPException(status_code=404, detail=f"Team {team_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Team {team_id} not found",
+        )
     return {"added": True}
 
 

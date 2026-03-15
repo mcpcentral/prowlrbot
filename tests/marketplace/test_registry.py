@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for registry sync trust tier assignment."""
 
 from prowlrbot.marketplace.registry import CATEGORY_DIR_MAP

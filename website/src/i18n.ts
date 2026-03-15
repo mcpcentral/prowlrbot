@@ -96,31 +96,40 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "docs.searchHint": "Enter a keyword and press Enter to search.",
     "comparison.label": "Why ProwlrBot?",
     "comparison.title": "How we compare",
-    "comparison.description": "8 channels, 7 providers, multi-agent coordination, and graduated autonomy. The most capable agent platform, period.",
+    "comparison.description":
+      "8 channels, 7 providers, multi-agent coordination, and graduated autonomy. The most capable agent platform, period.",
     "community.label": "Community",
     "community.title": "Join the pack",
-    "community.description": "Shape the platform with us. Beta members get direct access to the team, priority feature requests, and early access to Pro features.",
+    "community.description":
+      "Shape the platform with us. Beta members get direct access to the team, priority feature requests, and early access to Pro features.",
     "community.path.bugs.title": "Report bugs",
-    "community.path.bugs.desc": "Found something broken? Open an issue with reproduction steps and we will fix it fast.",
+    "community.path.bugs.desc":
+      "Found something broken? Open an issue with reproduction steps and we will fix it fast.",
     "community.path.prs.title": "Submit PRs",
-    "community.path.prs.desc": "Pick up an issue, fork the repo, and submit a pull request. We review within 48 hours.",
+    "community.path.prs.desc":
+      "Pick up an issue, fork the repo, and submit a pull request. We review within 48 hours.",
     "community.path.skills.title": "Build skills",
-    "community.path.skills.desc": "Create skill packs that extend ProwlrBot with new capabilities. Share them in the marketplace.",
+    "community.path.skills.desc":
+      "Create skill packs that extend ProwlrBot with new capabilities. Share them in the marketplace.",
     "community.discussions": "GitHub Discussions",
     "community.discord": "Join Discord",
     "community.contributing": "Contributing Guide",
     "roadmap.label": "Roadmap",
     "roadmap.title": "Where we are headed",
-    "roadmap.description": "A three-phase plan to build the most capable agent platform.",
+    "roadmap.description":
+      "A three-phase plan to build the most capable agent platform.",
     "roadmap.phase1.title": "Core Platform",
     "roadmap.phase1.subtitle": "Foundation complete",
-    "roadmap.phase1.items": "8 channels integrated|7 AI providers with smart routing|Multi-agent war room|Web and API monitoring|Security hardening",
+    "roadmap.phase1.items":
+      "8 channels integrated|7 AI providers with smart routing|Multi-agent war room|Web and API monitoring|Security hardening",
     "roadmap.phase2.title": "Marketplace & Cloud",
     "roadmap.phase2.subtitle": "Building now",
-    "roadmap.phase2.items": "Skill marketplace with revenue sharing|Hosted agent deployment|Team workspaces|Advanced analytics dashboard",
+    "roadmap.phase2.items":
+      "Skill marketplace with revenue sharing|Hosted agent deployment|Team workspaces|Advanced analytics dashboard",
     "roadmap.phase3.title": "AgentVerse",
     "roadmap.phase3.subtitle": "On the horizon",
-    "roadmap.phase3.items": "Virtual world for agents|Guilds, trading, and battles|Cross-platform agent federation|Community-driven governance",
+    "roadmap.phase3.items":
+      "Virtual world for agents|Guilds, trading, and battles|Cross-platform agent federation|Community-driven governance",
   },
   en: {
     "nav.docs": "Docs",
@@ -217,31 +226,40 @@ export const i18n: Record<Lang, Record<string, string>> = {
     "docs.searchHint": "Enter a keyword and press Enter to search.",
     "comparison.label": "Why ProwlrBot?",
     "comparison.title": "How we compare",
-    "comparison.description": "8 channels, 7 providers, multi-agent coordination, and graduated autonomy. The most capable agent platform, period.",
+    "comparison.description":
+      "8 channels, 7 providers, multi-agent coordination, and graduated autonomy. The most capable agent platform, period.",
     "community.label": "Community",
     "community.title": "Join the pack",
-    "community.description": "Shape the platform with us. Beta members get direct access to the team, priority feature requests, and early access to Pro features.",
+    "community.description":
+      "Shape the platform with us. Beta members get direct access to the team, priority feature requests, and early access to Pro features.",
     "community.path.bugs.title": "Report bugs",
-    "community.path.bugs.desc": "Found something broken? Open an issue with reproduction steps and we will fix it fast.",
+    "community.path.bugs.desc":
+      "Found something broken? Open an issue with reproduction steps and we will fix it fast.",
     "community.path.prs.title": "Submit PRs",
-    "community.path.prs.desc": "Pick up an issue, fork the repo, and submit a pull request. We review within 48 hours.",
+    "community.path.prs.desc":
+      "Pick up an issue, fork the repo, and submit a pull request. We review within 48 hours.",
     "community.path.skills.title": "Build skills",
-    "community.path.skills.desc": "Create skill packs that extend ProwlrBot with new capabilities. Share them in the marketplace.",
+    "community.path.skills.desc":
+      "Create skill packs that extend ProwlrBot with new capabilities. Share them in the marketplace.",
     "community.discussions": "GitHub Discussions",
     "community.discord": "Join Discord",
     "community.contributing": "Contributing Guide",
     "roadmap.label": "Roadmap",
     "roadmap.title": "Where we are headed",
-    "roadmap.description": "A three-phase plan to build the most capable agent platform.",
+    "roadmap.description":
+      "A three-phase plan to build the most capable agent platform.",
     "roadmap.phase1.title": "Core Platform",
     "roadmap.phase1.subtitle": "Foundation complete",
-    "roadmap.phase1.items": "8 channels integrated|7 AI providers with smart routing|Multi-agent war room|Web and API monitoring|Security hardening",
+    "roadmap.phase1.items":
+      "8 channels integrated|7 AI providers with smart routing|Multi-agent war room|Web and API monitoring|Security hardening",
     "roadmap.phase2.title": "Marketplace & Cloud",
     "roadmap.phase2.subtitle": "Building now",
-    "roadmap.phase2.items": "Skill marketplace with revenue sharing|Hosted agent deployment|Team workspaces|Advanced analytics dashboard",
+    "roadmap.phase2.items":
+      "Skill marketplace with revenue sharing|Hosted agent deployment|Team workspaces|Advanced analytics dashboard",
     "roadmap.phase3.title": "AgentVerse",
     "roadmap.phase3.subtitle": "On the horizon",
-    "roadmap.phase3.items": "Virtual world for agents|Guilds, trading, and battles|Cross-platform agent federation|Community-driven governance",
+    "roadmap.phase3.items":
+      "Virtual world for agents|Guilds, trading, and battles|Cross-platform agent federation|Community-driven governance",
   },
 };
 

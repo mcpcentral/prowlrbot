@@ -101,7 +101,7 @@ def completion_install(shell_name: str | None) -> None:
         fish_file = fish_dir / "prowlr.fish"
 
         if fish_file.exists() and _COMPLETION_MARKER in fish_file.read_text(
-            encoding="utf-8"
+            encoding="utf-8",
         ):
             click.echo("Fish completion for prowlr is already installed.")
             return
@@ -113,7 +113,9 @@ def completion_install(shell_name: str | None) -> None:
     else:
         rc_path = _SHELL_RC_FILES[shell_name]
         if _is_already_installed(rc_path):
-            click.echo(f"Completion for prowlr is already installed in {rc_path}.")
+            click.echo(
+                f"Completion for prowlr is already installed in {rc_path}.",
+            )
             return
 
         snippet = _BASH_SNIPPET if shell_name == "bash" else _ZSH_SNIPPET

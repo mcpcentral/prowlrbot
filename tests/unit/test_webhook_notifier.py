@@ -28,10 +28,15 @@ class TestWebhookNotifier:
         transport = httpx.MockTransport(handler)
         client = httpx.AsyncClient(transport=transport)
         notifier = WebhookNotifier(
-            url="https://hooks.example.com/notify", client=client
+            url="https://hooks.example.com/notify",
+            client=client,
         )
 
-        ok = await notifier.notify("my-monitor", "2 lines changed", "new content")
+        ok = await notifier.notify(
+            "my-monitor",
+            "2 lines changed",
+            "new content",
+        )
         assert ok is True
         assert received["body"]["monitor"] == "my-monitor"
         assert received["body"]["summary"] == "2 lines changed"
@@ -60,7 +65,8 @@ class TestWebhookNotifier:
         transport = httpx.MockTransport(lambda req: httpx.Response(500))
         client = httpx.AsyncClient(transport=transport)
         notifier = WebhookNotifier(
-            url="https://hooks.example.com/notify", client=client
+            url="https://hooks.example.com/notify",
+            client=client,
         )
 
         ok = await notifier.notify("test", "change")
@@ -74,7 +80,8 @@ class TestWebhookNotifier:
         transport = httpx.MockTransport(handler)
         client = httpx.AsyncClient(transport=transport)
         notifier = WebhookNotifier(
-            url="https://hooks.example.com/notify", client=client
+            url="https://hooks.example.com/notify",
+            client=client,
         )
 
         ok = await notifier.notify("test", "change")

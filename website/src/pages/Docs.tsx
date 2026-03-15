@@ -254,26 +254,58 @@ const DOC_SLUGS: DocEntry[] = [
   { slug: "cli", titleKey: "docs.cli" },
 
   // ── Guides ──
-  { slug: "guide-tiers-and-payments", titleKey: "docs.guide-tiers-and-payments", section: "Guides" },
+  {
+    slug: "guide-tiers-and-payments",
+    titleKey: "docs.guide-tiers-and-payments",
+    section: "Guides",
+  },
   { slug: "guide-monitoring", titleKey: "docs.guide-monitoring" },
   { slug: "guide-cron-jobs", titleKey: "docs.guide-cron-jobs" },
   { slug: "guide-deployment", titleKey: "docs.guide-deployment" },
   { slug: "guide-memory-system", titleKey: "docs.guide-memory-system" },
   { slug: "guide-mcp-setup", titleKey: "docs.guide-mcp-setup" },
-  { slug: "guide-war-room-mcp-debug", titleKey: "docs.guide-war-room-mcp-debug" },
-  { slug: "guide-war-room-dashboard-plan", titleKey: "docs.guide-war-room-dashboard-plan" },
+  {
+    slug: "guide-war-room-mcp-debug",
+    titleKey: "docs.guide-war-room-mcp-debug",
+  },
+  {
+    slug: "guide-war-room-dashboard-plan",
+    titleKey: "docs.guide-war-room-dashboard-plan",
+  },
   { slug: "guide-providers", titleKey: "docs.guide-providers" },
   { slug: "guide-cli-reference", titleKey: "docs.guide-cli-reference" },
   { slug: "guide-channels", titleKey: "docs.guide-channels" },
   { slug: "guide-skills", titleKey: "docs.guide-skills" },
   { slug: "guide-marketplace", titleKey: "docs.guide-marketplace" },
-  { slug: "guide-env-and-console-login", titleKey: "docs.guide-env-and-console-login" },
-  { slug: "guide-acp-ide-integration", titleKey: "docs.guide-acp-ide-integration" },
-  { slug: "guide-console-plugins-marketplace", titleKey: "docs.guide-console-plugins-marketplace" },
-  { slug: "guide-marketplace-repo-upgrade", titleKey: "docs.guide-marketplace-repo-upgrade" },
-  { slug: "guide-cross-network-connectivity", titleKey: "docs.guide-cross-network-connectivity" },
-  { slug: "guide-cross-network-setup", titleKey: "docs.guide-cross-network-setup" },
-  { slug: "guide-roar-usage", titleKey: "docs.guide-roar-usage", section: "Guides" },
+  {
+    slug: "guide-env-and-console-login",
+    titleKey: "docs.guide-env-and-console-login",
+  },
+  {
+    slug: "guide-acp-ide-integration",
+    titleKey: "docs.guide-acp-ide-integration",
+  },
+  {
+    slug: "guide-console-plugins-marketplace",
+    titleKey: "docs.guide-console-plugins-marketplace",
+  },
+  {
+    slug: "guide-marketplace-repo-upgrade",
+    titleKey: "docs.guide-marketplace-repo-upgrade",
+  },
+  {
+    slug: "guide-cross-network-connectivity",
+    titleKey: "docs.guide-cross-network-connectivity",
+  },
+  {
+    slug: "guide-cross-network-setup",
+    titleKey: "docs.guide-cross-network-setup",
+  },
+  {
+    slug: "guide-roar-usage",
+    titleKey: "docs.guide-roar-usage",
+    section: "Guides",
+  },
 
   // ── Community ──
   { slug: "faq", titleKey: "docs.faq", section: "Community" },
@@ -842,7 +874,8 @@ export function Docs({ config, lang, theme, onThemeToggle }: DocsProps) {
                             if (isVideo) {
                               return (
                                 <video src={src ?? undefined} controls>
-                                  {alt ?? "Your browser does not support the video tag."}
+                                  {alt ??
+                                    "Your browser does not support the video tag."}
                                 </video>
                               );
                             }

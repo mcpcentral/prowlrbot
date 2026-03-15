@@ -48,7 +48,8 @@ class AutonomyController:
     # ------------------------------------------------------------------
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS policies (
                 agent_id                TEXT PRIMARY KEY,
                 level                   TEXT NOT NULL DEFAULT 'watch',
@@ -73,7 +74,8 @@ class AutonomyController:
 
             CREATE INDEX IF NOT EXISTS idx_escalations_agent
                 ON escalations (agent_id);
-        """)
+        """,
+        )
         self._conn.commit()
 
     # ------------------------------------------------------------------
@@ -131,7 +133,8 @@ class AutonomyController:
     def get_policy(self, agent_id: str) -> Optional[AutonomyPolicy]:
         """Return the autonomy policy for *agent_id*, or ``None``."""
         row = self._conn.execute(
-            "SELECT * FROM policies WHERE agent_id = ?", (agent_id,)
+            "SELECT * FROM policies WHERE agent_id = ?",
+            (agent_id,),
         ).fetchone()
         if row is None:
             return None
@@ -139,13 +142,18 @@ class AutonomyController:
 
     def list_policies(self) -> List[AutonomyPolicy]:
         """Return all stored autonomy policies."""
-        rows = self._conn.execute("SELECT * FROM policies ORDER BY agent_id").fetchall()
+        rows = self._conn.execute(
+            "SELECT * FROM policies ORDER BY agent_id",
+        ).fetchall()
         return [self._row_to_policy(r) for r in rows]
 
     def delete_policy(self, agent_id: str) -> bool:
         """Delete the policy for *agent_id*.  Returns ``True`` if a row
         was actually removed."""
-        cur = self._conn.execute("DELETE FROM policies WHERE agent_id = ?", (agent_id,))
+        cur = self._conn.execute(
+            "DELETE FROM policies WHERE agent_id = ?",
+            (agent_id,),
+        )
         self._conn.commit()
         deleted = cur.rowcount > 0
         if deleted:
@@ -182,7 +190,10 @@ class AutonomyController:
         policy = self.get_policy(agent_id)
         if policy is None:
             # No policy means default WATCH behaviour.
-            return self._escalate(action, "No autonomy policy configured for agent")
+            return self._escalate(
+                action,
+                "No autonomy policy configured for agent",
+            )
 
         # --- universal blocks ---
         if tool_name in policy.blocked_tools:
@@ -211,7 +222,10 @@ class AutonomyController:
         level = policy.level
 
         if level == AutonomyLevel.WATCH:
-            return self._escalate(action, "WATCH mode: all actions require approval")
+            return self._escalate(
+                action,
+                "WATCH mode: all actions require approval",
+            )
 
         if level == AutonomyLevel.GUIDE:
             if estimated_cost > policy.max_cost_per_action:

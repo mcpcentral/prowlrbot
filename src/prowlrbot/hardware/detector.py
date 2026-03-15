@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """HardwareDetector — detects machine specs via psutil + nvidia-smi/rocm-smi/sysctl.
 
 Provides exact OS-level values rather than unreliable browser WebGPU detection.
@@ -68,7 +69,7 @@ class HardwareDetector:
 
     def detect(self) -> HardwareProfile:
         """Main entry point — returns a fully populated HardwareProfile."""
-        ram_gb = round(psutil.virtual_memory().total / (1024 ** 3), 1)
+        ram_gb = round(psutil.virtual_memory().total / (1024**3), 1)
         cpu_cores = psutil.cpu_count(logical=False) or psutil.cpu_count() or 1
         cpu_arch = platform.machine()
         plat = platform.system().lower()
@@ -80,7 +81,11 @@ class HardwareDetector:
         if is_apple:
             gpu_info = self._detect_apple()
         else:
-            for detector in (self._detect_nvidia, self._detect_amd, self._detect_intel):
+            for detector in (
+                self._detect_nvidia,
+                self._detect_amd,
+                self._detect_intel,
+            ):
                 gpu_info = detector()
                 if gpu_info is not None:
                     break
@@ -147,7 +152,13 @@ class HardwareDetector:
         """
         try:
             result = subprocess.run(
-                ["rocm-smi", "--showproductname", "--showmeminfo", "vram", "--json"],
+                [
+                    "rocm-smi",
+                    "--showproductname",
+                    "--showmeminfo",
+                    "vram",
+                    "--json",
+                ],
                 capture_output=True,
                 text=True,
                 check=True,
@@ -163,7 +174,7 @@ class HardwareDetector:
                 or card.get("vram_total_memory")
                 or "0"
             )
-            vram_gb = round(int(vram_bytes_str) / (1024 ** 3), 2)
+            vram_gb = round(int(vram_bytes_str) / (1024**3), 2)
             return {"name": name, "vram_gb": vram_gb, "vendor": "amd"}
         except Exception:
             return None
@@ -187,9 +198,11 @@ class HardwareDetector:
                 vram_file = card_dir / "mem_info_vram_total"
                 if vram_file.exists():
                     vram_bytes = int(vram_file.read_text().strip())
-                    vram_gb = round(vram_bytes / (1024 ** 3), 2)
+                    vram_gb = round(vram_bytes / (1024**3), 2)
                 name_file = card_dir / "device_name"
-                name = name_file.read_text().strip() if name_file.exists() else "Intel GPU"
+                name = (
+                    name_file.read_text().strip() if name_file.exists() else "Intel GPU"
+                )
                 return {"name": name, "vram_gb": vram_gb, "vendor": "intel"}
             return None
         except Exception:
@@ -215,7 +228,7 @@ class HardwareDetector:
             gpu_entry = displays[0]
             name = gpu_entry.get("sppci_model") or gpu_entry.get("_name") or "Apple GPU"
             # Unified memory — use total system RAM
-            ram_gb = round(psutil.virtual_memory().total / (1024 ** 3), 1)
+            ram_gb = round(psutil.virtual_memory().total / (1024**3), 1)
             return {"name": name, "vram_gb": ram_gb, "vendor": "apple"}
         except Exception:
             return None

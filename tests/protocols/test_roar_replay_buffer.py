@@ -23,10 +23,10 @@ class TestReplayBuffer(unittest.TestCase):
         async def _test():
             bus = EventBus(replay_size=50)
             await bus.publish(
-                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 1})
+                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 1}),
             )
             await bus.publish(
-                StreamEvent(type=StreamEventType.REASONING, data={"n": 2})
+                StreamEvent(type=StreamEventType.REASONING, data={"n": 2}),
             )
 
             sub = bus.subscribe()  # replay defaults to False
@@ -43,13 +43,13 @@ class TestReplayBuffer(unittest.TestCase):
         async def _test():
             bus = EventBus(replay_size=50)
             await bus.publish(
-                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 1})
+                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 1}),
             )
             await bus.publish(
-                StreamEvent(type=StreamEventType.REASONING, data={"n": 2})
+                StreamEvent(type=StreamEventType.REASONING, data={"n": 2}),
             )
             await bus.publish(
-                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 3})
+                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 3}),
             )
 
             sub = bus.subscribe(replay=True)
@@ -73,13 +73,13 @@ class TestReplayBuffer(unittest.TestCase):
         async def _test():
             bus = EventBus(replay_size=50)
             await bus.publish(
-                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 1})
+                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 1}),
             )
             await bus.publish(
-                StreamEvent(type=StreamEventType.REASONING, data={"n": 2})
+                StreamEvent(type=StreamEventType.REASONING, data={"n": 2}),
             )
             await bus.publish(
-                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 3})
+                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": 3}),
             )
 
             filt = StreamFilter(event_types=[StreamEventType.TOOL_CALL])
@@ -105,7 +105,7 @@ class TestReplayBuffer(unittest.TestCase):
             bus = EventBus(replay_size=3)
             for i in range(5):
                 await bus.publish(
-                    StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": i})
+                    StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": i}),
                 )
 
             sub = bus.subscribe(replay=True)
@@ -131,7 +131,10 @@ class TestReplayBuffer(unittest.TestCase):
         async def _test():
             bus = EventBus(replay_size=50)
             await bus.publish(
-                StreamEvent(type=StreamEventType.TOOL_CALL, data={"n": "replay"})
+                StreamEvent(
+                    type=StreamEventType.TOOL_CALL,
+                    data={"n": "replay"},
+                ),
             )
 
             sub = bus.subscribe(replay=True)
@@ -143,7 +146,10 @@ class TestReplayBuffer(unittest.TestCase):
 
             # Publish a live event
             await bus.publish(
-                StreamEvent(type=StreamEventType.REASONING, data={"n": "live"})
+                StreamEvent(
+                    type=StreamEventType.REASONING,
+                    data={"n": "live"},
+                ),
             )
             e2 = await sub.get(timeout=0.5)
             assert e2 is not None
@@ -165,7 +171,7 @@ class TestReplayBuffer(unittest.TestCase):
             sub = bus.subscribe()
 
             await bus.publish(
-                StreamEvent(type=StreamEventType.TOOL_CALL, data={"x": 1})
+                StreamEvent(type=StreamEventType.TOOL_CALL, data={"x": 1}),
             )
             e = await sub.get(timeout=0.5)
             assert e is not None
@@ -196,14 +202,14 @@ class TestReplayBuffer(unittest.TestCase):
                     type=StreamEventType.TOOL_CALL,
                     source="did:roar:agent:a",
                     data={"from": "a"},
-                )
+                ),
             )
             await bus.publish(
                 StreamEvent(
                     type=StreamEventType.TOOL_CALL,
                     source="did:roar:agent:b",
                     data={"from": "b"},
-                )
+                ),
             )
 
             filt = StreamFilter(source_dids=["did:roar:agent:a"])

@@ -29,7 +29,10 @@ async def engine(storage):
 class TestScheduleMonitor:
     @pytest.mark.asyncio
     async def test_schedule_returns_job_id(self, engine):
-        job_id = engine.schedule_monitor("https://example.com", interval_minutes=60)
+        job_id = engine.schedule_monitor(
+            "https://example.com",
+            interval_minutes=60,
+        )
         assert job_id is not None
         assert isinstance(job_id, str)
 
@@ -75,7 +78,10 @@ class TestScheduleMonitor:
 
     @pytest.mark.asyncio
     async def test_unschedule_removes_job(self, engine):
-        job_id = engine.schedule_monitor("https://example.com", interval_minutes=60)
+        job_id = engine.schedule_monitor(
+            "https://example.com",
+            interval_minutes=60,
+        )
         assert engine.get_scheduled_monitors() == 1
         removed = engine.unschedule_monitor(job_id)
         assert removed is True
@@ -100,6 +106,9 @@ class TestStoragePathInit:
         db_path = str(tmp_path / "test.db")
         engine = MonitorEngine(storage_path=db_path)
         assert engine.storage is not None
-        job_id = engine.schedule_monitor("https://example.com", interval_minutes=60)
+        job_id = engine.schedule_monitor(
+            "https://example.com",
+            interval_minutes=60,
+        )
         assert engine.get_scheduled_monitors() == 1
         engine._scheduler.shutdown(wait=False)

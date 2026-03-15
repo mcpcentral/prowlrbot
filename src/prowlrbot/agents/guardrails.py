@@ -26,13 +26,19 @@ class InputSanitizer:
             r"(?i)forget\s+(all\s+)?your\s+(previous\s+)?instructions",
             "Possible role-switching injection",
         ),
-        (r"(?i)you\s+are\s+now\s+a\s+different", "Possible role-switching injection"),
+        (
+            r"(?i)you\s+are\s+now\s+a\s+different",
+            "Possible role-switching injection",
+        ),
         (
             r"(?i)disregard\s+(all\s+)?(prior|previous|above)",
             "Possible role-switching injection",
         ),
         # System prompt override
-        (r"(?i)^system\s*:\s*you\s+are\s+now", "Possible system prompt override"),
+        (
+            r"(?i)^system\s*:\s*you\s+are\s+now",
+            "Possible system prompt override",
+        ),
         (r"(?i)^system\s*:\s*ignore", "Possible system prompt override"),
         (r"(?i)\[system\]\s*override", "Possible system prompt override"),
         # Jailbreak patterns
@@ -63,7 +69,10 @@ class OutputFilter:
             "Bearer [REDACTED]",
         ),
         # Generic key=value secrets
-        (r"(?i)(api[_-]?key|secret|token|password)\s*=\s*\S+", r"\1=[REDACTED]"),
+        (
+            r"(?i)(api[_-]?key|secret|token|password)\s*=\s*\S+",
+            r"\1=[REDACTED]",
+        ),
     ]
 
     def filter(self, text: str) -> str:

@@ -8,10 +8,16 @@ import tempfile
 import unittest
 
 from prowlrbot.protocols.roar import AgentCard, AgentIdentity, DiscoveryEntry
-from prowlrbot.protocols.sdk.discovery.sqlite_directory import SQLiteAgentDirectory
+from prowlrbot.protocols.sdk.discovery.sqlite_directory import (
+    SQLiteAgentDirectory,
+)
 
 
-def _make_card(name: str, capabilities: list = None, skills: list = None) -> AgentCard:
+def _make_card(
+    name: str,
+    capabilities: list = None,
+    skills: list = None,
+) -> AgentCard:
     identity = AgentIdentity(
         display_name=name,
         capabilities=capabilities or [],
@@ -143,7 +149,10 @@ class TestSQLiteAgentDirectory(unittest.TestCase):
         assert fc.description == "A fully specified card"
         assert fc.skills == ["skill-a", "skill-b"]
         assert fc.channels == ["http", "ws"]
-        assert fc.endpoints == {"http": "http://example.com", "ws": "ws://example.com"}
+        assert fc.endpoints == {
+            "http": "http://example.com",
+            "ws": "ws://example.com",
+        }
         assert fc.metadata == {"tier": "premium"}
 
 

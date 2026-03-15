@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for listing detail endpoint with computed fields."""
 
 import importlib.util
@@ -49,7 +50,7 @@ def store():
             trust_tier="official",
             author_name="Author One",
             status="approved",
-        )
+        ),
     )
     s.publish_listing(
         MarketplaceListing(
@@ -60,16 +61,26 @@ def store():
             category=MarketplaceCategory.skills,
             tags=["testing"],
             status="approved",
-        )
+        ),
     )
     s.add_review(
         ReviewEntry(
-            listing_id="test-skill", reviewer_id="u1", rating=5, comment="Great"
-        )
+            listing_id="test-skill",
+            reviewer_id="u1",
+            rating=5,
+            comment="Great",
+        ),
     )
-    s.add_tip(TipRecord(listing_id="test-skill", author_id="author1", amount=5.0))
+    s.add_tip(
+        TipRecord(listing_id="test-skill", author_id="author1", amount=5.0),
+    )
     s.create_bundle(
-        Bundle(id="b1", name="B1", description="x", listing_ids=["test-skill"])
+        Bundle(
+            id="b1",
+            name="B1",
+            description="x",
+            listing_ids=["test-skill"],
+        ),
     )
     yield s
     s.close()

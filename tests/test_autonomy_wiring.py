@@ -26,7 +26,7 @@ def test_evaluate_action_blocks_blocked_tool():
             agent_id="test_agent",
             level=AutonomyLevel.DELEGATE,
             blocked_tools=["shell"],
-        )
+        ),
     )
     decision = controller.evaluate_action("test_agent", "run shell", "shell")
     assert decision.approved is False
@@ -37,7 +37,11 @@ def test_controller_lifecycle_closes_connection():
     from prowlrbot.autonomy.controller import AutonomyController
     from unittest.mock import patch
 
-    with patch.object(AutonomyController, "get_policy", return_value=None) as mock_get:
+    with patch.object(
+        AutonomyController,
+        "get_policy",
+        return_value=None,
+    ) as mock_get:
         with patch.object(AutonomyController, "close") as mock_close:
             # Simulate what runner does
             controller = AutonomyController()
@@ -60,7 +64,11 @@ def test_evaluate_action_approves_in_autonomous_mode():
         AutonomyPolicy(
             agent_id="test_agent2",
             level=AutonomyLevel.AUTONOMOUS,
-        )
+        ),
     )
-    decision = controller.evaluate_action("test_agent2", "read file", "file_read")
+    decision = controller.evaluate_action(
+        "test_agent2",
+        "read file",
+        "file_read",
+    )
     assert decision.approved is True

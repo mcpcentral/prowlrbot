@@ -43,7 +43,13 @@ class TestEnums:
         assert {c.value for c in MarketplaceCategory} == expected
 
     def test_listing_status_values(self):
-        expected = {"draft", "pending_review", "approved", "rejected", "suspended"}
+        expected = {
+            "draft",
+            "pending_review",
+            "approved",
+            "rejected",
+            "suspended",
+        }
         assert {s.value for s in ListingStatus} == expected
 
     def test_pricing_model_values(self):
@@ -241,7 +247,11 @@ class TestMarketplaceListingV2Fields:
 
     def test_setup_steps(self):
         steps = [
-            {"order": 1, "label": "Install", "command": "pip install prowlrbot"},
+            {
+                "order": 1,
+                "label": "Install",
+                "command": "pip install prowlrbot",
+            },
             {"order": 2, "label": "Configure", "command": "prowlr init"},
         ]
         listing = MarketplaceListing(
@@ -297,8 +307,12 @@ class TestMarketplaceListingV2Fields:
             skill_scan={"tools": ["shell"], "complexity": 2},
             works_with=["github", "docker"],
             demo_url="https://demo.prowlrbot.com/smart-deploy",
-            setup_steps=[{"order": 1, "label": "Clone", "command": "git clone ..."}],
-            user_stories=[{"persona": "developer", "story": "Deploy in seconds"}],
+            setup_steps=[
+                {"order": 1, "label": "Clone", "command": "git clone ..."},
+            ],
+            user_stories=[
+                {"persona": "developer", "story": "Deploy in seconds"},
+            ],
             hero_animation="deploy-hero.lottie",
         )
         assert listing.category == MarketplaceCategory.workflows
@@ -392,7 +406,12 @@ class TestProTierLimits:
         assert PRO_TIER_LIMITS[ProTier.pro]["marketplace_publish_paid"] is True
 
     def test_credit_multiplier_increases_with_tier(self):
-        tiers_ordered = [ProTier.free, ProTier.starter, ProTier.pro, ProTier.team]
+        tiers_ordered = [
+            ProTier.free,
+            ProTier.starter,
+            ProTier.pro,
+            ProTier.team,
+        ]
         multipliers = [
             PRO_TIER_LIMITS[t]["credit_earn_multiplier"] for t in tiers_ordered
         ]
@@ -400,7 +419,12 @@ class TestProTierLimits:
         assert multipliers[0] < multipliers[-1]
 
     def test_monthly_credits_increase_with_tier(self):
-        tiers_ordered = [ProTier.free, ProTier.starter, ProTier.pro, ProTier.team]
+        tiers_ordered = [
+            ProTier.free,
+            ProTier.starter,
+            ProTier.pro,
+            ProTier.team,
+        ]
         credits = [PRO_TIER_LIMITS[t]["monthly_credits"] for t in tiers_ordered]
         assert credits == sorted(credits)
 
@@ -411,7 +435,10 @@ class TestProTierLimits:
 class TestReviewEntry:
     def test_valid_review(self):
         review = ReviewEntry(
-            listing_id="l1", reviewer_id="r1", rating=5, comment="Great!"
+            listing_id="l1",
+            reviewer_id="r1",
+            rating=5,
+            comment="Great!",
         )
         assert review.rating == 5
         assert review.listing_id == "l1"
@@ -432,7 +459,12 @@ class TestInstallRecord:
 
 class TestTipRecord:
     def test_valid_tip(self):
-        tip = TipRecord(listing_id="l1", author_id="a1", tipper_id="t1", amount=5.0)
+        tip = TipRecord(
+            listing_id="l1",
+            author_id="a1",
+            tipper_id="t1",
+            amount=5.0,
+        )
         assert tip.amount == 5.0
         assert tip.tipper_id == "t1"
 

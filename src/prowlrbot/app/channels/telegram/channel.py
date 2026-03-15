@@ -527,7 +527,7 @@ class TelegramChannel(BaseChannel):
                 if isinstance(exc, Conflict):
                     logger.warning(
                         "telegram: another bot instance is polling with the same token; "
-                        "only one instance should run. Stop other processes or use a different token."
+                        "only one instance should run. Stop other processes or use a different token.",
                     )
                     return
                 self._application.create_task(

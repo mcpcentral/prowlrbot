@@ -43,7 +43,8 @@ async def create_project(req: CreateProjectRequest) -> ResearchProject:
 
 @router.get("/projects", response_model=List[ResearchSummary])
 async def list_projects(
-    status: Optional[str] = None, limit: int = 50
+    status: Optional[str] = None,
+    limit: int = 50,
 ) -> List[ResearchSummary]:
     return _store.list_projects(status=status, limit=limit)
 
@@ -64,9 +65,16 @@ async def delete_project(project_id: str) -> Dict[str, str]:
 
 
 @router.post("/projects/{project_id}/sources", response_model=ResearchProject)
-async def add_source(project_id: str, req: AddSourceRequest) -> ResearchProject:
+async def add_source(
+    project_id: str,
+    req: AddSourceRequest,
+) -> ResearchProject:
     project = _engine.add_source(
-        project_id, req.title, req.content, req.url, req.source_type
+        project_id,
+        req.title,
+        req.content,
+        req.url,
+        req.source_type,
     )
     if not project:
         raise HTTPException(404, f"Research project '{project_id}' not found")
@@ -81,7 +89,10 @@ async def analyze_project(project_id: str) -> ResearchProject:
     return project
 
 
-@router.post("/projects/{project_id}/synthesize", response_model=ResearchProject)
+@router.post(
+    "/projects/{project_id}/synthesize",
+    response_model=ResearchProject,
+)
 async def synthesize_project(project_id: str) -> ResearchProject:
     project = _engine.synthesize(project_id)
     if not project:

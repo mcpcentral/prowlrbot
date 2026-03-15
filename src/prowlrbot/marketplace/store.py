@@ -48,7 +48,10 @@ class MarketplaceStore:
             db_path = WORKING_DIR / "marketplace.db"
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
+        self._conn = sqlite3.connect(
+            str(self.db_path),
+            check_same_thread=False,
+        )
         self._conn.row_factory = _dict_factory
         self._init_db()
 
@@ -58,7 +61,8 @@ class MarketplaceStore:
 
     def _init_db(self) -> None:
         cur = self._conn.cursor()
-        cur.executescript("""
+        cur.executescript(
+            """
             CREATE TABLE IF NOT EXISTS listings (
                 id                  TEXT PRIMARY KEY,
                 author_id           TEXT NOT NULL,
@@ -148,7 +152,8 @@ class MarketplaceStore:
                 install_count INTEGER DEFAULT 0,
                 created_at    TEXT DEFAULT (datetime('now'))
             );
-            """)
+            """,
+        )
         self._conn.commit()
         self._migrate_v2()
         self._migrate_v3()
@@ -162,7 +167,7 @@ class MarketplaceStore:
         }
         if "console_plugin" not in existing:
             cur.execute(
-                "ALTER TABLE listings ADD COLUMN console_plugin TEXT DEFAULT NULL"
+                "ALTER TABLE listings ADD COLUMN console_plugin TEXT DEFAULT NULL",
             )
         self._conn.commit()
 
@@ -214,7 +219,10 @@ class MarketplaceStore:
     # Listings
     # ------------------------------------------------------------------
 
-    def publish_listing(self, listing: MarketplaceListing) -> MarketplaceListing:
+    def publish_listing(
+        self,
+        listing: MarketplaceListing,
+    ) -> MarketplaceListing:
         """Insert a new listing into the store."""
         console_plugin_json = None
         if listing.console_plugin is not None:
@@ -283,7 +291,8 @@ class MarketplaceStore:
     def get_listing(self, listing_id: str) -> Optional[MarketplaceListing]:
         """Fetch a single listing by ID."""
         row = self._conn.execute(
-            "SELECT * FROM listings WHERE id = ?", (listing_id,)
+            "SELECT * FROM listings WHERE id = ?",
+            (listing_id,),
         ).fetchone()
         if row is None:
             return None
@@ -306,7 +315,7 @@ class MarketplaceStore:
         if query:
             conditions.append(
                 "(title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\'"
-                " OR tags LIKE ? ESCAPE '\\')"
+                " OR tags LIKE ? ESCAPE '\\')",
             )
             like = f"%{_escape_like(query)}%"
             params.extend([like, like, like])
@@ -343,7 +352,9 @@ class MarketplaceStore:
         return [self._row_to_listing(r) for r in rows]
 
     def update_listing(
-        self, listing_id: str, updates: dict
+        self,
+        listing_id: str,
+        updates: dict,
     ) -> Optional[MarketplaceListing]:
         """Partially update a listing. Returns updated listing or None."""
         existing = self.get_listing(listing_id)
@@ -394,7 +405,10 @@ class MarketplaceStore:
             "before_after",
             "skill_scan",
         ):
-            if json_field in filtered and not isinstance(filtered[json_field], str):
+            if json_field in filtered and not isinstance(
+                filtered[json_field],
+                str,
+            ):
                 filtered[json_field] = json.dumps(filtered[json_field])
 
         # Normalize enum fields to their .value for DB storage
@@ -444,7 +458,10 @@ class MarketplaceStore:
                 raise ValueError(f"Invalid column name: {k}")
         set_clause = ", ".join(f"{k} = ?" for k in filtered)
         params = list(filtered.values()) + [listing_id]
-        self._conn.execute(f"UPDATE listings SET {set_clause} WHERE id = ?", params)
+        self._conn.execute(
+            f"UPDATE listings SET {set_clause} WHERE id = ?",
+            params,
+        )
         self._conn.commit()
         return self.get_listing(listing_id)
 
@@ -513,7 +530,11 @@ class MarketplaceStore:
         self._conn.commit()
         return review
 
-    def get_reviews(self, listing_id: str, limit: int = 50) -> list[ReviewEntry]:
+    def get_reviews(
+        self,
+        listing_id: str,
+        limit: int = 50,
+    ) -> list[ReviewEntry]:
         """Return reviews for a listing, newest first."""
         rows = self._conn.execute(
             "SELECT * FROM reviews WHERE listing_id = ? ORDER BY created_at DESC LIMIT ?",
@@ -602,7 +623,8 @@ class MarketplaceStore:
     def get_balance(self, user_id: str) -> CreditBalance:
         """Get or create a user's credit balance."""
         row = self._conn.execute(
-            "SELECT * FROM credit_balances WHERE user_id = ?", (user_id,)
+            "SELECT * FROM credit_balances WHERE user_id = ?",
+            (user_id,),
         ).fetchone()
         if row:
             return CreditBalance(**row)
@@ -682,7 +704,7 @@ class MarketplaceStore:
         balance = self.get_balance(user_id)
         if balance.balance < amount:
             raise ValueError(
-                f"Insufficient credits: have {balance.balance}, need {amount}"
+                f"Insufficient credits: have {balance.balance}, need {amount}",
             )
 
         txn = CreditTransaction(
@@ -713,7 +735,9 @@ class MarketplaceStore:
         return self.get_balance(user_id)
 
     def get_transactions(
-        self, user_id: str, limit: int = 50
+        self,
+        user_id: str,
+        limit: int = 50,
     ) -> list[CreditTransaction]:
         """Get recent credit transactions for a user."""
         rows = self._conn.execute(
@@ -746,7 +770,11 @@ class MarketplaceStore:
             description="Published a listing",
         )
 
-    def award_install_credits(self, listing_id: str, installer_user_id: str) -> None:
+    def award_install_credits(
+        self,
+        listing_id: str,
+        installer_user_id: str,
+    ) -> None:
         """Award +5 credits to listing author per unique install."""
         # Dedup: check if this user already triggered credits for this listing
         existing = self._conn.execute(
@@ -814,7 +842,8 @@ class MarketplaceStore:
         return MarketplaceListing(**row)
 
     def get_installed_listing_ids(
-        self, user_id: Optional[str] = None
+        self,
+        user_id: Optional[str] = None,
     ) -> list[str]:
         """Return listing IDs that have been installed (optionally for a user)."""
         if user_id:
@@ -824,12 +853,13 @@ class MarketplaceStore:
             ).fetchall()
         else:
             rows = self._conn.execute(
-                "SELECT DISTINCT listing_id FROM installs"
+                "SELECT DISTINCT listing_id FROM installs",
             ).fetchall()
         return [r["listing_id"] for r in rows]
 
     def get_console_plugins(
-        self, user_id: Optional[str] = None
+        self,
+        user_id: Optional[str] = None,
     ) -> list[dict]:
         """Return console plugin manifests: built-ins plus from installed listings."""
         # Built-in plugins (always available; can later be made installable-only)
@@ -848,12 +878,14 @@ class MarketplaceStore:
             if listing and listing.console_plugin:
                 cp = listing.console_plugin
                 # Avoid duplicate paths (installed overrides built-in if same path)
-                from_installed.append({
-                    "path": cp.path,
-                    "label": cp.label,
-                    "icon": cp.icon,
-                    "entry": cp.entry,
-                })
+                from_installed.append(
+                    {
+                        "path": cp.path,
+                        "label": cp.label,
+                        "icon": cp.icon,
+                        "entry": cp.entry,
+                    },
+                )
         # Merge: built-ins first, then installed (installed can override by path)
         seen_paths: set[str] = set()
         result: list[dict] = []
@@ -889,7 +921,8 @@ class MarketplaceStore:
     def get_bundle(self, bundle_id: str) -> Optional[Bundle]:
         """Fetch a single bundle by ID."""
         row = self._conn.execute(
-            "SELECT * FROM bundles WHERE id = ?", (bundle_id,)
+            "SELECT * FROM bundles WHERE id = ?",
+            (bundle_id,),
         ).fetchone()
         if row is None:
             return None
@@ -897,7 +930,9 @@ class MarketplaceStore:
 
     def list_bundles(self) -> list[Bundle]:
         """Return all bundles."""
-        rows = self._conn.execute("SELECT * FROM bundles ORDER BY name").fetchall()
+        rows = self._conn.execute(
+            "SELECT * FROM bundles ORDER BY name",
+        ).fetchall()
         return [self._row_to_bundle(r) for r in rows]
 
     def increment_bundle_installs(self, bundle_id: str) -> None:

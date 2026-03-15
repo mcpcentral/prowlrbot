@@ -29,7 +29,7 @@ def _seeded_store():
             description="First skill",
             category=MarketplaceCategory.skills,
             status="approved",
-        )
+        ),
     )
     store.publish_listing(
         MarketplaceListing(
@@ -39,7 +39,7 @@ def _seeded_store():
             description="Second skill",
             category=MarketplaceCategory.skills,
             status="approved",
-        )
+        ),
     )
     store.create_bundle(
         Bundle(
@@ -49,7 +49,7 @@ def _seeded_store():
             emoji="rocket",
             color="#3b82f6",
             listing_ids=["skill-a", "skill-b"],
-        )
+        ),
     )
     return store
 

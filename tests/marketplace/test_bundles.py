@@ -1,8 +1,13 @@
+# -*- coding: utf-8 -*-
 """Tests for Bundle model and store CRUD."""
 
 import tempfile
 
-from prowlrbot.marketplace.models import Bundle, MarketplaceCategory, MarketplaceListing
+from prowlrbot.marketplace.models import (
+    Bundle,
+    MarketplaceCategory,
+    MarketplaceListing,
+)
 from prowlrbot.marketplace.store import MarketplaceStore
 
 
@@ -42,8 +47,12 @@ def test_create_and_get_bundle():
 
 def test_list_bundles():
     store = _tmp_store()
-    store.create_bundle(Bundle(id="b1", name="B1", description="x", listing_ids=[]))
-    store.create_bundle(Bundle(id="b2", name="B2", description="y", listing_ids=[]))
+    store.create_bundle(
+        Bundle(id="b1", name="B1", description="x", listing_ids=[]),
+    )
+    store.create_bundle(
+        Bundle(id="b2", name="B2", description="y", listing_ids=[]),
+    )
     bundles = store.list_bundles()
     assert len(bundles) == 2
     store.close()
@@ -51,7 +60,9 @@ def test_list_bundles():
 
 def test_increment_bundle_install_count():
     store = _tmp_store()
-    store.create_bundle(Bundle(id="b1", name="B1", description="x", listing_ids=[]))
+    store.create_bundle(
+        Bundle(id="b1", name="B1", description="x", listing_ids=[]),
+    )
     store.increment_bundle_installs("b1")
     fetched = store.get_bundle("b1")
     assert fetched is not None

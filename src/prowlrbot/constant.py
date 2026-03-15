@@ -31,7 +31,10 @@ HEARTBEAT_TARGET_LAST = "last"
 LOG_LEVEL_ENV = "PROWLRBOT_LOG_LEVEL"
 
 # Env to indicate running inside a container (e.g. Docker). Set to 1/true/yes.
-RUNNING_IN_CONTAINER = os.environ.get("PROWLRBOT_RUNNING_IN_CONTAINER", "false")
+RUNNING_IN_CONTAINER = os.environ.get(
+    "PROWLRBOT_RUNNING_IN_CONTAINER",
+    "false",
+)
 
 # Playwright: use system Chromium when set (e.g. in Docker).
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH_ENV = "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH"

@@ -30,7 +30,8 @@ class ResearchStore:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        self._conn.executescript("""
+        self._conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS research_projects (
                 id TEXT PRIMARY KEY,
                 topic TEXT NOT NULL,
@@ -45,7 +46,8 @@ class ResearchStore:
                 updated_at REAL NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_research_status ON research_projects(status);
-        """)
+        """,
+        )
         self._conn.commit()
 
     def save_project(self, project: ResearchProject) -> ResearchProject:
@@ -78,14 +80,17 @@ class ResearchStore:
 
     def get_project(self, project_id: str) -> Optional[ResearchProject]:
         row = self._conn.execute(
-            "SELECT * FROM research_projects WHERE id = ?", (project_id,)
+            "SELECT * FROM research_projects WHERE id = ?",
+            (project_id,),
         ).fetchone()
         if not row:
             return None
         return self._row_to_project(row)
 
     def list_projects(
-        self, status: Optional[str] = None, limit: int = 50
+        self,
+        status: Optional[str] = None,
+        limit: int = 50,
     ) -> List[ResearchSummary]:
         query = "SELECT id, topic, status, sources, findings, created_at FROM research_projects"
         params: list = []
@@ -109,7 +114,8 @@ class ResearchStore:
 
     def delete_project(self, project_id: str) -> bool:
         cursor = self._conn.execute(
-            "DELETE FROM research_projects WHERE id = ?", (project_id,)
+            "DELETE FROM research_projects WHERE id = ?",
+            (project_id,),
         )
         self._conn.commit()
         return cursor.rowcount > 0

@@ -341,7 +341,10 @@ class TestSessionTokenVerification:
 
     def test_missing_session_token_rejected(self, client):
         agent_id, _ = self._register(client)
-        resp = client.post(f"/broadcast/{agent_id}", json={"message": "no token"})
+        resp = client.post(
+            f"/broadcast/{agent_id}",
+            json={"message": "no token"},
+        )
         assert resp.status_code == 401
 
     def test_wrong_session_token_rejected(self, client):
@@ -418,7 +421,10 @@ class TestRateLimiting:
     def test_register_rate_limited(self, rate_limited_client):
         """Exceeding 10 registrations per minute should return 429."""
         for i in range(11):
-            resp = rate_limited_client.post("/register", json={"name": f"agent-{i}"})
+            resp = rate_limited_client.post(
+                "/register",
+                json={"name": f"agent-{i}"},
+            )
             if resp.status_code == 429:
                 assert "rate limit" in resp.json()["detail"].lower()
                 return

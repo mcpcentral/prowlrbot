@@ -55,7 +55,10 @@ def team_group():
 )
 @click.option("--description", "-d", default="")
 def team_create(
-    name: str | None, config_path: str | None, coordination: str, description: str
+    name: str | None,
+    config_path: str | None,
+    coordination: str,
+    description: str,
 ):
     """Create a new agent team. Interactive wizard if no name provided."""
     store = _get_store()
@@ -86,13 +89,20 @@ def team_create(
         description = click.prompt("  Description (optional)", default="")
         click.echo()
         click.echo("  Coordination modes:")
-        click.echo("    1) hierarchical — Director routes tasks to specialists")
+        click.echo(
+            "    1) hierarchical — Director routes tasks to specialists",
+        )
         click.echo("    2) round_robin  — Tasks distributed evenly")
         click.echo("    3) consensus    — Agents vote on approach")
         click.echo("    4) auction      — Agents bid on tasks by capability")
         click.echo()
         choice = click.prompt("  Select mode [1-4]", type=int, default=1)
-        coord_map = {1: "hierarchical", 2: "round_robin", 3: "consensus", 4: "auction"}
+        coord_map = {
+            1: "hierarchical",
+            2: "round_robin",
+            3: "consensus",
+            4: "auction",
+        }
         coordination = coord_map.get(choice, "hierarchical")
 
     team = AgentTeam(
@@ -125,7 +135,7 @@ def _create_from_config(store: TeamStore, path: Path) -> None:
             data = yaml.safe_load(text)
         except ImportError:
             click.echo(
-                "Error: PyYAML required for YAML configs. Install with: pip install pyyaml"
+                "Error: PyYAML required for YAML configs. Install with: pip install pyyaml",
             )
             return
     else:
@@ -140,7 +150,7 @@ def _create_from_config(store: TeamStore, path: Path) -> None:
                 personality=m.get("personality", ""),
                 skills=m.get("skills", []),
                 model_preference=m.get("model_preference", ""),
-            )
+            ),
         )
 
     team = AgentTeam(
@@ -148,14 +158,17 @@ def _create_from_config(store: TeamStore, path: Path) -> None:
         description=data.get("description", ""),
         coordination=CoordinationMode(
             data.get("coordination", {}).get(
-                "pattern", data.get("coordination", "hierarchical")
-            )
+                "pattern",
+                data.get("coordination", "hierarchical"),
+            ),
         ),
         fallback_strategy=data.get("fallback_strategy", "escalate"),
         members=members,
     )
     created = store.create_team(team)
-    click.echo(f"  Created team '{created.name}' with {len(members)} member(s)")
+    click.echo(
+        f"  Created team '{created.name}' with {len(members)} member(s)",
+    )
     store.close()
 
 
@@ -173,7 +186,9 @@ def _interactive_add_members(store: TeamStore, team_id: str) -> None:
 
     while True:
         agent_id = click.prompt(
-            "  Agent ID or name (blank to finish)", default="", show_default=False
+            "  Agent ID or name (blank to finish)",
+            default="",
+            show_default=False,
         )
         if not agent_id:
             break
@@ -217,11 +232,13 @@ def team_list():
         return
 
     click.echo()
-    click.echo(f"  {'ID':<10} {'Name':<20} {'Members':<9} {'Coordination':<15}")
+    click.echo(
+        f"  {'ID':<10} {'Name':<20} {'Members':<9} {'Coordination':<15}",
+    )
     click.echo(f"  {'─'*10} {'─'*20} {'─'*9} {'─'*15}")
     for t in teams:
         click.echo(
-            f"  {t.id:<10} {t.name:<20} {len(t.members):<9} {t.coordination:<15}"
+            f"  {t.id:<10} {t.name:<20} {len(t.members):<9} {t.coordination:<15}",
         )
     click.echo()
     store.close()
@@ -256,7 +273,9 @@ def team_info(team_id: str):
             skills = ", ".join(m.skills) if m.skills else "—"
             click.echo(f"    [{m.role}] {m.agent_id} (skills: {skills})")
     else:
-        click.echo("  No members yet. Use 'prowlr team add-member' to add agents.")
+        click.echo(
+            "  No members yet. Use 'prowlr team add-member' to add agents.",
+        )
     click.echo()
     store.close()
 
@@ -273,7 +292,12 @@ def team_info(team_id: str):
     type=click.Choice(["director", "specialist", "observer"]),
     default="specialist",
 )
-@click.option("--skills", "-s", multiple=True, help="Skills this member contributes")
+@click.option(
+    "--skills",
+    "-s",
+    multiple=True,
+    help="Skills this member contributes",
+)
 def team_add_member(team_id: str, agent_id: str, role: str, skills: tuple):
     """Add an agent to a team."""
     store = _get_store()

@@ -14,7 +14,10 @@ import click
 from ..constant import WORKING_DIR, SECRET_DIR
 
 
-@click.group("export", help="Export and manage your ProwlrBot data (GDPR-friendly).")
+@click.group(
+    "export",
+    help="Export and manage your ProwlrBot data (GDPR-friendly).",
+)
 def export_group() -> None:
     pass
 
@@ -45,7 +48,10 @@ def export_all(output: str | None, fmt: str) -> None:
             else Path.home() / f"prowlrbot-export-{timestamp}.json"
         )
         data = _collect_export_data()
-        out_path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
+        out_path.write_text(
+            json.dumps(data, indent=2, default=str),
+            encoding="utf-8",
+        )
     else:
         out_path = (
             Path(output)
@@ -81,7 +87,10 @@ def export_chats(output: str | None) -> None:
         except (json.JSONDecodeError, OSError):
             pass
 
-    out_path.write_text(json.dumps(chats, indent=2, default=str), encoding="utf-8")
+    out_path.write_text(
+        json.dumps(chats, indent=2, default=str),
+        encoding="utf-8",
+    )
     click.echo(f"Exported {len(chats)} chat(s) to: {out_path}")
 
 
@@ -100,9 +109,16 @@ def export_config() -> None:
 
 
 @export_group.command("retention")
-@click.option("--days", type=int, default=30, help="Delete data older than N days.")
 @click.option(
-    "--dry-run", is_flag=True, help="Show what would be deleted without deleting."
+    "--days",
+    type=int,
+    default=30,
+    help="Delete data older than N days.",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Show what would be deleted without deleting.",
 )
 def apply_retention(days: int, dry_run: bool) -> None:
     """Apply data retention policy — delete data older than N days."""
@@ -128,7 +144,10 @@ def apply_retention(days: int, dry_run: bool) -> None:
 
 def _collect_export_data() -> dict:
     """Collect all exportable data into a dict."""
-    data: dict = {"exported_at": time.strftime("%Y-%m-%dT%H:%M:%SZ"), "data": {}}
+    data: dict = {
+        "exported_at": time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "data": {},
+    }
 
     # Config (redacted)
     config_path = WORKING_DIR / "config.json"

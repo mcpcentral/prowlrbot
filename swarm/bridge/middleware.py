@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """HMAC middleware for request authentication."""
 
 import hashlib
@@ -32,7 +33,7 @@ class HMACMiddleware(BaseHTTPMiddleware):
             logger.warning("Missing X-Swarm-Signature header")
             return JSONResponse(
                 status_code=401,
-                content={"detail": "Missing signature header"}
+                content={"detail": "Missing signature header"},
             )
 
         # Read and verify body
@@ -42,14 +43,14 @@ class HMACMiddleware(BaseHTTPMiddleware):
                 logger.warning("Empty request body")
                 return JSONResponse(
                     status_code=400,
-                    content={"detail": "Empty request body"}
+                    content={"detail": "Empty request body"},
                 )
 
             # Calculate expected signature
             expected = hmac.new(
                 self.secret,
                 body,
-                hashlib.sha256
+                hashlib.sha256,
             ).hexdigest()
 
             # Constant-time comparison to prevent timing attacks
@@ -57,7 +58,7 @@ class HMACMiddleware(BaseHTTPMiddleware):
                 logger.warning("Invalid HMAC signature")
                 return JSONResponse(
                     status_code=401,
-                    content={"detail": "Invalid signature"}
+                    content={"detail": "Invalid signature"},
                 )
 
             # Reconstruct request with body for downstream handlers
@@ -70,7 +71,7 @@ class HMACMiddleware(BaseHTTPMiddleware):
             logger.error(f"Error validating signature: {e}")
             return JSONResponse(
                 status_code=500,
-                content={"detail": "Error validating signature"}
+                content={"detail": "Error validating signature"},
             )
 
         return await call_next(request)

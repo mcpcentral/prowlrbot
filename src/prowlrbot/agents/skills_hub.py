@@ -89,7 +89,10 @@ def _compute_backoff_seconds(attempt: int) -> float:
 
 
 def _hub_base_url() -> str:
-    return os.environ.get("PROWLRBOT_SKILLS_HUB_BASE_URL", "https://clawhub.ai")
+    return os.environ.get(
+        "PROWLRBOT_SKILLS_HUB_BASE_URL",
+        "https://clawhub.ai",
+    )
 
 
 def _hub_search_path() -> str:

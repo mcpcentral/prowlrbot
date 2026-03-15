@@ -26,7 +26,9 @@ def room(engine):
 def agent(engine, room):
     """Register an agent in the room."""
     return engine.register_agent(
-        "agent-alpha", room["room_id"], capabilities=["python", "testing"]
+        "agent-alpha",
+        room["room_id"],
+        capabilities=["python", "testing"],
     )
 
 
@@ -34,7 +36,9 @@ def agent(engine, room):
 def agent_beta(engine, room):
     """Register a second agent."""
     return engine.register_agent(
-        "agent-beta", room["room_id"], capabilities=["frontend"]
+        "agent-beta",
+        room["room_id"],
+        capabilities=["frontend"],
     )
 
 
@@ -69,7 +73,9 @@ class TestRoomManagement:
 class TestAgentLifecycle:
     def test_register_agent(self, engine, room):
         agent = engine.register_agent(
-            "test-agent", room["room_id"], capabilities=["python"]
+            "test-agent",
+            room["room_id"],
+            capabilities=["python"],
         )
         assert agent["agent_id"].startswith("agent-")
         assert agent["name"] == "test-agent"
@@ -110,7 +116,11 @@ class TestAgentLifecycle:
 
 class TestTaskManagement:
     def test_create_task(self, engine, room):
-        task = engine.create_task(room["room_id"], "Build feature X", priority="high")
+        task = engine.create_task(
+            room["room_id"],
+            "Build feature X",
+            priority="high",
+        )
         assert task["task_id"].startswith("task-")
         assert task["title"] == "Build feature X"
         assert task["priority"] == "high"
@@ -118,7 +128,11 @@ class TestTaskManagement:
 
     def test_mission_board_sorted_by_priority(self, engine, room):
         engine.create_task(room["room_id"], "low task", priority="low")
-        engine.create_task(room["room_id"], "critical task", priority="critical")
+        engine.create_task(
+            room["room_id"],
+            "critical task",
+            priority="critical",
+        )
         engine.create_task(room["room_id"], "normal task", priority="normal")
         board = engine.get_mission_board(room["room_id"])
         priorities = [t["priority"] for t in board]
@@ -126,28 +140,60 @@ class TestTaskManagement:
 
     def test_claim_task_success(self, engine, room, agent):
         task = engine.create_task(
-            room["room_id"], "claimable", file_scopes=["src/a.py"]
+            room["room_id"],
+            "claimable",
+            file_scopes=["src/a.py"],
         )
-        result = engine.claim_task(task["task_id"], agent["agent_id"], room["room_id"])
+        result = engine.claim_task(
+            task["task_id"],
+            agent["agent_id"],
+            room["room_id"],
+        )
         assert result.success is True
         assert result.lock_token != ""
 
     def test_claim_task_already_taken(self, engine, room, agent, agent_beta):
         task = engine.create_task(
-            room["room_id"], "race condition", file_scopes=["src/b.py"]
+            room["room_id"],
+            "race condition",
+            file_scopes=["src/b.py"],
         )
-        r1 = engine.claim_task(task["task_id"], agent["agent_id"], room["room_id"])
+        r1 = engine.claim_task(
+            task["task_id"],
+            agent["agent_id"],
+            room["room_id"],
+        )
         assert r1.success is True
-        r2 = engine.claim_task(task["task_id"], agent_beta["agent_id"], room["room_id"])
+        r2 = engine.claim_task(
+            task["task_id"],
+            agent_beta["agent_id"],
+            room["room_id"],
+        )
         assert r2.success is False
         assert r2.reason == "not_available"
 
     def test_claim_task_file_conflict(self, engine, room, agent, agent_beta):
-        t1 = engine.create_task(room["room_id"], "task1", file_scopes=["src/shared.py"])
-        t2 = engine.create_task(room["room_id"], "task2", file_scopes=["src/shared.py"])
-        r1 = engine.claim_task(t1["task_id"], agent["agent_id"], room["room_id"])
+        t1 = engine.create_task(
+            room["room_id"],
+            "task1",
+            file_scopes=["src/shared.py"],
+        )
+        t2 = engine.create_task(
+            room["room_id"],
+            "task2",
+            file_scopes=["src/shared.py"],
+        )
+        r1 = engine.claim_task(
+            t1["task_id"],
+            agent["agent_id"],
+            room["room_id"],
+        )
         assert r1.success is True
-        r2 = engine.claim_task(t2["task_id"], agent_beta["agent_id"], room["room_id"])
+        r2 = engine.claim_task(
+            t2["task_id"],
+            agent_beta["agent_id"],
+            room["room_id"],
+        )
         assert r2.success is False
         assert r2.reason == "files_locked"
         assert len(r2.conflicts) == 1
@@ -155,7 +201,9 @@ class TestTaskManagement:
 
     def test_complete_task_releases_locks(self, engine, room, agent):
         task = engine.create_task(
-            room["room_id"], "finish me", file_scopes=["src/c.py"]
+            room["room_id"],
+            "finish me",
+            file_scopes=["src/c.py"],
         )
         engine.claim_task(task["task_id"], agent["agent_id"], room["room_id"])
         ok = engine.complete_task(task["task_id"], agent["agent_id"], "done!")
@@ -168,7 +216,11 @@ class TestTaskManagement:
         assert board[0]["status"] == "done"
 
     def test_fail_task_releases_locks(self, engine, room, agent):
-        task = engine.create_task(room["room_id"], "fail me", file_scopes=["src/d.py"])
+        task = engine.create_task(
+            room["room_id"],
+            "fail me",
+            file_scopes=["src/d.py"],
+        )
         engine.claim_task(task["task_id"], agent["agent_id"], room["room_id"])
         ok = engine.fail_task(task["task_id"], agent["agent_id"], "too hard")
         assert ok is True
@@ -178,7 +230,11 @@ class TestTaskManagement:
     def test_complete_task_wrong_owner(self, engine, room, agent, agent_beta):
         task = engine.create_task(room["room_id"], "owned task")
         engine.claim_task(task["task_id"], agent["agent_id"], room["room_id"])
-        ok = engine.complete_task(task["task_id"], agent_beta["agent_id"], "stealing")
+        ok = engine.complete_task(
+            task["task_id"],
+            agent_beta["agent_id"],
+            "stealing",
+        )
         assert ok is False
 
     def test_update_task_progress(self, engine, room, agent):
@@ -191,7 +247,9 @@ class TestTaskManagement:
     def test_blocked_tasks(self, engine, room):
         t1 = engine.create_task(room["room_id"], "prerequisite")
         t2 = engine.create_task(
-            room["room_id"], "depends on t1", blocked_by=[t1["task_id"]]
+            room["room_id"],
+            "depends on t1",
+            blocked_by=[t1["task_id"]],
         )
         board = engine.get_mission_board(room["room_id"])
         blocked_task = [t for t in board if t["task_id"] == t2["task_id"]][0]
@@ -199,12 +257,19 @@ class TestTaskManagement:
 
     def test_capability_filter(self, engine, room):
         engine.create_task(
-            room["room_id"], "python only", required_capabilities=["python"]
+            room["room_id"],
+            "python only",
+            required_capabilities=["python"],
         )
         engine.create_task(
-            room["room_id"], "frontend only", required_capabilities=["frontend"]
+            room["room_id"],
+            "frontend only",
+            required_capabilities=["frontend"],
         )
-        board = engine.get_mission_board(room["room_id"], agent_capabilities=["python"])
+        board = engine.get_mission_board(
+            room["room_id"],
+            agent_capabilities=["python"],
+        )
         assert len(board) == 1
         assert board[0]["title"] == "python only"
 
@@ -214,14 +279,20 @@ class TestTaskManagement:
 
 class TestFileLocking:
     def test_lock_file(self, engine, room, agent):
-        result = engine.lock_file("src/lock.py", agent["agent_id"], room["room_id"])
+        result = engine.lock_file(
+            "src/lock.py",
+            agent["agent_id"],
+            room["room_id"],
+        )
         assert result.success is True
         assert result.lock_token != ""
 
     def test_lock_file_conflict(self, engine, room, agent, agent_beta):
         engine.lock_file("src/conflict.py", agent["agent_id"], room["room_id"])
         result = engine.lock_file(
-            "src/conflict.py", agent_beta["agent_id"], room["room_id"]
+            "src/conflict.py",
+            agent_beta["agent_id"],
+            room["room_id"],
         )
         assert result.success is False
         assert result.reason == "already_locked"
@@ -229,22 +300,37 @@ class TestFileLocking:
 
     def test_lock_same_agent_succeeds(self, engine, room, agent):
         engine.lock_file("src/relock.py", agent["agent_id"], room["room_id"])
-        result = engine.lock_file("src/relock.py", agent["agent_id"], room["room_id"])
+        result = engine.lock_file(
+            "src/relock.py",
+            agent["agent_id"],
+            room["room_id"],
+        )
         # Same agent re-locking should succeed (or at least not fail)
         assert result.success is True
 
     def test_unlock_file(self, engine, room, agent):
         engine.lock_file("src/unlock.py", agent["agent_id"], room["room_id"])
-        ok = engine.unlock_file("src/unlock.py", agent["agent_id"], room["room_id"])
+        ok = engine.unlock_file(
+            "src/unlock.py",
+            agent["agent_id"],
+            room["room_id"],
+        )
         assert ok is True
         # Now another agent can lock it
         agent2 = engine.register_agent("other", room["room_id"])
-        result = engine.lock_file("src/unlock.py", agent2["agent_id"], room["room_id"])
+        result = engine.lock_file(
+            "src/unlock.py",
+            agent2["agent_id"],
+            room["room_id"],
+        )
         assert result.success is True
 
     def test_check_conflicts(self, engine, room, agent):
         engine.lock_file("src/a.py", agent["agent_id"], room["room_id"])
-        conflicts = engine.check_conflicts(["src/a.py", "src/b.py"], room["room_id"])
+        conflicts = engine.check_conflicts(
+            ["src/a.py", "src/b.py"],
+            room["room_id"],
+        )
         assert len(conflicts) == 1
         assert conflicts[0]["file"] == "src/a.py"
 
@@ -255,7 +341,10 @@ class TestFileLocking:
 class TestSharedContext:
     def test_set_and_get_context(self, engine, room, agent):
         engine.set_context(
-            room["room_id"], agent["agent_id"], "api-pattern", "REST over gRPC"
+            room["room_id"],
+            agent["agent_id"],
+            "api-pattern",
+            "REST over gRPC",
         )
         ctx = engine.get_context(room["room_id"], "api-pattern")
         assert len(ctx) == 1
@@ -280,7 +369,11 @@ class TestSharedContext:
 
 class TestEvents:
     def test_events_logged(self, engine, room, agent):
-        engine.broadcast_status(room["room_id"], agent["agent_id"], "hello world")
+        engine.broadcast_status(
+            room["room_id"],
+            agent["agent_id"],
+            "hello world",
+        )
         events = engine.get_events(room["room_id"])
         broadcast_events = [e for e in events if e["type"] == "agent.broadcast"]
         assert len(broadcast_events) >= 1
@@ -288,13 +381,24 @@ class TestEvents:
 
     def test_event_type_filter(self, engine, room, agent):
         engine.create_task(room["room_id"], "filter test")
-        engine.broadcast_status(room["room_id"], agent["agent_id"], "status update")
-        events = engine.get_events(room["room_id"], event_type="agent.broadcast")
+        engine.broadcast_status(
+            room["room_id"],
+            agent["agent_id"],
+            "status update",
+        )
+        events = engine.get_events(
+            room["room_id"],
+            event_type="agent.broadcast",
+        )
         assert all(e["type"] == "agent.broadcast" for e in events)
 
     def test_event_limit(self, engine, room, agent):
         for i in range(10):
-            engine.broadcast_status(room["room_id"], agent["agent_id"], f"msg {i}")
+            engine.broadcast_status(
+                room["room_id"],
+                agent["agent_id"],
+                f"msg {i}",
+            )
         events = engine.get_events(room["room_id"], limit=3)
         assert len(events) <= 3
 

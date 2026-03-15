@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Marketplace security scanner.
 
@@ -46,6 +47,7 @@ class Finding(NamedTuple):
 
 # ── Pattern registry (assembled at import time) ───────────────────────────────
 
+
 def _fn(*parts: str) -> str:
     """Join parts into a function/module name without literal strings in source."""
     return "".join(parts)
@@ -55,58 +57,114 @@ def _fn(*parts: str) -> str:
 #: Names are assembled from parts to avoid triggering static scanners
 #: that mis-flag security *documentation* as security *violations*.
 _DANGEROUS_AST_CALLS: dict[str, tuple[RiskLevel, str]] = {
-    _fn("ev", "al"):                    (RiskLevel.CRITICAL, "arbitrary code evaluation"),
-    _fn("ex", "ec"):                    (RiskLevel.CRITICAL, "arbitrary code execution"),
-    _fn("comp", "ile"):                 (RiskLevel.HIGH,     "produces executable code objects"),
-    _fn("os.sys", "tem"):               (RiskLevel.HIGH,     "shell invocation via os module"),
-    _fn("os.po", "pen"):                (RiskLevel.HIGH,     "shell invocation via os module"),
-    _fn("subproc", "ess.call"):         (RiskLevel.MEDIUM,   "subprocess invocation"),
-    _fn("subproc", "ess.run"):          (RiskLevel.MEDIUM,   "subprocess invocation"),
-    _fn("subproc", "ess.Pop", "en"):    (RiskLevel.MEDIUM,   "subprocess invocation"),
-    _fn("subproc", "ess.check_out", "put"): (RiskLevel.MEDIUM, "subprocess invocation"),
-    _fn("importlib.imp", "ort_module"): (RiskLevel.HIGH,     "dynamic module import"),
-    _fn("__imp", "ort__"):              (RiskLevel.HIGH,     "dynamic module import"),
-    _fn("pic", "kle.lo", "ads"):        (RiskLevel.CRITICAL, "unsafe binary deserialization"),
-    _fn("pic", "kle.lo", "ad"):         (RiskLevel.CRITICAL, "unsafe binary deserialization"),
-    _fn("mar", "shal.lo", "ads"):       (RiskLevel.HIGH,     "unsafe binary deserialization"),
-    "socket.connect":                   (RiskLevel.LOW,      "raw socket connection"),
-    "shutil.rmtree":                    (RiskLevel.MEDIUM,   "recursive directory deletion"),
-    "os.remove":                        (RiskLevel.LOW,      "file deletion"),
+    _fn("ev", "al"): (RiskLevel.CRITICAL, "arbitrary code evaluation"),
+    _fn("ex", "ec"): (RiskLevel.CRITICAL, "arbitrary code execution"),
+    _fn("comp", "ile"): (RiskLevel.HIGH, "produces executable code objects"),
+    _fn("os.sys", "tem"): (RiskLevel.HIGH, "shell invocation via os module"),
+    _fn("os.po", "pen"): (RiskLevel.HIGH, "shell invocation via os module"),
+    _fn("subproc", "ess.call"): (RiskLevel.MEDIUM, "subprocess invocation"),
+    _fn("subproc", "ess.run"): (RiskLevel.MEDIUM, "subprocess invocation"),
+    _fn("subproc", "ess.Pop", "en"): (
+        RiskLevel.MEDIUM,
+        "subprocess invocation",
+    ),
+    _fn("subproc", "ess.check_out", "put"): (
+        RiskLevel.MEDIUM,
+        "subprocess invocation",
+    ),
+    _fn("importlib.imp", "ort_module"): (
+        RiskLevel.HIGH,
+        "dynamic module import",
+    ),
+    _fn("__imp", "ort__"): (RiskLevel.HIGH, "dynamic module import"),
+    _fn("pic", "kle.lo", "ads"): (
+        RiskLevel.CRITICAL,
+        "unsafe binary deserialization",
+    ),
+    _fn("pic", "kle.lo", "ad"): (
+        RiskLevel.CRITICAL,
+        "unsafe binary deserialization",
+    ),
+    _fn("mar", "shal.lo", "ads"): (
+        RiskLevel.HIGH,
+        "unsafe binary deserialization",
+    ),
+    "socket.connect": (RiskLevel.LOW, "raw socket connection"),
+    "shutil.rmtree": (RiskLevel.MEDIUM, "recursive directory deletion"),
+    "os.remove": (RiskLevel.LOW, "file deletion"),
 }
 
 #: Module imports that warrant a note (not necessarily blocking).
 _WARN_IMPORTS: dict[str, tuple[RiskLevel, str]] = {
-    _fn("pic", "kle"):  (RiskLevel.MEDIUM, "verify no deserialization of untrusted data"),
-    "ctypes":           (RiskLevel.MEDIUM, "direct memory manipulation"),
+    _fn("pic", "kle"): (
+        RiskLevel.MEDIUM,
+        "verify no deserialization of untrusted data",
+    ),
+    "ctypes": (RiskLevel.MEDIUM, "direct memory manipulation"),
 }
 
 #: Regex patterns checked against full file text.
 _TEXT_PATTERNS: list[tuple[re.Pattern, RiskLevel, str]] = [
     # Hardcoded credentials
-    (re.compile(r'(?i)(api_key|secret|password|token)\s*=\s*["\'][^"\']{8,}["\']'),
-     RiskLevel.HIGH, "hardcoded credential"),
-    (re.compile(r'AKIA[0-9A-Z]{16}'),
-     RiskLevel.CRITICAL, "AWS access key"),
-    (re.compile(r'sk-ant-[A-Za-z0-9\-_]{90,}'),
-     RiskLevel.CRITICAL, "Anthropic API key"),
-    (re.compile(r'ghp_[A-Za-z0-9_]{36,}'),
-     RiskLevel.CRITICAL, "GitHub personal access token"),
+    (
+        re.compile(
+            r'(?i)(api_key|secret|password|token)\s*=\s*["\'][^"\']{8,}["\']',
+        ),
+        RiskLevel.HIGH,
+        "hardcoded credential",
+    ),
+    (
+        re.compile(r"AKIA[0-9A-Z]{16}"),
+        RiskLevel.CRITICAL,
+        "AWS access key",
+    ),
+    (
+        re.compile(r"sk-ant-[A-Za-z0-9\-_]{90,}"),
+        RiskLevel.CRITICAL,
+        "Anthropic API key",
+    ),
+    (
+        re.compile(r"ghp_[A-Za-z0-9_]{36,}"),
+        RiskLevel.CRITICAL,
+        "GitHub personal access token",
+    ),
     # Dangerous shell invocations
-    (re.compile(r'rm\s+-rf\s+/(?!\s*#)'),
-     RiskLevel.HIGH, "destructive rm -rf /"),
-    (re.compile(r'curl\s+.*\|\s*(?:bash|sh)\b'),
-     RiskLevel.HIGH, "curl-pipe-shell"),
-    (re.compile(r'wget\s+.*-O\s*-.*\|\s*(?:bash|sh)\b'),
-     RiskLevel.HIGH, "wget-pipe-shell"),
+    (
+        re.compile(r"rm\s+-rf\s+/(?!\s*#)"),
+        RiskLevel.HIGH,
+        "destructive rm -rf /",
+    ),
+    (
+        re.compile(r"curl\s+.*\|\s*(?:bash|sh)\b"),
+        RiskLevel.HIGH,
+        "curl-pipe-shell",
+    ),
+    (
+        re.compile(r"wget\s+.*-O\s*-.*\|\s*(?:bash|sh)\b"),
+        RiskLevel.HIGH,
+        "wget-pipe-shell",
+    ),
     # Exfiltration / malware signals
-    (re.compile(r'(?i)(monero|xmrig|stratum\+tcp)'),
-     RiskLevel.CRITICAL, "cryptomining indicator"),
-    (re.compile(r'bash\s+-i\s+>&\s+/dev/tcp/'),
-     RiskLevel.CRITICAL, "reverse shell"),
-    (re.compile(r'\bnc\b.*-e\s+/bin/(?:bash|sh)'),
-     RiskLevel.CRITICAL, "netcat reverse shell"),
-    (re.compile(r'curl\s+.*(?:-d|--data).*\$(?:HOME|USER|HOSTNAME)'),
-     RiskLevel.HIGH, "potential data exfiltration"),
+    (
+        re.compile(r"(?i)(monero|xmrig|stratum\+tcp)"),
+        RiskLevel.CRITICAL,
+        "cryptomining indicator",
+    ),
+    (
+        re.compile(r"bash\s+-i\s+>&\s+/dev/tcp/"),
+        RiskLevel.CRITICAL,
+        "reverse shell",
+    ),
+    (
+        re.compile(r"\bnc\b.*-e\s+/bin/(?:bash|sh)"),
+        RiskLevel.CRITICAL,
+        "netcat reverse shell",
+    ),
+    (
+        re.compile(r"curl\s+.*(?:-d|--data).*\$(?:HOME|USER|HOSTNAME)"),
+        RiskLevel.HIGH,
+        "potential data exfiltration",
+    ),
 ]
 
 
@@ -135,19 +193,28 @@ class _DangerVisitor(ast.NodeVisitor):
         name = self._call_name(node)
         if name in _DANGEROUS_AST_CALLS:
             risk, detail = _DANGEROUS_AST_CALLS[name]
-            self.findings.append(Finding(
-                risk=risk, category="dangerous-call",
-                detail=f"{name}(): {detail}", line=node.lineno,
-            ))
+            self.findings.append(
+                Finding(
+                    risk=risk,
+                    category="dangerous-call",
+                    detail=f"{name}(): {detail}",
+                    line=node.lineno,
+                ),
+            )
         self.generic_visit(node)
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
             if alias.name in _WARN_IMPORTS:
                 risk, detail = _WARN_IMPORTS[alias.name]
-                self.findings.append(Finding(
-                    risk=risk, category="import", detail=detail, line=node.lineno,
-                ))
+                self.findings.append(
+                    Finding(
+                        risk=risk,
+                        category="import",
+                        detail=detail,
+                        line=node.lineno,
+                    ),
+                )
         self.generic_visit(node)
 
 
@@ -164,10 +231,14 @@ class ScanResult:
     def summary(self) -> str:
         if not self.findings:
             return f"{self.path.name}: CLEAN"
-        lines = [f"{self.path.name}: {self.risk_level.value.upper()} ({len(self.findings)} findings)"]
+        lines = [
+            f"{self.path.name}: {self.risk_level.value.upper()} ({len(self.findings)} findings)",
+        ]
         for f in self.findings:
             loc = f"L{f.line}: " if f.line else ""
-            lines.append(f"  {loc}[{f.risk.value.upper()}] [{f.category}] {f.detail}")
+            lines.append(
+                f"  {loc}[{f.risk.value.upper()}] [{f.category}] {f.detail}",
+            )
         return "\n".join(lines)
 
 
@@ -195,8 +266,11 @@ def scan_file(path: Path) -> ScanResult:
     try:
         text = path.read_text(errors="ignore")
     except OSError as exc:
-        return ScanResult(path=path, risk_level=RiskLevel.CLEAN,
-                          findings=[Finding(RiskLevel.LOW, "io-error", str(exc))])
+        return ScanResult(
+            path=path,
+            risk_level=RiskLevel.CLEAN,
+            findings=[Finding(RiskLevel.LOW, "io-error", str(exc))],
+        )
 
     findings: list[Finding] = []
 
@@ -204,7 +278,14 @@ def scan_file(path: Path) -> ScanResult:
     for i, line in enumerate(text.splitlines(), 1):
         for pattern, risk, detail in _TEXT_PATTERNS:
             if pattern.search(line):
-                findings.append(Finding(risk=risk, category="pattern", detail=detail, line=i))
+                findings.append(
+                    Finding(
+                        risk=risk,
+                        category="pattern",
+                        detail=detail,
+                        line=i,
+                    ),
+                )
 
     # AST analysis of code blocks
     for block_start, code in _python_blocks(text):
@@ -215,10 +296,14 @@ def scan_file(path: Path) -> ScanResult:
         visitor = _DangerVisitor()
         visitor.visit(tree)
         for f in visitor.findings:
-            findings.append(Finding(
-                risk=f.risk, category=f.category, detail=f.detail,
-                line=block_start + f.line,
-            ))
+            findings.append(
+                Finding(
+                    risk=f.risk,
+                    category=f.category,
+                    detail=f.detail,
+                    line=block_start + f.line,
+                ),
+            )
 
     # Deduplicate
     seen: set[tuple] = set()
@@ -231,10 +316,15 @@ def scan_file(path: Path) -> ScanResult:
 
     overall = (
         max(unique, key=lambda f: list(RiskLevel).index(f.risk)).risk
-        if unique else RiskLevel.CLEAN
+        if unique
+        else RiskLevel.CLEAN
     )
-    return ScanResult(path=path, risk_level=overall, findings=unique,
-                      blocked=overall >= RiskLevel.HIGH)
+    return ScanResult(
+        path=path,
+        risk_level=overall,
+        findings=unique,
+        blocked=overall >= RiskLevel.HIGH,
+    )
 
 
 def scan_directory(directory: Path) -> list[ScanResult]:
@@ -249,8 +339,8 @@ def scan_directory(directory: Path) -> list[ScanResult]:
 def scan_listing(listing_path: Path) -> ScanResult:
     """Scan a listing directory, returning worst-case result."""
     results = [
-        scan_file(f) for f in
-        [listing_path / "SKILL.md", listing_path / "AGENT.md"]
+        scan_file(f)
+        for f in [listing_path / "SKILL.md", listing_path / "AGENT.md"]
         if f.exists()
     ]
     if not results:

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Bridge API configuration module."""
 import os
 

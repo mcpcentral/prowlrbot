@@ -39,7 +39,10 @@ class WebhookExecutor:
         matching = [r for r in rules if r.enabled and r.trigger.type == trigger_type]
 
         if not matching:
-            logger.debug("no matching webhook rules for trigger %s", trigger_type.value)
+            logger.debug(
+                "no matching webhook rules for trigger %s",
+                trigger_type.value,
+            )
             return []
 
         results: List[Dict[str, Any]] = []
@@ -73,10 +76,16 @@ class WebhookExecutor:
         for action in rule.actions:
             try:
                 result = await self._run_action(
-                    action.type, action.config, trigger_data
+                    action.type,
+                    action.config,
+                    trigger_data,
                 )
                 action_results.append(
-                    {"action": action.type.value, "status": "ok", "result": result}
+                    {
+                        "action": action.type.value,
+                        "status": "ok",
+                        "result": result,
+                    },
                 )
             except Exception as exc:
                 logger.exception(
@@ -86,7 +95,11 @@ class WebhookExecutor:
                     exc,
                 )
                 action_results.append(
-                    {"action": action.type.value, "status": "error", "error": str(exc)}
+                    {
+                        "action": action.type.value,
+                        "status": "error",
+                        "error": str(exc),
+                    },
                 )
 
         # Record that this rule was triggered.
@@ -137,7 +150,7 @@ class WebhookExecutor:
         handler = _ACTION_HANDLERS.get(action_type)
         if handler is None:
             raise NotImplementedError(
-                f"action type not implemented: {action_type.value}"
+                f"action type not implemented: {action_type.value}",
             )
         return await handler(self, config, trigger_data)
 
@@ -255,11 +268,16 @@ class WebhookExecutor:
         """
         to = config.get("to", "")
         subject = config.get("subject", "ProwlrBot Webhook Notification")
-        body = config.get("body", "Webhook triggered with data: {trigger_data}")
+        body = config.get(
+            "body",
+            "Webhook triggered with data: {trigger_data}",
+        )
         body = body.replace("{trigger_data}", str(trigger_data))
 
         if not to:
-            raise ValueError("send_email action requires a 'to' address in config")
+            raise ValueError(
+                "send_email action requires a 'to' address in config",
+            )
 
         return {
             "prepared": True,
@@ -284,7 +302,8 @@ class WebhookExecutor:
         """
         title = config.get("title", "Webhook Task")
         description = config.get(
-            "description", "Auto-created from webhook: {trigger_data}"
+            "description",
+            "Auto-created from webhook: {trigger_data}",
         )
         description = description.replace("{trigger_data}", str(trigger_data))
         priority = config.get("priority", "medium")

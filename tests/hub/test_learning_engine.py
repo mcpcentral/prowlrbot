@@ -35,7 +35,10 @@ def db(tmp_path):
 class TestLearningCRUD:
     def test_add_and_retrieve(self, db):
         lid = db.add_learning(
-            "correction", "agent-1", "Fix import", "Use absolute imports"
+            "correction",
+            "agent-1",
+            "Fix import",
+            "Use absolute imports",
         )
         assert lid is not None
         assert lid.startswith("learn-")
@@ -76,7 +79,12 @@ class TestLearningCRUD:
         assert len(other) == 0
 
     def test_get_by_id(self, db):
-        lid = db.add_learning("insight", "agent-1", "Key insight", "Important content")
+        lid = db.add_learning(
+            "insight",
+            "agent-1",
+            "Key insight",
+            "Important content",
+        )
         result = db.get(lid)
         assert result is not None
         assert result["learning_id"] == lid
@@ -117,7 +125,13 @@ class TestLearningCRUD:
         assert recent[0]["times_used"] == 2
 
     def test_update_confidence(self, db):
-        lid = db.add_learning("pattern", "a", "Adjustable", "content", confidence=0.5)
+        lid = db.add_learning(
+            "pattern",
+            "a",
+            "Adjustable",
+            "content",
+            confidence=0.5,
+        )
         db.update_confidence(lid, 0.9)
         result = db.get(lid)
         assert result["confidence"] == 0.9
@@ -142,7 +156,10 @@ class TestFTSSearch:
             "Use asyncio.gather instead of sequential awaits",
         )
         db.add_learning(
-            "pattern", "a", "Database pooling", "Always use connection pools for SQLite"
+            "pattern",
+            "a",
+            "Database pooling",
+            "Always use connection pools for SQLite",
         )
         results = db.search("async deadlock")
         assert len(results) == 1
@@ -150,7 +167,10 @@ class TestFTSSearch:
 
     def test_search_content(self, db):
         db.add_learning(
-            "insight", "a", "Perf tip", "Use connection pools for better throughput"
+            "insight",
+            "a",
+            "Perf tip",
+            "Use connection pools for better throughput",
         )
         results = db.search("connection pools")
         assert len(results) == 1
@@ -220,7 +240,12 @@ class TestFTSSafety:
         assert _sanitize_fts_query("fix import error") == '"fix import error"'
 
     def test_search_with_malicious_fts_operators(self, db):
-        db.add_learning("correction", "a", "Safe title", "Safe content about imports")
+        db.add_learning(
+            "correction",
+            "a",
+            "Safe title",
+            "Safe content about imports",
+        )
         results = db.search("* OR *")
         assert isinstance(results, list)
         results = db.search('NEAR("foo" "bar")')
@@ -254,7 +279,10 @@ class TestLimitClamping:
     def test_search_respects_limit(self, db):
         for i in range(5):
             db.add_learning(
-                "correction", "a", f"Search target {i}", f"Searchable content {i}"
+                "correction",
+                "a",
+                f"Search target {i}",
+                f"Searchable content {i}",
             )
         results = db.search("searchable", limit=2)
         assert len(results) <= 2
@@ -431,8 +459,20 @@ class TestSummary:
         assert "No learnings" in result
 
     def test_summary_with_data(self, db):
-        db.add_learning("correction", "a", "Fix imports", "content", project="test")
-        db.add_learning("pattern", "a", "Use dataclasses", "content", project="test")
+        db.add_learning(
+            "correction",
+            "a",
+            "Fix imports",
+            "content",
+            project="test",
+        )
+        db.add_learning(
+            "pattern",
+            "a",
+            "Use dataclasses",
+            "content",
+            project="test",
+        )
         result = db.summary("test")
         assert "Fix imports" in result
         assert "Use dataclasses" in result
@@ -450,7 +490,7 @@ class TestModuleLevelFunctions:
         assert conn is not None
         # Verify tables exist
         tables = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'"
+            "SELECT name FROM sqlite_master WHERE type='table'",
         ).fetchall()
         table_names = {r[0] for r in tables}
         assert "learnings" in table_names
@@ -461,11 +501,17 @@ class TestModuleLevelFunctions:
     def test_add_learning_function(self, tmp_path):
         db_path = str(tmp_path / "func_test.db")
         conn = init_db(db_path)
-        lid = add_learning(conn, "test-project", "correction", "Use Black formatter")
+        lid = add_learning(
+            conn,
+            "test-project",
+            "correction",
+            "Use Black formatter",
+        )
         assert lid.startswith("learn-")
         # Verify stored
         row = conn.execute(
-            "SELECT * FROM learnings WHERE learning_id = ?", (lid,)
+            "SELECT * FROM learnings WHERE learning_id = ?",
+            (lid,),
         ).fetchone()
         assert row is not None
         assert row["project"] == "test-project"
@@ -486,7 +532,8 @@ class TestModuleLevelFunctions:
             title="Custom title",
         )
         row = conn.execute(
-            "SELECT title FROM learnings WHERE learning_id = ?", (lid,)
+            "SELECT title FROM learnings WHERE learning_id = ?",
+            (lid,),
         ).fetchone()
         assert row["title"] == "Custom title"
         conn.close()
@@ -508,7 +555,12 @@ class TestModuleLevelFunctions:
     def test_search_learnings_function(self, tmp_path):
         db_path = str(tmp_path / "func_test.db")
         conn = init_db(db_path)
-        add_learning(conn, "proj", "correction", "Fix the async deadlock issue")
+        add_learning(
+            conn,
+            "proj",
+            "correction",
+            "Fix the async deadlock issue",
+        )
         add_learning(conn, "proj", "pattern", "Database connection pooling")
 
         results = search_learnings(conn, "async deadlock")
@@ -569,7 +621,10 @@ class TestThreadSafety:
     def test_concurrent_read_write(self, db):
         """Reads during writes should not crash or corrupt data."""
         db.add_learning(
-            "correction", "seed", "Seed data", "Initial content for searching"
+            "correction",
+            "seed",
+            "Seed data",
+            "Initial content for searching",
         )
         write_errors = []
         read_errors = []
@@ -577,7 +632,12 @@ class TestThreadSafety:
         def writer():
             try:
                 for i in range(20):
-                    db.add_learning("pattern", "writer", f"Write {i}", f"Content {i}")
+                    db.add_learning(
+                        "pattern",
+                        "writer",
+                        f"Write {i}",
+                        f"Content {i}",
+                    )
             except Exception as e:
                 write_errors.append(e)
 
@@ -642,7 +702,11 @@ class TestMigration:
         # Create a DB, then verify the project column works
         learning_db = LearningDB(db_path)
         lid = learning_db.add_learning(
-            "correction", "a", "Title", "Content", project="migrated"
+            "correction",
+            "a",
+            "Title",
+            "Content",
+            project="migrated",
         )
         result = learning_db.get(lid)
         assert result["project"] == "migrated"

@@ -80,7 +80,9 @@ class TestParseWorkflowDict:
         assert spec.trigger.type == TriggerType.manual
 
     def test_config_preserved(self):
-        spec = parse_workflow_dict({"name": "X", "config": {"a": 1, "b": [2, 3]}})
+        spec = parse_workflow_dict(
+            {"name": "X", "config": {"a": 1, "b": [2, 3]}},
+        )
         assert spec.config == {"a": 1, "b": [2, 3]}
 
 

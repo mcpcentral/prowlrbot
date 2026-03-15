@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 # Type alias for handler functions (sync or async).
 HandlerFunc = Callable[
-    [ROARMessage], Union[ROARMessage, Coroutine[Any, Any, ROARMessage]]
+    [ROARMessage],
+    Union[ROARMessage, Coroutine[Any, Any, ROARMessage]],
 ]
 
 
@@ -99,7 +100,10 @@ class ROARServer:
         """
         return await self._event_bus.publish(event)
 
-    def on(self, intent: MessageIntent) -> Callable[[HandlerFunc], HandlerFunc]:
+    def on(
+        self,
+        intent: MessageIntent,
+    ) -> Callable[[HandlerFunc], HandlerFunc]:
         """Register a handler for a specific message intent.
 
         Can be used as a decorator::
@@ -177,7 +181,10 @@ class ROARServer:
             endpoints={"http": f"http://{self._host}:{self._port}"},
         )
 
-    def register_with_directory(self, directory: AgentDirectory) -> DiscoveryEntry:
+    def register_with_directory(
+        self,
+        directory: AgentDirectory,
+    ) -> DiscoveryEntry:
         """Register this server's agent card with a directory.
 
         Args:

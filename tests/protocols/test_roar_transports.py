@@ -148,7 +148,7 @@ class TestROARClientTransport(unittest.TestCase):
             },
         )
         self.client.register(
-            AgentCard(identity=self.identity, description="Test client")
+            AgentCard(identity=self.identity, description="Test client"),
         )
         self.client.directory.register(self.target_card)
 
@@ -164,13 +164,15 @@ class TestROARClientTransport(unittest.TestCase):
                 identity=http_only,
                 description="HTTP only",
                 endpoints={"http": "http://localhost:9000"},
-            )
+            ),
         )
         transport = self.client._best_transport(http_only.did)
         assert transport == TransportType.HTTP
 
     def test_best_transport_unknown_agent(self):
-        transport = self.client._best_transport("did:roar:agent:nonexistent-12345678")
+        transport = self.client._best_transport(
+            "did:roar:agent:nonexistent-12345678",
+        )
         assert transport == TransportType.HTTP  # fallback
 
     def test_connect_builds_config(self):
@@ -187,7 +189,8 @@ class TestROARClientTransport(unittest.TestCase):
 
     def test_connect_unknown_agent_empty_url(self):
         config = self.client.connect(
-            "did:roar:agent:ghost-00000000", TransportType.HTTP
+            "did:roar:agent:ghost-00000000",
+            TransportType.HTTP,
         )
         assert config.url == ""
 

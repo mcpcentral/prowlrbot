@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for ROAR Protocol type conformance and cross-SDK compatibility."""
 
 import hashlib
@@ -39,7 +40,10 @@ class TestAgentIdentity:
     def test_agent_types(self):
         """All four agent types generate correct DID prefix."""
         for agent_type in ("agent", "tool", "human", "ide"):
-            identity = AgentIdentity(display_name="test", agent_type=agent_type)
+            identity = AgentIdentity(
+                display_name="test",
+                agent_type=agent_type,
+            )
             assert f"did:roar:{agent_type}:" in identity.did
 
     def test_public_key_optional(self):
@@ -48,7 +52,8 @@ class TestAgentIdentity:
         assert identity.public_key is None
 
         identity_with_key = AgentIdentity(
-            display_name="test", public_key="abcdef1234567890"
+            display_name="test",
+            public_key="abcdef1234567890",
         )
         assert identity_with_key.public_key == "abcdef1234567890"
 
@@ -146,7 +151,9 @@ class TestROARMessage:
 
         # Independently compute HMAC
         expected_sig = hmac.new(
-            b"cross-sdk-secret", expected_body.encode(), hashlib.sha256
+            b"cross-sdk-secret",
+            expected_body.encode(),
+            hashlib.sha256,
         ).hexdigest()
         assert sig_hex == expected_sig
 
@@ -212,7 +219,8 @@ class TestAgentDirectory:
     def test_register_and_lookup(self):
         directory = AgentDirectory()
         identity = AgentIdentity(
-            display_name="summarizer", capabilities=["text-summary"]
+            display_name="summarizer",
+            capabilities=["text-summary"],
         )
         card = AgentCard(
             identity=identity,
@@ -229,10 +237,16 @@ class TestAgentDirectory:
     def test_search_by_capability(self):
         directory = AgentDirectory()
         card1 = AgentCard(
-            identity=AgentIdentity(display_name="a", capabilities=["code-review"]),
+            identity=AgentIdentity(
+                display_name="a",
+                capabilities=["code-review"],
+            ),
         )
         card2 = AgentCard(
-            identity=AgentIdentity(display_name="b", capabilities=["translation"]),
+            identity=AgentIdentity(
+                display_name="b",
+                capabilities=["translation"],
+            ),
         )
         directory.register(card1)
         directory.register(card2)

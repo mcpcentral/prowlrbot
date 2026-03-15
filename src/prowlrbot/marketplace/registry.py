@@ -108,9 +108,14 @@ class RegistryClient:
 
     def fetch_categories(self) -> list[str]:
         """List available category directories in the repo."""
-        resp = self._client.get(f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents")
+        resp = self._client.get(
+            f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents",
+        )
         if resp.status_code != 200:
-            logger.warning("Failed to fetch repo contents: %s", resp.status_code)
+            logger.warning(
+                "Failed to fetch repo contents: %s",
+                resp.status_code,
+            )
             return []
 
         entries = resp.json()
@@ -123,7 +128,7 @@ class RegistryClient:
     def fetch_category_listings(self, category: str) -> list[dict]:
         """Fetch all listing manifests within a category directory."""
         resp = self._client.get(
-            f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents/{category}"
+            f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents/{category}",
         )
         if resp.status_code != 200:
             logger.warning("Failed to list %s: %s", category, resp.status_code)
@@ -147,7 +152,10 @@ class RegistryClient:
         """Fetch every listing — prefers index.json (1 request) over directory crawl."""
         index_listings = self._fetch_via_index()
         if index_listings is not None:
-            logger.info("Loaded %d listings from index.json", len(index_listings))
+            logger.info(
+                "Loaded %d listings from index.json",
+                len(index_listings),
+            )
             return index_listings
         logger.info("index.json unavailable, falling back to directory crawl")
         all_listings: list[dict] = []
@@ -199,7 +207,7 @@ class RegistryClient:
         """Fetch manifest.json (or package.json / SKILL.md) for a single listing."""
         for filename in ("manifest.json", "package.json"):
             resp = self._client.get(
-                f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents/{category}/{name}/{filename}"
+                f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents/{category}/{name}/{filename}",
             )
             if resp.status_code == 200:
                 data = resp.json()
@@ -210,18 +218,26 @@ class RegistryClient:
                         return json.loads(decoded)
                     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
                         logger.warning(
-                            "Bad manifest %s/%s/%s: %s", category, name, filename, exc
+                            "Bad manifest %s/%s/%s: %s",
+                            category,
+                            name,
+                            filename,
+                            exc,
                         )
         return None
 
-    def fetch_listing_files(self, category: str, dir_name: str) -> dict[str, str]:
+    def fetch_listing_files(
+        self,
+        category: str,
+        dir_name: str,
+    ) -> dict[str, str]:
         """Fetch all file contents for a listing (category/dir_name). Returns relative path -> content."""
         result: dict[str, str] = {}
         prefix = f"{category}/{dir_name}"
 
         def _fetch_dir(path: str, rel_prefix: str = "") -> None:
             resp = self._client.get(
-                f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents/{path}"
+                f"/repos/{REGISTRY_OWNER}/{REGISTRY_REPO}/contents/{path}",
             )
             if resp.status_code != 200:
                 return
@@ -234,7 +250,9 @@ class RegistryClient:
                     content_b64 = entry.get("content", "")
                     if content_b64:
                         try:
-                            result[rel] = b64decode(content_b64).decode("utf-8")
+                            result[rel] = b64decode(content_b64).decode(
+                                "utf-8",
+                            )
                         except (ValueError, UnicodeDecodeError):
                             pass
                 elif entry.get("type") == "dir":
@@ -280,7 +298,11 @@ def sync_registry(
         author_str = (
             author if isinstance(author, str) else author.get("name", "unknown")
         )
-        is_official = author_str.lower() in ("prowlrbot", "prowlr", "prowlrbot-team")
+        is_official = author_str.lower() in (
+            "prowlrbot",
+            "prowlr",
+            "prowlrbot-team",
+        )
 
         try:
             cat = MarketplaceCategory(category_str)
@@ -316,7 +338,10 @@ def sync_registry(
                 "tags": tags,
                 "category": cat.value,
                 "author_name": author_str,
-                "source_repo": raw.get("source_repo", raw.get("repository", "")),
+                "source_repo": raw.get(
+                    "source_repo",
+                    raw.get("repository", ""),
+                ),
                 "license": raw.get("license", "MIT"),
             }
             if console_plugin is not None:

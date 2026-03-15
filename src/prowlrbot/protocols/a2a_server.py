@@ -143,17 +143,17 @@ class A2AAgentCard(BaseModel):
             "streaming": True,
             "pushNotifications": False,
             "stateTransitionHistory": True,
-        }
+        },
     )
     skills: List[A2ASkill] = Field(default_factory=list)
     authentication: Dict[str, Any] = Field(
-        default_factory=lambda: {"schemes": ["Bearer"]}
+        default_factory=lambda: {"schemes": ["Bearer"]},
     )
     supported_protocols: List[str] = Field(
-        default_factory=lambda: ["a2a", "mcp", "roar"]
+        default_factory=lambda: ["a2a", "mcp", "roar"],
     )
     provider: Dict[str, str] = Field(
-        default_factory=lambda: {"organization": "ProwlrBot", "url": ""}
+        default_factory=lambda: {"organization": "ProwlrBot", "url": ""},
     )
 
 
@@ -239,7 +239,9 @@ class A2ATaskStore:
         if task:
             allowed = _VALID_TRANSITIONS.get(task.status, set())
             if status not in allowed:
-                raise ValueError(f"Invalid transition: {task.status} -> {status}")
+                raise ValueError(
+                    f"Invalid transition: {task.status} -> {status}",
+                )
             task.status = status
             task.history.append(StatusEntry(status=status, message=message))
         return task
@@ -251,7 +253,11 @@ class A2ATaskStore:
             task.messages.append(msg)
         return task
 
-    def append_artifact(self, task_id: str, artifact: Artifact) -> Optional[A2ATask]:
+    def append_artifact(
+        self,
+        task_id: str,
+        artifact: Artifact,
+    ) -> Optional[A2ATask]:
         """Append an output artifact to a task."""
         task = self._tasks.get(task_id)
         if task:
@@ -402,14 +408,18 @@ async def send_task_subscribe(request: SendTaskRequest) -> StreamingResponse:
             sub = _event_bus.subscribe(
                 StreamFilter(
                     session_ids=[task.id],
-                )
+                ),
             )
             try:
                 async for event in sub:
                     yield f"data: {json.dumps({'type': event.type, 'task_id': task.id, 'data': event.data, 'timestamp': event.timestamp})}\n\n"
                     if event.type in (StreamEventType.TASK_UPDATE,) and event.data.get(
-                        "status"
-                    ) in ("completed", "failed", "canceled"):
+                        "status",
+                    ) in (
+                        "completed",
+                        "failed",
+                        "canceled",
+                    ):
                         break
             finally:
                 sub.close()
@@ -451,14 +461,18 @@ async def subscribe_task(task_id: str) -> StreamingResponse:
             sub = _event_bus.subscribe(
                 StreamFilter(
                     session_ids=[task.id],
-                )
+                ),
             )
             try:
                 async for event in sub:
                     yield f"data: {json.dumps({'type': event.type, 'task_id': task.id, 'data': event.data, 'timestamp': event.timestamp})}\n\n"
                     if event.type in (StreamEventType.TASK_UPDATE,) and event.data.get(
-                        "status"
-                    ) in ("completed", "failed", "canceled"):
+                        "status",
+                    ) in (
+                        "completed",
+                        "failed",
+                        "canceled",
+                    ):
                         break
             finally:
                 sub.close()

@@ -68,7 +68,10 @@ class TokenBucket:
         """
         now = time.monotonic()
         elapsed = now - self._last_refill
-        self._tokens = min(self._max_tokens, self._tokens + elapsed * self._refill_rate)
+        self._tokens = min(
+            self._max_tokens,
+            self._tokens + elapsed * self._refill_rate,
+        )
         self._last_refill = now
 
         if self._tokens >= 1.0:
@@ -158,11 +161,15 @@ def create_roar_router(
             return
         if not authorization or not authorization.startswith("Bearer "):
             raise HTTPException(
-                status_code=401, detail="Missing or invalid authorization"
+                status_code=401,
+                detail="Missing or invalid authorization",
             )
         token = authorization[7:]
         if not _hmac.compare_digest(token, auth_token):
-            raise HTTPException(status_code=401, detail="Invalid authorization token")
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid authorization token",
+            )
 
     @router.post("/message")
     async def handle_message(body: Dict[str, Any], request: Request) -> Any:
@@ -177,7 +184,10 @@ def create_roar_router(
             logger.warning("Invalid ROAR message: %s", exc)
             return JSONResponse(
                 status_code=400,
-                content={"error": "invalid_message", "detail": _sanitize_error(exc)},
+                content={
+                    "error": "invalid_message",
+                    "detail": _sanitize_error(exc),
+                },
             )
 
         # Hard reject on signature failure when server has a signing secret
@@ -224,10 +234,16 @@ def create_roar_router(
                 raw = await ws.receive_text()
                 auth_data = json.loads(raw)
                 if auth_data.get("type") != "auth" or not _hmac.compare_digest(
-                    auth_data.get("token", ""), auth_token
+                    auth_data.get("token", ""),
+                    auth_token,
                 ):
                     await ws.send_text(
-                        json.dumps({"error": "auth_failed", "detail": "Invalid token."})
+                        json.dumps(
+                            {
+                                "error": "auth_failed",
+                                "detail": "Invalid token.",
+                            },
+                        ),
                     )
                     await ws.close(code=4001)
                     return
@@ -247,8 +263,8 @@ def create_roar_router(
                             {
                                 "error": "rate_limited",
                                 "detail": "Too many requests. Please try again later.",
-                            }
-                        )
+                            },
+                        ),
                     )
                     continue
 
@@ -258,15 +274,15 @@ def create_roar_router(
 
                     # Verify signature on WebSocket frames too
                     if server._signing_secret and not incoming.verify(
-                        server._signing_secret
+                        server._signing_secret,
                     ):
                         await ws.send_text(
                             json.dumps(
                                 {
                                     "error": "signature_invalid",
                                     "detail": "HMAC signature verification failed.",
-                                }
-                            )
+                                },
+                            ),
                         )
                         continue
 
@@ -277,21 +293,23 @@ def create_roar_router(
                                 {
                                     "error": "duplicate_message",
                                     "detail": "Message already processed.",
-                                }
-                            )
+                                },
+                            ),
                         )
                         continue
 
                     response = await server.handle_message(incoming)
-                    await ws.send_text(json.dumps(response.model_dump(by_alias=True)))
+                    await ws.send_text(
+                        json.dumps(response.model_dump(by_alias=True)),
+                    )
                 except Exception as exc:
                     await ws.send_text(
                         json.dumps(
                             {
                                 "error": "processing_error",
                                 "detail": _sanitize_error(exc),
-                            }
-                        )
+                            },
+                        ),
                     )
         except WebSocketDisconnect:
             logger.info("ROAR WebSocket disconnected")
@@ -351,7 +369,7 @@ def create_roar_router(
                                 "session_id": event.session_id,
                                 "data": event.data,
                                 "timestamp": event.timestamp,
-                            }
+                            },
                         )
                         yield f"event: {event.type}\ndata: {data}\n\n"
                 finally:
