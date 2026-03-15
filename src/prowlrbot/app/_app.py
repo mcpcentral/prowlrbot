@@ -565,6 +565,15 @@ if os.path.isdir(_CONSOLE_STATIC_DIR):
 
     @app.get("/{full_path:path}")
     def _console_spa(full_path: str):
+        # Block .env-style probe paths with 404 (no distinguishable response for scanners)
+        if full_path.startswith(".env") or full_path in (
+            ".env",
+            ".env.local",
+            ".env.prod",
+            ".env.dev",
+            ".env.example",
+        ):
+            raise HTTPException(status_code=404, detail="Not Found")
         # Never serve SPA for API/protocol paths (let them 404 if not registered)
         if full_path.startswith(("api/", "roar/", "ws/")) or full_path in (
             "roar",

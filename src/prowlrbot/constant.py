@@ -77,10 +77,16 @@ DASHSCOPE_BASE_URL = os.environ.get(
     "https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
-# CORS configuration — comma-separated list of allowed origins for dev mode.
-# Example: PROWLRBOT_CORS_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
-# When unset, CORS middleware is not applied.
-CORS_ORIGINS = os.environ.get("PROWLRBOT_CORS_ORIGINS", "").strip()
+# CORS configuration — comma-separated list of allowed origins.
+# Example: PROWLRBOT_CORS_ORIGINS="http://localhost:5173,https://prowlrbot.com"
+# When unset: if PROWLR_OFFICIAL_APP=1 (e.g. app.prowlrbot.com), allows the marketing
+# site origins so the ROAR demo (prowlrbot.com/demo/roar-demo.html) can call /roar/health and /roar/card.
+_OFFICIAL_APP = os.environ.get("PROWLR_OFFICIAL_APP", "").strip().lower() in ("1", "true", "yes")
+_DEMO_ORIGINS = "https://prowlrbot.com,https://www.prowlrbot.com"
+CORS_ORIGINS = (
+    os.environ.get("PROWLRBOT_CORS_ORIGINS", "").strip()
+    or (_DEMO_ORIGINS if _OFFICIAL_APP else "")
+)
 
 # API authentication — set to a SHA-256 hash of your token.
 # Generate with: python -c "from prowlrbot.app.auth import generate_api_token, hash_token; t=generate_api_token(); print(f'Token: {t}\nHash:  {hash_token(t)}')"

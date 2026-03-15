@@ -439,8 +439,10 @@
           setResult(healthResult, JSON.stringify(data, null, 2), !r.ok);
           if (r.ok) showCurl();
         } catch (e) {
-          setStatus(healthStatus, "Error: " + e.message, "fail");
-          setResult(healthResult, e.message, true);
+          const msg = e.message || "Failed to fetch";
+          const hint = msg === "Failed to fetch" ? " (check CORS: app must allow this origin, or try from same origin)" : "";
+          setStatus(healthStatus, "Error: " + msg + hint, "fail");
+          setResult(healthResult, msg + hint, true);
         }
         setLoading(btnHealth, false);
       });
@@ -460,7 +462,9 @@
           const data = await r.json().catch(() => ({}));
           setResult(cardResult, JSON.stringify(data, null, 2), !r.ok);
         } catch (e) {
-          setResult(cardResult, "Error: " + e.message, true);
+          const msg = e.message || "Failed to fetch";
+          const hint = msg === "Failed to fetch" ? " (check CORS or network)" : "";
+          setResult(cardResult, "Error: " + msg + hint, true);
         }
         setLoading(btnCard, false);
       });

@@ -8,9 +8,11 @@
 #   fly secrets set ANTHROPIC_API_KEY="sk-ant-..."
 #   fly deploy
 #
-# Custom domains (after deploy):
-#   fly certs add api.prowlrbot.com
-#   → adds Cloudflare CNAME: api → prowlrbot.fly.dev
+# Use the app via your custom domain (recommended):
+#   fly certs add app.prowlrbot.com
+#   Point DNS: A/AAAA app.prowlrbot.com → fly ips list
+#   Then use https://app.prowlrbot.com — avoid prowlrbot.fly.dev for production;
+#   the .fly.dev URL can show "not loading" for 30–90s after deploy while the app starts.
 
 app = "prowlrbot"
 primary_region = "sjc"
@@ -23,6 +25,7 @@ primary_region = "sjc"
   PROWLRBOT_WORKING_DIR     = "/data/.prowlrbot"
   PROWLRBOT_SECRET_DIR      = "/data/.prowlrbot.secret"
   PROWLRBOT_RUNNING_IN_CONTAINER = "1"
+  PROWLR_OFFICIAL_APP       = "1"
   NODE_ENV                  = "production"
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
 
@@ -42,16 +45,17 @@ primary_region = "sjc"
     hard_limit = 100
     soft_limit = 80
 
-# App startup (init, memory, channels) can take ~30–60s; grace allows listen before fail
+# App startup (runner, channels, cron, MCP) takes ~30–90s; grace avoids marking unhealthy during that time.
+# Use https://app.prowlrbot.com (custom domain); prowlrbot.fly.dev may be slow on first load after deploy.
 [[http_service.checks]]
-  grace_period = "90s"
+  grace_period = "120s"
   interval     = "15s"
   method       = "GET"
   path         = "/api/health"
   timeout      = "5s"
 
 [[http_service.checks]]
-  grace_period = "90s"
+  grace_period = "120s"
   interval     = "60s"
   method       = "GET"
   path         = "/roar/health"

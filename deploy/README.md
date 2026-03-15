@@ -56,12 +56,45 @@ fly scale show          # Current machine size
 fly scale vm shared-cpu-2x --memory 1024  # Resize
 ```
 
-### Custom domain
+### Custom domain (recommended)
+
+Use a custom domain so users don’t hit the default Fly URL (`prowlrbot.fly.dev`), which can show “not loading” for 30–90 seconds after a deploy while the app starts (runner, channels, cron, MCP init). Health checks have a 120s grace period so Fly won’t mark the app unhealthy during startup.
 
 ```bash
-fly certs add your-domain.com
-# Then point your DNS A/AAAA records to the IPs shown
+fly certs add app.prowlrbot.com
+fly certs show app.prowlrbot.com   # shows the CNAME target
+fly ips list                       # only needed for A/AAAA method
 ```
+
+**Pick one** — you cannot have both a CNAME and A/AAAA for the same name.
+
+- **CNAME (recommended with Cloudflare)**  
+  In Cloudflare, add a **CNAME** record:
+  - **Name:** `app` (so `app.prowlrbot.com`)
+  - **Target:** the Fly CNAME from `fly certs show app.prowlrbot.com` (e.g. `e0w81kk.prowlrbot.fly.dev`)
+  - Proxy (orange cloud) can be on or off. Leave the existing CNAME; do **not** add A/AAAA for `app`.
+
+- **A + AAAA (alternative)**  
+  Only if you are **not** using a CNAME for `app`: remove the CNAME for `app` first, then add:
+  - **A** `app` → `<fly-ipv4>` from `fly ips list`
+  - **AAAA** `app` → `<fly-ipv6>` from `fly ips list`
+
+Then use **https://app.prowlrbot.com** as the canonical app URL; avoid relying on `https://prowlrbot.fly.dev` for production.
+
+### Studio (optional alias)
+
+The **Prowlr-Studio** API is part of the same app at `/studio/*` (e.g. `https://app.prowlrbot.com/studio/health`). The Studio frontend (visual agent builder) usually runs locally (`prowlr studio start`) and points at this backend.
+
+If you want a dedicated hostname for Studio (e.g. so docs or links can say “use studio.prowlrbot.com”):
+
+```bash
+fly certs add studio.prowlrbot.com
+fly certs show studio.prowlrbot.com   # CNAME target
+```
+
+In Cloudflare, add a **CNAME** for `studio` to the target Fly shows (e.g. `*.flydns.net`). You already have `_acme-challenge.studio` for cert validation; the main record is **Name** `studio` → that Fly CNAME. (Or use A/AAAA to the same Fly IPs as `app` if you prefer — but not both CNAME and A/AAAA for `studio`.)
+
+Both hostnames hit the same Fly app; Studio routes live at `/studio/*`.
 
 ---
 
