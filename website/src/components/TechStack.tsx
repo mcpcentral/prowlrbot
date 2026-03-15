@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { type Lang } from "../i18n";
 import { SectionWrapper } from "./SectionWrapper";
 
@@ -8,6 +8,8 @@ interface TechTile {
   glow: string;
   category: string;
   desc: string;
+  /** Optional link for "Learn more" (e.g. docs or official site) */
+  link?: string;
 }
 
 const tiles: TechTile[] = [
@@ -219,10 +221,20 @@ interface TechStackProps {
 export function TechStack({ lang: _lang }: TechStackProps) {
   const [hoveredTile, setHoveredTile] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [selectedTile, setSelectedTile] = useState<TechTile | null>(null);
 
   const filtered = activeCategory
     ? tiles.filter((t) => t.category === activeCategory)
     : tiles;
+
+  useEffect(() => {
+    if (!selectedTile) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedTile(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedTile]);
 
   return (
     <SectionWrapper
@@ -302,8 +314,17 @@ export function TechStack({ lang: _lang }: TechStackProps) {
             <div
               key={tile.name}
               className="tech-tile"
+              role="button"
+              tabIndex={0}
               onMouseEnter={() => setHoveredTile(tile.name)}
               onMouseLeave={() => setHoveredTile(null)}
+              onClick={() => setSelectedTile(tile)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedTile(tile);
+                }
+              }}
               style={{
                 position: "relative",
                 borderRadius: "0.625rem",
@@ -392,9 +413,146 @@ export function TechStack({ lang: _lang }: TechStackProps) {
         })}
       </div>
 
+      {/* Tile detail modal */}
+      {selectedTile && (
+        <div
+          className="tech-stack-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tech-stack-modal-title"
+          onClick={() => setSelectedTile(null)}
+        >
+          <div
+            className="tech-stack-modal"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              borderColor: `${selectedTile.color}66`,
+              boxShadow: `0 8px 32px ${selectedTile.glow}, 0 4px 16px rgba(0,0,0,0.3)`,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "var(--space-3)",
+                gap: "1rem",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: selectedTile.color,
+                }}
+              >
+                {selectedTile.category}
+              </span>
+              <button
+                type="button"
+                className="tech-stack-modal-close"
+                onClick={() => setSelectedTile(null)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <h3
+              id="tech-stack-modal-title"
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                color: "var(--text)",
+                marginBottom: "var(--space-2)",
+              }}
+            >
+              {selectedTile.name}
+            </h3>
+            <p
+              style={{
+                fontSize: "0.9375rem",
+                color: "var(--text-muted)",
+                lineHeight: 1.5,
+                marginBottom: selectedTile.link ? "var(--space-4)" : 0,
+              }}
+            >
+              {selectedTile.desc}
+            </p>
+            {selectedTile.link && (
+              <a
+                href={selectedTile.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.375rem",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  color: selectedTile.color,
+                  textDecoration: "none",
+                }}
+              >
+                Learn more →
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
       <style>{`
         .tech-tile:active {
           transform: translateY(2px) rotateX(0deg) !important;
+        }
+        .tech-stack-modal-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(4px);
+          animation: tech-stack-fadeIn 0.2s ease;
+        }
+        .tech-stack-modal {
+          max-width: 400px;
+          width: 100%;
+          padding: var(--space-5);
+          border-radius: 1rem;
+          border: 1px solid var(--border);
+          background: var(--bg);
+          animation: tech-stack-slideUp 0.25s ease;
+        }
+        .tech-stack-modal-close {
+          width: 2rem;
+          height: 2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: none;
+          border-radius: 0.5rem;
+          background: var(--surface);
+          color: var(--text-muted);
+          font-size: 1.25rem;
+          line-height: 1;
+          cursor: pointer;
+          transition: background 0.2s, color 0.2s;
+        }
+        .tech-stack-modal-close:hover {
+          background: var(--border);
+          color: var(--text);
+        }
+        @keyframes tech-stack-fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes tech-stack-slideUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 640px) {
           .tech-grid {

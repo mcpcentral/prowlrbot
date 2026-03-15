@@ -3,6 +3,7 @@ import { type Lang } from "../i18n";
 import { Nav } from "../components/Nav";
 import { Hero } from "../components/Hero";
 import { Features } from "../components/Features";
+import { InteractiveTerminal } from "../components/InteractiveTerminal";
 import { CompetitorComparison } from "../components/CompetitorComparison";
 import { UseCases } from "../components/UseCases";
 import { CommunitySection } from "../components/CommunitySection";
@@ -46,6 +47,7 @@ export function Home({ config, lang, theme, onThemeToggle }: HomeProps) {
           consoleUrl={config.consoleUrl}
         />
         <Features lang={lang} />
+        <InteractiveTerminal lang={lang} />
         <CompetitorComparison lang={lang} />
         <UseCases lang={lang} />
         <CommunitySection lang={lang} />
