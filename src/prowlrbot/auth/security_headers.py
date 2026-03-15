@@ -18,15 +18,18 @@ from starlette.responses import Response
 #   hashes).  With ``'strict-dynamic'`` and no trusted script via nonce/hash,
 #   Chrome will ignore host-based allow‑listing and block the main bundle,
 #   resulting in a blank screen.
+# - Clerk (when used) loads its SDK from the Frontend API domain (custom or
+#   *.clerk.accounts.dev). script-src, frame-src, connect-src and img-src
+#   must allow those origins or Clerk sign-in will be blocked.
 DEFAULT_CSP_DIRECTIVES: dict[str, str] = {
     "default-src": "'self'",
-    # Allow same‑origin scripts (including bundled assets) but keep inline
-    # scripts disabled by default.
-    "script-src": "'self'",
+    # Same‑origin + Clerk Frontend API (script loads and iframes).
+    "script-src": "'self' https://clerk.prowlrbot.com https://*.clerk.accounts.dev",
     "style-src": "'self' 'unsafe-inline'",  # CSS inline is low risk
-    "img-src": "'self' data: blob:",
+    "img-src": "'self' data: blob: https://clerk.prowlrbot.com https://*.clerk.accounts.dev",
     "font-src": "'self' data:",
-    "connect-src": "'self' ws: wss:",
+    "connect-src": "'self' ws: wss: https://clerk.prowlrbot.com https://*.clerk.accounts.dev",
+    "frame-src": "'self' https://clerk.prowlrbot.com https://*.clerk.accounts.dev",
     "frame-ancestors": "'none'",
     "base-uri": "'self'",
     "form-action": "'self'",
