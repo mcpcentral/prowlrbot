@@ -1,4 +1,6 @@
-# ROAR Protocol -- Reliable Open Agent Relay
+# ROAR Protocol — Reliable Open Agent Relay
+
+**Install:** `pip install roar-protocol` · [PyPI](https://pypi.org/project/roar-protocol/) · [GitHub](https://github.com/ProwlrBot/roar-protocol)
 
 ROAR is ProwlrBot's unified 5-layer agent communication protocol that wraps
 MCP, ACP, and A2A into a single coherent message format with identity,

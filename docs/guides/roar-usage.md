@@ -1,6 +1,8 @@
 # ROAR protocol — Using ProwlrBot as an agent
 
-How to discover ProwlrBot over ROAR and send it tasks (EXECUTE/DELEGATE) via HTTP.
+ProwlrBot implements the [ROAR protocol](https://github.com/ProwlrBot/roar-protocol). Install the protocol package to build compatible agents: **`pip install roar-protocol`** · [PyPI](https://pypi.org/project/roar-protocol/)
+
+This guide shows how to discover ProwlrBot over ROAR and send it tasks (EXECUTE/DELEGATE) via HTTP.
 
 ## Public endpoints (no auth)
 

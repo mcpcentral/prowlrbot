@@ -10,6 +10,7 @@ import {
   Moon,
   Store,
   DollarSign,
+  PlayCircle,
 } from "lucide-react";
 import { UserButton, useUser } from "@clerk/react";
 import { useAuthEnabled } from "../contexts/AuthContext";
@@ -212,6 +213,16 @@ export function Nav({
             <DollarSign size={18} strokeWidth={1.5} aria-hidden />
             <span>Pricing</span>
           </Link>
+          <a
+            href="/demo/roar-demo.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClass}
+            title="ROAR protocol interactive demo"
+          >
+            <PlayCircle size={18} strokeWidth={1.5} aria-hidden />
+            <span>Demo</span>
+          </a>
           {consoleUrl && (
             <a
               href={consoleUrl}
@@ -386,6 +397,16 @@ export function Nav({
         >
           <DollarSign size={18} /> Pricing
         </Link>
+        <a
+          href="/demo/roar-demo.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkClass}
+          onClick={() => setOpen(false)}
+          title="ROAR protocol demo"
+        >
+          <PlayCircle size={18} /> Demo
+        </a>
         {consoleUrl && (
           <a
             href={consoleUrl}

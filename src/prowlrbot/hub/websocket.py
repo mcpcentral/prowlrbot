@@ -26,6 +26,7 @@ _WS_CONNECTS_PER_MINUTE = 10
 
 async def broadcast_ws(event: dict):
     """Push event to all connected WebSocket clients."""
+    global _ws_clients
     if not _ws_clients:
         return
     dead = set()

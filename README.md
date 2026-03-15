@@ -516,10 +516,26 @@ ProwlrBot is part of a family of projects:
 | Project | Description |
 |---------|-------------|
 | [ProwlrBot](https://github.com/ProwlrBot/prowlrbot) | Core agent platform |
-| [ROAR Protocol](https://github.com/ProwlrBot/roar-protocol) | Agent communication standard |
+| [ROAR Protocol](https://github.com/ProwlrBot/roar-protocol) · [PyPI](https://pypi.org/project/roar-protocol/) | Agent communication standard — `pip install roar-protocol` |
 | [Marketplace](https://github.com/ProwlrBot/prowlr-marketplace) | Skills & agents marketplace |
 | [Docs](https://github.com/ProwlrBot/prowlr-docs) | Centralized documentation |
 | [AgentVerse](https://github.com/ProwlrBot/agentverse) | Virtual agent world for testing |
+
+### 🎬 See ROAR in action
+
+**One protocol. Any agent.** ProwlrBot speaks [ROAR](https://github.com/ProwlrBot/roar-protocol) — the open agent communication protocol. Discover agents, fetch their cards, and send tasks over HTTP or WebSocket. No vendor lock-in; any ROAR-compatible agent can talk to any other.
+
+| Try it | Description |
+|--------|-------------|
+| **[▶ Live demo](https://prowlrbot.com/demo/roar-demo.html)** | Point at any ROAR endpoint (e.g. `app.prowlrbot.com`), check health, fetch the agent card, send a test message — all in your browser, zero install. |
+| **CLI** | One-liners below. |
+| **Video** | Record the demo (health → card → send message), upload to YouTube/Loom, and [add the link](docs/guides/roar-usage.md) for a one‑minute showoff. |
+
+```bash
+# Quick CLI check (no auth)
+curl -s https://app.prowlrbot.com/roar/health
+curl -s https://app.prowlrbot.com/roar/card | jq .
+```
 
 ---
 

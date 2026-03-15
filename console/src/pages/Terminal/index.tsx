@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, Space, Tag, Typography } from "antd";
 import { PoweroffOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Terminal as XTerm } from "xterm";
-import { FitAddon } from "xterm-addon-fit";
-import "xterm/css/xterm.css";
+import { Terminal as XTerm } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
+import "@xterm/xterm/css/xterm.css";
 
 declare const BASE_URL: string;
 

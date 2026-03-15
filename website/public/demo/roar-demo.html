@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ROAR Protocol — Live Demo | ProwlrBot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #070708;
+      --surface: #111113;
+      --surface-hover: #18181b;
+      --border: #27272a;
+      --text: #fafafa;
+      --text-muted: #71717a;
+      --accent: #ff3d00;
+      --accent-soft: #ff6d3d;
+      --accent-glow: rgba(255, 61, 0, 0.35);
+      --success: #22c55e;
+      --success-glow: rgba(34, 197, 94, 0.2);
+      --error: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Outfit", system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .bg-gradient {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 61, 0, 0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255, 61, 0, 0.06), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.75rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 0.35rem 0.75rem;
+      border: 1px solid rgba(255, 61, 0, 0.35);
+      border-radius: 999px;
+      margin-bottom: 1rem;
+      animation: fadeIn 0.6s ease;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.5rem;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeIn 0.6s ease 0.1s both;
+    }
+
+    .tagline {
+      font-size: 1.0625rem;
+      color: var(--text-muted);
+      margin: 0 0 0.25rem;
+      animation: fadeIn 0.6s ease 0.2s both;
+    }
+
+    .tagline strong { color: var(--accent-soft); }
+
+    .sub {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      opacity: 0.9;
+      margin: 0;
+      animation: fadeIn 0.6s ease 0.3s both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--accent-glow); }
+      50% { opacity: 0.9; box-shadow: 0 0 0 8px transparent; }
+    }
+
+    @keyframes successPop {
+      0% { transform: scale(1); border-color: var(--border); }
+      50% { transform: scale(1.01); border-color: var(--success); box-shadow: 0 0 20px var(--success-glow); }
+      100% { transform: scale(1); border-color: var(--success); }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card:hover { border-color: rgba(255, 61, 0, 0.2); }
+
+    .card h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin: 0 0 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.375rem;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.875rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      margin-bottom: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn {
+      font-family: "Outfit", system-ui, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.625rem 1.25rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+    }
+
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn:not(:disabled):active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-soft) 100%);
+      color: #0a0a0a;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 6px 24px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--surface-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) { border-color: var(--text-muted); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .btn-ghost:hover { color: var(--text); }
+
+    .result {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.8125rem;
+      line-height: 1.55;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 340px;
+      overflow: auto;
+      margin-top: 1rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .result:empty { display: none; }
+    .result.success { border-color: var(--success); animation: successPop 0.4s ease; }
+    .result.error { border-color: var(--error); color: #fca5a5; }
+
+    .result .key { color: #a78bfa; }
+    .result .string { color: #34d399; }
+    .result .num { color: #fbbf24; }
+
+    .status {
+      font-size: 0.8125rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status.ok { color: var(--success); }
+    .status.ok::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .status.fail { color: var(--error); }
+    .status.pending { color: var(--text-muted); }
+    .status.pending::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.2s ease infinite;
+    }
+
+    .curl-block {
+      margin-top: 1rem;
+      padding: 0.875rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      position: relative;
+    }
+
+    .curl-block code { color: var(--text); }
+    .curl-block .btn-ghost {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .links a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      margin: 0 1rem;
+      transition: color 0.2s ease;
+    }
+
+    .links a:hover { color: var(--accent-soft); text-decoration: underline; }
+
+    .what-is {
+      margin-bottom: 1.5rem;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 61, 0, 0.06);
+      border: 1px solid rgba(255, 61, 0, 0.15);
+      border-radius: 12px;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .what-is strong { color: var(--accent-soft); }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="page">
+    <header>
+      <p class="badge">Live demo · No backend</p>
+      <h1>ROAR Protocol</h1>
+      <p class="tagline"><strong>One protocol.</strong> Any agent.</p>
+      <p class="sub">Discover agents, fetch cards, send tasks — from your browser. Point at any ROAR endpoint.</p>
+    </header>
+
+    <div class="what-is">
+      <strong>ROAR</strong> (Reliable Open Agent Relay) is a 5-layer agent communication protocol: identity (DIDs), discovery, transport, message exchange, and streaming. ProwlrBot and compatible agents speak it over HTTP and WebSocket. <code style="color: var(--accent); font-size: 0.8125rem;">pip install roar-protocol</code>
+    </div>
+
+    <div class="card">
+      <h2>Endpoint</h2>
+      <label for="base">Base URL</label>
+      <input type="text" id="base" placeholder="https://app.prowlrbot.com" value="https://app.prowlrbot.com" />
+      <div class="row">
+        <button type="button" class="btn btn-primary" id="btn-health">Check health</button>
+        <button type="button" class="btn btn-secondary" id="btn-card">Fetch agent card</button>
+      </div>
+      <div id="health-status" class="status"></div>
+      <div id="health-result" class="result"></div>
+      <div id="card-result" class="result"></div>
+      <div class="curl-block" id="curl-block" style="display: none;">
+        <button type="button" class="btn btn-ghost" id="btn-copy-curl">Copy</button>
+        <code id="curl-text"></code>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Send a test message</h2>
+      <p style="margin: 0 0 1rem; font-size: 0.875rem; color: var(--text-muted);">
+        Optional. Requires a Bearer token for the app — the agent runs the task and returns a ROAR response.
+      </p>
+      <label for="token">Bearer token</label>
+      <input type="password" id="token" placeholder="Your API or session token" />
+      <label for="task">Task</label>
+      <input type="text" id="task" placeholder="e.g. Say hello in one word." value="Reply with exactly: ROAR works." />
+      <div class="row" style="margin-top: 1rem;">
+        <button type="button" class="btn btn-primary" id="btn-send">Send message</button>
+      </div>
+      <div id="send-status" class="status"></div>
+      <div id="send-result" class="result"></div>
+    </div>
+
+    <div class="links">
+      <a href="https://github.com/ProwlrBot/roar-protocol">GitHub</a>
+      <a href="https://pypi.org/project/roar-protocol/">PyPI</a>
+      <a href="/docs/guide-roar-usage" target="_blank" rel="noopener">Docs</a>
+      <a href="/" target="_blank" rel="noopener">ProwlrBot</a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const baseInput = document.getElementById("base");
+      const btnHealth = document.getElementById("btn-health");
+      const btnCard = document.getElementById("btn-card");
+      const btnSend = document.getElementById("btn-send");
+      const btnCopyCurl = document.getElementById("btn-copy-curl");
+      const healthStatus = document.getElementById("health-status");
+      const healthResult = document.getElementById("health-result");
+      const cardResult = document.getElementById("card-result");
+      const curlBlock = document.getElementById("curl-block");
+      const curlText = document.getElementById("curl-text");
+      const tokenInput = document.getElementById("token");
+      const taskInput = document.getElementById("task");
+      const sendStatus = document.getElementById("send-status");
+      const sendResult = document.getElementById("send-result");
+
+      function baseUrl() { return (baseInput.value || "").replace(/\/$/, ""); }
+
+      function setResult(el, text, isError) {
+        el.textContent = text;
+        el.className = "result" + (isError ? " error" : " success");
+      }
+
+      function setStatus(el, text, kind) {
+        el.textContent = text;
+        el.className = "status " + (kind === "ok" ? "ok" : kind === "fail" ? "fail" : "pending");
+      }
+
+      function setLoading(btn, loading) {
+        btn.disabled = loading;
+        btn.textContent = loading ? "…" : btn.getAttribute("data-label") || btn.textContent;
+      }
+
+      function showCurl() {
+        const base = baseUrl();
+        if (!base) return;
+        curlText.textContent = "curl -s " + base + "/roar/health\ncurl -s " + base + "/roar/card | jq .";
+        curlBlock.style.display = "block";
+      }
+
+      btnHealth.setAttribute("data-label", "Check health");
+      btnCard.setAttribute("data-label", "Fetch agent card");
+      btnSend.setAttribute("data-label", "Send message");
+
+      btnHealth.addEventListener("click", async function () {
+        const base = baseUrl();
+        healthStatus.textContent = "Checking…";
+        setStatus(healthStatus, "Checking…", "pending");
+        healthResult.textContent = "";
+        cardResult.textContent = "";
+        curlBlock.style.display = "none";
+        if (!base) {
+          setStatus(healthStatus, "Enter a base URL.", "fail");
+          return;
+        }
+        setLoading(btnHealth, true);
+        try {
+          const r = await fetch(base + "/roar/health", { method: "GET" });
+          const data = await r.json().catch(() => ({}));
+          setStatus(healthStatus, r.ok ? "ROAR endpoint is up." : "Request failed: " + r.status, r.ok ? "ok" : "fail");
+          setResult(healthResult, JSON.stringify(data, null, 2), !r.ok);
+          if (r.ok) showCurl();
+        } catch (e) {
+          setStatus(healthStatus, "Error: " + e.message, "fail");
+          setResult(healthResult, e.message, true);
+        }
+        setLoading(btnHealth, false);
+      });
+
+      btnCard.addEventListener("click", async function () {
+        const base = baseUrl();
+        healthStatus.textContent = "";
+        healthResult.textContent = "";
+        cardResult.textContent = "";
+        if (!base) {
+          setResult(cardResult, "Enter a base URL.", true);
+          return;
+        }
+        setLoading(btnCard, true);
+        try {
+          const r = await fetch(base + "/roar/card", { method: "GET" });
+          const data = await r.json().catch(() => ({}));
+          setResult(cardResult, JSON.stringify(data, null, 2), !r.ok);
+        } catch (e) {
+          setResult(cardResult, "Error: " + e.message, true);
+        }
+        setLoading(btnCard, false);
+      });
+
+      btnCopyCurl.addEventListener("click", function () {
+        const t = curlText.textContent;
+        if (!t) return;
+        navigator.clipboard.writeText(t).then(function () {
+          btnCopyCurl.textContent = "Copied!";
+          setTimeout(function () { btnCopyCurl.textContent = "Copy"; }, 1500);
+        });
+      });
+
+      btnSend.addEventListener("click", async function () {
+        const base = baseUrl();
+        const token = (tokenInput.value || "").trim();
+        const task = (taskInput.value || "").trim();
+        sendStatus.textContent = "";
+        sendResult.textContent = "";
+        if (!base || !token) {
+          setStatus(sendStatus, "Base URL and Bearer token required.", "fail");
+          return;
+        }
+        if (!task) {
+          setStatus(sendStatus, "Enter a task.", "fail");
+          return;
+        }
+        setStatus(sendStatus, "Sending…", "pending");
+        setLoading(btnSend, true);
+        const body = {
+          roar: "1.0",
+          from: { did: "did:roar:agent:demo-" + Date.now(), display_name: "ROAR Demo", agent_type: "agent", capabilities: ["execute"] },
+          to: { did: "did:roar:agent:prowlrbot", display_name: "ProwlrBot", agent_type: "agent", capabilities: ["execute", "delegate", "monitor", "stream"] },
+          intent: "execute",
+          payload: { task: task },
+        };
+        try {
+          const r = await fetch(base + "/roar/message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+            body: JSON.stringify(body),
+          });
+          const data = await r.json().catch(() => ({}));
+          setStatus(sendStatus, r.ok ? "Response received." : "Request failed: " + r.status, r.ok ? "ok" : "fail");
+          setResult(sendResult, JSON.stringify(data, null, 2), !r.ok);
+        } catch (e) {
+          setStatus(sendStatus, "Error: " + e.message, "fail");
+          setResult(sendResult, e.message, true);
+        }
+        setLoading(btnSend, false);
+      });
+    })();
+  </script>
+</body>
+</html>
